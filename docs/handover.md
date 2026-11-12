@@ -147,7 +147,7 @@ seconds; it is `null` until the first status line refresh with data). Read it wi
 `jq -c '{age_s: (now - .t | floor), rate_limits}' ~/.config/personal-claude/state/rate-limits.json`
 before starting any subagent and after every merge. From 80 % of the five-hour window: start no new
 subagent, let running ones finish, write their results into this file instead of starting fix
-rounds, and stop.
+rounds, then schedule a one-shot wake-up (`CronCreate`) a few minutes after `resets_at` and continue in the same session when it fires. This file stays the fallback if the session dies.
 
 ## Cautions
 
