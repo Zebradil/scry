@@ -7,13 +7,19 @@ spec is [`spec.md`](spec.md).
 
 ## Where things stand
 
-- Done and merged into `main`: M0 (scaffold, CLI, report types, seam interface), M1 (packages
-  core), M2 (files and boot core), M4 (command seam and ssh transport). Every milestone passed a
-  review subagent, and the review findings were fixed before the merge.
-- Next: wave 3, **M3** (rendering) and **M5** (fetch pipeline), in parallel. Then wave 4, **M6**
-  (sources and run) and **M7** (TUI), in parallel. Then M8, then M9.
-- ADRs exist as 0001–0006 (M0) and 0010–0012 (M4), plus any M2 added; the next ADR takes the next
-  free number after the highest.
+- Done and merged into `main`: M0, M1, M2, M3, M4. Every milestone passed a review subagent, and
+  the review findings were fixed before the merge.
+- In flight when this was last updated (2026-11-13): **M5** (fetch pipeline) implemented on branch
+  `wt/261113-000329-m5-fetch`, under review; **M7** (TUI) being implemented on branch
+  `wt/261113-002750-m7-tui`. Both worktrees are under `.worktrees/`. A new session cannot resume
+  those subagents: check each branch with the gate (step 3 below), run a fresh review subagent if
+  the branch has no review fixes yet (`git log main..<branch>`), fix, then merge.
+- Next after M5: **M6** (sources and run). After M6 and M7: M8, then M9.
+- Open item for the M5 fix round or M6: the `unknown closure kind: no followed trees, no Boot
+  section` note (spec 5) has no report field and M3 does not render it; render it in
+  `render::view` for a `done` configuration of kind `unknown`.
+- ADRs: 0001–0006 (M0), 0010–0012 (M4), 0020 (M3), 0030 (M5); M7 numbers from 0040. The next ADR
+  takes the next free number after the highest.
 - No git remote. GitHub, CI and the binary cache are a follow-up (roadmap).
 
 ## How each milestone runs
@@ -129,4 +135,4 @@ Collected from the reports and reviews so far; pass the relevant ones to each im
 Paste into a new Claude Code session in the main checkout:
 
 > Continue implementing scry. Read `docs/handover.md` and follow it: orchestrate subagents per
-> milestone, starting with wave 3 (M3 and M5 in parallel). Call me in only for real blockers.
+> milestone, starting with the in-flight branches listed there. Call me in only for real blockers.
