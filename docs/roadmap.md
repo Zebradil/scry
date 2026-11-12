@@ -24,7 +24,7 @@ that is not done.
 | M1 | Packages core: store names, `parseDrvName`, `compareVersions` with the git-revision rule, path-info JSON, sizes, package comparison | 7.1, 7.2 | M0 | done |
 | M2 | Files core: listing parsing, level walk state, file statuses, binary detection, churn, unified diff, word highlight, reference pairing; Boot comparison | 5, 6.2, 7.3–7.5 | M0 | in progress |
 | M3 | Report rendering: JSON, text, shared changes, colour; snapshot tests | 8.1–8.3, 8.5 | M1, M2 | todo |
-| M4 | Command seam (real and fake), ssh invocation, connection sharing, remote script wrapping, per-connection limit, kill on timeout | 6.1, 9, 11 | M0 | in progress |
+| M4 | Command seam (real and fake), ssh invocation, connection sharing, remote script wrapping, per-connection limit, kill on timeout | 6.1, 9, 11 | M0 | done |
 | M5 | Fetch pipeline: probe, level listing, content fetch, references and small rebuilds; pipeline tests | 6.2, 6.3, 7.4 | M1, M2, M4 | todo |
 | M6 | Sources and run: selection, colmena, flake, paths, build step, revision mode, parallelism, cleanup, exit codes | 4.1–4.8, 6.3, 9 | M3, M5 | todo |
 | M7 | TUI: state, rendering, keys, filter, tree view, wrap, live status, OSC 52 | 8.4 | M3 | todo |
