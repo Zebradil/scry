@@ -9,11 +9,15 @@ spec is [`spec.md`](spec.md).
 
 - Done and merged into `main`: M0, M1, M2, M3, M4. Every milestone passed a review subagent, and
   the review findings were fixed before the merge.
-- In flight when this was last updated (2026-11-13): **M5** (fetch pipeline) implemented on branch
-  `wt/261113-000329-m5-fetch`, under review; **M7** (TUI) being implemented on branch
-  `wt/261113-002750-m7-tui`. Both worktrees are under `.worktrees/`. A new session cannot resume
-  those subagents: check each branch with the gate (step 3 below), run a fresh review subagent if
-  the branch has no review fixes yet (`git log main..<branch>`), fix, then merge.
+- In flight when this was last updated (2026-11-13, 01:00 CET), both under `.worktrees/`; a new
+  session cannot resume the old subagents, so spawn fresh ones:
+  - **M5** (fetch pipeline), branch `wt/261113-000329-m5-fetch`: implemented, gate passed (121
+    tests), a review was running. If its findings are not recorded below, run the review again
+    (shape in step 4; include the real-data check against `diff -rq` of local trees), have a new
+    agent fix the findings on the branch, then merge.
+  - **M7** (TUI), branch `wt/261113-002750-m7-tui`: implemented, gate passed (159 tests, clippy
+    clean), checked by its author in tmux; **not reviewed yet**. Review against spec 8.4/8.5, fix,
+    merge.
 - Next after M5: **M6** (sources and run). After M6 and M7: M8, then M9.
 - Open item for the M5 fix round or M6: the `unknown closure kind: no followed trees, no Boot
   section` note (spec 5) has no report field and M3 does not render it; render it in
@@ -109,9 +113,20 @@ Collected from the reports and reviews so far; pass the relevant ones to each im
 
 ### M7: TUI (spec 8.4)
 
-- The run hands over the report header, the selected names in name order and the receiver; the
-  TUI runs a blocking loop on its own thread and drains with `try_recv` (architecture).
-- Reuse M3's line model for the detail pane and M3's text output for `Y`.
+Implemented (see above). What M6 calls, from the author's report:
+
+- `tui::run(header, names, events, options) -> Finished`: blocking, on the calling thread (M6
+  picks the thread; `docs/architecture.md` says "its own thread": align the doc when merging);
+  restores the terminal on every exit path, including panics.
+- `tui::Options { expand_churn, color }` (`color` from `render::color_enabled`).
+- `tui::Finished { all_finished, configurations }` (name order); pass `!all_finished` to
+  `exit::Outcome::of_report` so quitting early counts unfinished configurations as failed.
+- ADR 0040 records its readings: no reverse video (8.5 forbids backgrounds), so a `>` cursor
+  column and a thick border on the focused pane; the KiB in the copy notice is the OSC 52 payload
+  size; `nothing to copy yet` only for a configuration still fetching; `g`/`G` act on the detail
+  pane; `l` from the list only focuses the detail pane.
+- Unverified by its author: terminal restore after a real panic, OSC 52 outside tmux, colours by
+  eye; the panic hook stays installed after `run` returns (harmless).
 
 ### M8 and M9
 
