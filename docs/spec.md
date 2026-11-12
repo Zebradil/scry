@@ -290,7 +290,9 @@ A broken pipe on stdout ends the run quietly with the exit code it would have ha
 ### 4.8 Environment
 
 - `NO_COLOR`: a non-empty value disables colour under `--color auto`.
-- `NIX_SSHOPTS`: split on whitespace and passed to every `ssh` invocation, as Nix does.
+- `NIX_SSHOPTS`: split shell-style, as Nix does (spaces and tabs separate words; single quotes,
+  double quotes and backslashes group them), and passed to every `ssh` invocation. A value that does
+  not split, such as one with an unterminated quote, is a fatal error naming `NIX_SSHOPTS`.
 - `USER`, and the short hostname: flake default selection.
 - On the old side's machine: `HOME`, `USER`, `XDG_STATE_HOME` for the home-manager current system.
 
@@ -338,8 +340,9 @@ toplevel probes (section 6.2):
     on every connection.
   - Respect existing setups: when `ssh -G <target>` (local, no connection) shows a `controlpath`
     other than `none`, the user's own multiplexing is used as is.
-  - Otherwise pass `-o ControlMaster=auto -o ControlPath=<dir>/%C -o ControlPersist=60`. `<dir>` is a
-    private (mode 0700) per-run directory with a short path such as `/tmp/scry-XXXXXX`, because
+  - Otherwise pass `-o ControlMaster=auto -o ControlPath=<dir>/<n> -o ControlPersist=60`, with `<n>`
+    one name per connection: `%C` would give two connections that differ only in options, such as an
+    identity file, the same socket. `<dir>` is a private (mode 0700) per-run directory with a short path such as `/tmp/scry-XXXXXX`, because
     macOS rejects socket paths of 104 bytes or more (hit while measuring). At exit, the tool sends
     `ssh -O exit` to each master it opened and removes the directory. `ControlPersist=60` bounds a
     master left behind by a hard kill.

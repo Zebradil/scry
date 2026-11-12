@@ -100,7 +100,7 @@ impl Output {
 /// Command failures in the wording of spec 9. `line` is the first line of stderr.
 #[derive(Debug, thiserror::Error)]
 pub enum ExecError {
-    /// The program is not installed there: a failed spawn locally, exit 127 remotely.
+    /// The program is not installed there: a failed spawn, or exit 127 from a shell.
     #[error("`{program}` not found on {machine}")]
     NotFound { program: String, machine: Machine },
     /// `ssh` itself failed (exit 255): unreachable host, refused key, host key mismatch.
