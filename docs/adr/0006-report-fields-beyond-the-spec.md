@@ -11,6 +11,10 @@ still parses and serialises back unchanged (test in `report`).
 - **`hash_only`** on a hunk line, serialised only when true: the line is paired with one that
   differs only in store hashes, shown dimmed without bold (7.3). Without it a renderer cannot tell
   such a line from an unpaired one, since both have no spans.
+- **`no_newline`** on a hunk line, serialised only when true: the file's last line has no final
+  newline, shown as `diff -u` does with `\ No newline at end of file` after it. Without it, a
+  change that only adds or removes the final newline shows as a removed and an added line with
+  the same text.
 - **Shared boot items** (8.2 gives no JSON): `{"section": "boot", "change": {"item": …}}` with
   `item` one of `kernel`, `initrd`, `kernel-modules`, `kernel-params` (fields as in `boot`), or
   `specialisation` with `name` and `status` (`added`, `removed`, `changed`): one item per row of

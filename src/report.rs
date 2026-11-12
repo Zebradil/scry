@@ -266,6 +266,10 @@ pub struct Line {
     /// bold (spec 7.3). Serialised only when true.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub hash_only: bool,
+    /// The file's last line, without a final newline: followed by `\ No newline at end of
+    /// file`, as in `diff -u`. Serialised only when true.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub no_newline: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -452,7 +456,7 @@ mod tests {
                         "type_old": "file", "type_new": "external-link", "binary": false, "content_fetched": false,
                         "size_old": 3, "size_new": null, "link_old": null, "link_new": "/dev/null",
                         "hunks": [ { "old_start": 1, "old_lines": 1, "new_start": 1, "new_lines": 1, "lines": [
-                            { "op": "-", "text": "a", "spans": [], "hash_only": true } ] } ] } ] },
+                            { "op": "-", "text": "a", "spans": [], "hash_only": true, "no_newline": true } ] } ] } ] },
                   "boot": null }
             ],
             "shared": [

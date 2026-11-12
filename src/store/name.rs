@@ -1,5 +1,8 @@
 //! Store path names and the `builtins.parseDrvName` split (spec 7.1).
 
+/// Every store path starts with this.
+pub const STORE_PREFIX: &str = "/nix/store/";
+
 /// The name part of a store path's file name: what follows the 32-character hash and its `-`.
 /// A file name whose first `-` is not at position 32 has no hash and is returned whole.
 pub fn store_name(file_name: &str) -> &str {
@@ -7,6 +10,13 @@ pub fn store_name(file_name: &str) -> &str {
         Some(32) => &file_name[33..],
         _ => file_name,
     }
+}
+
+/// The store name of the store path that `path` is or lies below:
+/// `/nix/store/<hash>-linux-6.12.48/bzImage` gives `linux-6.12.48`.
+pub fn store_path_name(path: &str) -> &str {
+    let rest = path.strip_prefix(STORE_PREFIX).unwrap_or(path);
+    store_name(rest.split('/').next().unwrap_or(rest))
 }
 
 /// Splits a name into pname and version like `builtins.parseDrvName`: the version starts after
@@ -58,6 +68,19 @@ mod tests {
         );
         assert_eq!(store_name("etc-hosts"), "etc-hosts");
         assert_eq!(store_name("hello"), "hello");
+    }
+
+    #[test]
+    fn store_path_name_takes_the_store_path_below_the_prefix() {
+        let h = "0123456789abcdfghijklmnpqrsvwxyz";
+        assert_eq!(
+            store_path_name(&format!("/nix/store/{h}-linux-6.12.48/bzImage")),
+            "linux-6.12.48"
+        );
+        assert_eq!(
+            store_path_name(&format!("/nix/store/{h}-app-start")),
+            "app-start"
+        );
     }
 
     #[test]

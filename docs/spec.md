@@ -361,11 +361,11 @@ toplevel probes (section 6.2):
   install on macOS. Every remote script appends `/run/current-system/sw/bin`,
   `/nix/var/nix/profiles/default/bin` and `$HOME/.nix-profile/bin` to `PATH` before running
   anything.
-- **Allowed commands on a side's machine**: `nix`, `sh` and its builtins, `cat`, `ls`, `find`,
-  `xargs`, `cksum`, `tar`, and `gzip` when present (probe for it, fall back to uncompressed). Use only
-  POSIX options, plus `tar -c -h -f - -T -`, which GNU tar 1.35 and bsdtar 3.5.3 both accept
-  (checked). No GNU-only options of other tools, since macOS ships BSD userland. Resolve a toplevel
-  with `cd -P <path> && pwd -P`, not `readlink -f`.
+- **Allowed commands on a side's machine**: `nix`, `sh` and its builtins, `echo`, `cat`, `ls`,
+  `find`, `xargs`, `cksum`, `tar`, and `gzip` when present (probe for it, fall back to
+  uncompressed). Use only POSIX options, plus `tar -c -h -f - -T -`, which GNU tar 1.35 and
+  bsdtar 3.5.3 both accept (checked). No GNU-only options of other tools, since macOS ships BSD
+  userland. Resolve a toplevel with `cd -P <path> && pwd -P`, not `readlink -f`.
 - **Nix flags**: every `nix` invocation passes `--extra-experimental-features nix-command`, so machines
   without it enabled work. Invocations that take a flake reference (local evaluation and builds) pass
   `--extra-experimental-features 'nix-command flakes'`.
@@ -394,9 +394,13 @@ toplevel probes (section 6.2):
    is the toplevel. `find` without `-L` descends real directories only, so links such as `sw` or
    `etc` are listed, not entered. Each level sends its roots over stdin to one script of
    the shape
-   `set --; while IFS= read -r r; do set -- "$@" "$r"; done; find "$@" -type l -exec ls -ld {} + -o -type f -exec cksum {} + -o -type d -print`.
-   `-a` binds tighter than `-o`, so no escaped parentheses are needed, and the script needs no nested
-   quotes (see the login-shell rule). Roots are chunked below the machine's argument limit. Locally:
+   `LC_ALL=C; export LC_ALL; nl="<newline>"; set --; while IFS= read -r r; do if [ -e "$r" ] || [ -h "$r" ]; then set -- "$@" "$r"; fi; done; find "$@" -name "*$nl*" -exec echo newline: {} ";" -o -type l -exec ls -ldn {} + -o -type f -exec cksum {} + -o -type d -print`,
+   where `<newline>` is a literal newline. `-a` binds tighter than `-o`, so no escaped parentheses
+   are needed, and the script needs no nested quotes (see the login-shell rule). Roots that do not
+   exist are skipped, since `find` fails on them; their links are dangling. `ls -ldn` prints numeric
+   ids, so an owner or group name with a space cannot shift the fields. `ls` prints a newline in a
+   name as `?`, so the first alternative reports such names (section 9). Roots are chunked below the
+   machine's argument limit, inside the script. Locally:
    - a symlink at or below a followed tree whose target is in `/nix/store` is replaced by that target,
      which becomes a root of the next level unless it was already listed. Store links elsewhere (`sw`,
      `Applications`, `Library/Fonts`, `etc/profiles/per-user`) are neither followed nor compared;
@@ -835,8 +839,9 @@ output stays readable on dark and light terminals. No colour when it is disabled
 - Any other failed command: `` `<program>` failed (exit N): <first stderr line> ``. The full argv and
   stderr go to the log only when a debug flag or environment variable asks for it (implementer's
   choice, documented in `--help`).
-- A file name containing a newline cannot be listed reliably with `cksum`. It fails that
-  configuration with an error naming the tree, rather than giving a wrong answer.
+- A file name containing a newline cannot be listed reliably with `cksum` or `ls`. It fails that
+  configuration with an error naming the tree, rather than giving a wrong answer. A newline in a
+  link's target cannot be detected with POSIX `find`; `ls` shows it as `?`.
 
 ## 10. Shell completion
 
