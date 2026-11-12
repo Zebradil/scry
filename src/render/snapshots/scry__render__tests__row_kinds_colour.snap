@@ -1,0 +1,60 @@
+---
+source: src/render/tests.rs
+expression: "render(&report, true, false)"
+---
+\e[1mShared across configurations\e[0m
+  \e[36m[M]\e[0m \e[36metc/abcdefgh.conf\e[0m  web-a, web-b
+  \e[36m[M]\e[0m \e[36metc/日本語.conf\e[0m    web-a, web-b
+
+\e[1mweb-a · nixos (root@web-a)\e[0m
+  \e[2mold /nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-nixos-system-web-a-25.05.20250801.6027c30\e[0m
+  \e[2mnew /nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-nixos-system-web-a-25.11.20251001.9a8b7c6\e[0m
+  system 25.05.20250801.6027c30 -> 25.11.20251001.9a8b7c6
+\e[1mPackages  1.0 MiB -> 1.0 MiB (0 B)\e[0m
+  no package changes
+\e[1mFiles\e[0m
+  \e[36m[M]\e[0m \e[36metc/abcdefgh.conf\e[0m  (also in 1)
+      \e[2m@@ -1,1 +1,1 @@\e[0m
+      \e[31m-名前 = \e[0m\e[1;31m太郎\e[0m
+      \e[32m+名前 = \e[0m\e[1;32m花子\e[0m
+  \e[35m[B]\e[0m \e[35metc/blob.bin\e[0m  (binary, 1.0 KiB -> 2.0 KiB)
+  \e[32m[A]\e[0m \e[32metc/evil^[[31m.conf\e[0m
+  \e[31m[R]\e[0m \e[31metc/gone.conf\e[0m
+      \e[2m@@ -1,2 +0,0 @@\e[0m
+      \e[31m-a = 1\e[0m
+      \e[31m-b = 2\e[0m
+  \e[36m[M]\e[0m \e[36metc/inject.conf\e[0m
+      \e[2m@@ -1,1 +1,1 @@\e[0m
+      \e[31m-plain\e[0m
+      \e[32m+a^[]52;c;ZXZpbA==^Gb^[]0;pwned^Gc^[[2J^M\e[0m\e[1;32mX\e[0m\e[32m\u{9b}31mY\e[0m
+  \e[35m[T]\e[0m \e[35metc/ssl/certs\e[0m  directory -> external link /etc/static/ssl/certs
+  \e[36m[M]\e[0m \e[36metc/日本語.conf\e[0m  (also in 1)
+      \e[2m@@ -1,1 +1,1 @@\e[0m
+      \e[31m-名前 = \e[0m\e[1;31m太郎\e[0m
+      \e[32m+名前 = \e[0m\e[1;32m花子\e[0m
+\e[1mBoot\e[0m
+  kernel: (none) -> linux-6.12.48
+  initrd: initrd-linux-6.12.40 -> (none)
+  kernel-params: (none) -> quiet
+  \e[31m[R]\e[0m \e[31mspecialisation old\e[0m
+  \e[36m[M]\e[0m \e[36mspecialisation gpu (changed)\e[0m
+
+\e[1mweb-b · nixos (root@web-b)\e[0m
+  \e[2mold /nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-nixos-system-web-b-25.05.20250801.6027c30\e[0m
+  \e[2mnew /nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-nixos-system-web-b-25.11.20251001.9a8b7c6\e[0m
+  system 25.05.20250801.6027c30 -> 25.11.20251001.9a8b7c6
+\e[1mPackages  1.0 MiB -> 1.0 MiB (0 B)\e[0m
+  no package changes
+\e[1mFiles\e[0m
+  \e[36m[M]\e[0m \e[36metc/abcdefgh.conf\e[0m  (also in 1)
+      \e[2m@@ -1,1 +1,1 @@\e[0m
+      \e[31m-名前 = \e[0m\e[1;31m太郎\e[0m
+      \e[32m+名前 = \e[0m\e[1;32m花子\e[0m
+  \e[36m[M]\e[0m \e[36metc/日本語.conf\e[0m  (also in 1)
+      \e[2m@@ -1,1 +1,1 @@\e[0m
+      \e[31m-名前 = \e[0m\e[1;31m太郎\e[0m
+      \e[32m+名前 = \e[0m\e[1;32m花子\e[0m
+
+\e[1mweb-c · nixos (root@web-c)\e[0m
+  \e[31merror: ssh root@web-c: banner ^[]0;pwned^G\e[0m
+         \e[31mPermission denied (publickey).\e[0m

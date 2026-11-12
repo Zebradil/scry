@@ -1,0 +1,130 @@
+---
+source: src/render/tests.rs
+expression: text
+---
+{
+  "schema_version": 1,
+  "tool_version": "1.0.0",
+  "mode": "revision",
+  "base": {
+    "ref": "main",
+    "rev": "6027c30aa1b2c3d4e5f60718293a4b5c6d7e8f90"
+  },
+  "head": {
+    "rev": "9a8b7c6aa1b2c3d4e5f60718293a4b5c6d7e8f90",
+    "dirty": true
+  },
+  "configurations": [
+    {
+      "name": "db-a",
+      "source": "flake",
+      "kind": "nix-darwin",
+      "status": "done",
+      "packages": {
+        "size_old": 3145728,
+        "size_new": 3145728,
+        "changes": [
+          {
+            "kind": "downgraded",
+            "pname": "python3",
+            "old_versions": [
+              "3.12.4"
+            ],
+            "new_versions": [
+              "3.11.9"
+            ],
+            "size_delta": 0
+          }
+        ],
+        "rebuilt": {
+          "count": 0,
+          "size_delta": 0,
+          "items": []
+        }
+      },
+      "files": {
+        "changes": [
+          {
+            "path": "etc/motd",
+            "via": [],
+            "status": "added",
+            "class": "real",
+            "type_old": null,
+            "type_new": "file",
+            "binary": false,
+            "content_fetched": true,
+            "size_old": null,
+            "size_new": 829,
+            "link_old": null,
+            "link_new": null,
+            "hunks": []
+          },
+          {
+            "path": "etc/old.bin",
+            "via": [],
+            "status": "removed",
+            "class": "real",
+            "type_old": "file",
+            "type_new": null,
+            "binary": true,
+            "content_fetched": true,
+            "size_old": 2048,
+            "size_new": null,
+            "link_old": null,
+            "link_new": null,
+            "hunks": []
+          }
+        ]
+      },
+      "boot": null,
+      "old": {
+        "path": "/nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-darwin-system-25.11.a",
+        "system_version": "25.11.a",
+        "location": "local"
+      },
+      "new": {
+        "path": "/nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-darwin-system-25.11.b",
+        "system_version": "25.11.b",
+        "location": "local"
+      }
+    },
+    {
+      "name": "db-b",
+      "source": "flake",
+      "kind": "home-manager",
+      "status": "absent-at-base",
+      "old": null,
+      "new": {
+        "path": "/nix/store/0c2xa4r6mpqv8bdn5fhy3wz7gil9ks1j-home-manager-generation",
+        "system_version": "25.11",
+        "location": "local"
+      }
+    },
+    {
+      "name": "db-c",
+      "source": "flake",
+      "kind": "home-manager",
+      "status": "no-changes",
+      "old": {
+        "path": "/nix/store/0c2xa4r6mpqv8bdn5fhy3wz7gil9ks1j-home-manager-generation",
+        "system_version": "25.11",
+        "location": "local"
+      },
+      "new": {
+        "path": "/nix/store/0c2xa4r6mpqv8bdn5fhy3wz7gil9ks1j-home-manager-generation",
+        "system_version": "25.11",
+        "location": "local"
+      }
+    },
+    {
+      "name": "db-d",
+      "source": "flake",
+      "kind": "nixos",
+      "status": "timeout",
+      "error": "timeout after 60 s",
+      "old": null,
+      "new": null
+    }
+  ],
+  "shared": []
+}

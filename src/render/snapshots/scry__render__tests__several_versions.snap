@@ -1,0 +1,18 @@
+---
+source: src/render/tests.rs
+expression: "render(&report(Mode::Deployed, vec![configuration]), false, false)"
+---
+web-a · nixos (root@web-a)
+  old /nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-nixos-system-web-a-25.05.20250801.6027c30
+  new /nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-nixos-system-web-a-25.11.20251001.9a8b7c6
+  system 25.05.20250801.6027c30 -> 25.11.20251001.9a8b7c6
+Packages  1.0 GiB -> 1.1 GiB (+80.0 MiB)
+  [U] foo               +10 B     (none) -> 1.0
+  [C] glibc             -5.0 MiB  {2.39, 2.40} -> {2.40}
+  [C] perl              0 B       5.38.2 -> 5.42.0
+  [C] python3           +30.0 MiB {3.12.4} -> {3.12.4, 3.13.1}
+  [A] qt                +50.0 MiB 6.7.0, 6.8.0
+  [A] unit-foo.service  +1.2 KiB
+  [R] libbar            -1 B      0.9
+  [S] firmware          +3.0 MiB  20250801
+  2 rebuilt (same version, new hash, 0 B)

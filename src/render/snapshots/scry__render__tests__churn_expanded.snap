@@ -1,0 +1,27 @@
+---
+source: src/render/tests.rs
+expression: "render(&churn(), false, true)"
+---
+web-a · nixos (root@web-a)
+  old /nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-nixos-system-web-a-25.05.20250801.6027c30
+  new /nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-nixos-system-web-a-25.11.20251001.9a8b7c6
+  system 25.05.20250801.6027c30 -> 25.11.20251001.9a8b7c6
+Packages  1.0 GiB -> 1.0 GiB (0 B)
+  no package changes
+Files
+  [M] etc/d.conf
+      @@ -1,2 +1,2 @@
+       port = 80
+      -workers = 4
+      +workers = 8
+  2 hash-only (store hash churn)
+    [M] etc/a.conf
+        @@ -1,1 +1,1 @@
+        -ExecStart=/nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-app/bin/app
+        +ExecStart=/nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-app/bin/app
+    [M] etc/c.conf
+  1 version-only (store path version bumps)
+    [M] etc/b.conf
+        @@ -2,1 +2,1 @@
+        -/nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-app-1.0
+        +/nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-app-1.1

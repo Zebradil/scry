@@ -1,0 +1,22 @@
+---
+source: src/render/tests.rs
+expression: "render(&revision(), false, false)"
+---
+db-a · nix-darwin (6027c30 -> working tree)
+  old /nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-darwin-system-25.11.a
+  new /nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-darwin-system-25.11.b
+  system 25.11.a -> 25.11.b
+Packages  3.0 MiB -> 3.0 MiB (0 B)
+  [D] python3  0 B 3.12.4 -> 3.11.9
+Files
+  [A] etc/motd
+  [R] etc/old.bin  (binary, 2.0 KiB)
+
+db-b · home-manager (6027c30 -> working tree)
+  not present at base 6027c30
+
+db-c · home-manager (6027c30 -> working tree)
+  no changes, same toplevel /nix/store/0c2xa4r6mpqv8bdn5fhy3wz7gil9ks1j-home-manager-generation
+
+db-d · nixos (6027c30 -> working tree)
+  timeout after 60 s

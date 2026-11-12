@@ -1,0 +1,27 @@
+---
+source: src/render/tests.rs
+expression: "render(&churn(), true, true)"
+---
+\e[1mweb-a · nixos (root@web-a)\e[0m
+  \e[2mold /nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-nixos-system-web-a-25.05.20250801.6027c30\e[0m
+  \e[2mnew /nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-nixos-system-web-a-25.11.20251001.9a8b7c6\e[0m
+  system 25.05.20250801.6027c30 -> 25.11.20251001.9a8b7c6
+\e[1mPackages  1.0 GiB -> 1.0 GiB (0 B)\e[0m
+  no package changes
+\e[1mFiles\e[0m
+  \e[36m[M]\e[0m \e[36metc/d.conf\e[0m
+      \e[2m@@ -1,2 +1,2 @@\e[0m
+       port = 80
+      \e[31m-workers = \e[0m\e[1;31m4\e[0m
+      \e[32m+workers = \e[0m\e[1;32m8\e[0m
+  2 hash-only (store hash churn)
+    \e[36m[M]\e[0m \e[36metc/a.conf\e[0m
+        \e[2m@@ -1,1 +1,1 @@\e[0m
+        \e[2;31m-ExecStart=/nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-app/bin/app\e[0m
+        \e[2;32m+ExecStart=/nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-app/bin/app\e[0m
+    \e[36m[M]\e[0m \e[36metc/c.conf\e[0m
+  1 version-only (store path version bumps)
+    \e[36m[M]\e[0m \e[36metc/b.conf\e[0m
+        \e[2m@@ -2,1 +2,1 @@\e[0m
+        \e[31m-/nix/store/\e[0m\e[1;31m1b9p07z77phvv2hf6gm9f28syp39f1ag\e[0m\e[31m-app-1.\e[0m\e[1;31m0\e[0m
+        \e[32m+/nix/store/\e[0m\e[1;32m9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g\e[0m\e[32m-app-1.\e[0m\e[1;32m1\e[0m

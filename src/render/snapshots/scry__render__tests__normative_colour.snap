@@ -1,0 +1,67 @@
+---
+source: src/render/tests.rs
+expression: "render(&normative(), true, false)"
+---
+\e[1mShared across configurations\e[0m
+  \e[36m[U]\e[0m \e[36mopenssl\e[0m  3.0.13 -> 3.0.14  web-a, web-c
+  \e[36m[M]\e[0m \e[36metc/nix/nix.conf\e[0m           web-a, web-c
+
+\e[1mweb-a · nixos (root@web-a)\e[0m
+  \e[2mold /nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-nixos-system-web-a-25.05.20250801.6027c30\e[0m
+  \e[2mnew /nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-nixos-system-web-a-25.11.20251001.9a8b7c6\e[0m
+  system 25.05.20250801.6027c30 -> 25.11.20251001.9a8b7c6
+\e[1mPackages  1.2 GiB -> 1.3 GiB (+41.0 MiB)\e[0m
+  \e[36m[U]\e[0m \e[36mopenssl\e[0m         +100 B     3.0.13 -> 3.0.14  (also in 1)
+  \e[36m[U]\e[0m \e[36msystemd\e[0m         +1.2 MiB   257.5 -> 258.1
+  \e[35m[C]\e[0m \e[35mmy-tool\e[0m         +4.0 KiB   1.2.0-1a2b3c4 -> 1.2.0-9f8e7d6
+  \e[32m[A]\e[0m \e[32mnew-agent\e[0m       +2.0 MiB   1.4.0
+  \e[31m[R]\e[0m \e[31mold-lib\e[0m         -300.0 KiB 0.9
+  [S] linux-firmware  +12.0 MiB  20250801
+  412 rebuilt (same version, new hash, +3.1 MiB)
+\e[1mFiles\e[0m
+  \e[36m[L]\e[0m \e[36metc/mtab\e[0m  /proc/mounts -> /proc/self/mounts
+  \e[36m[M]\e[0m \e[36metc/nix/nix.conf\e[0m  (also in 1)
+      \e[2m@@ -11,3 +11,3 @@\e[0m
+       substituters = https://cache.example
+      \e[31m-trusted-public-keys = cache-a:AAAA\e[0m
+      \e[32m+trusted-public-keys = cache-a:AAAA\e[0m\e[1;32m cache-b:BBBB\e[0m
+       max-jobs = auto
+  \e[32m[A]\e[0m \e[32metc/ssh/authorized_keys.d/deploy\e[0m
+      \e[2m@@ -0,0 +1,1 @@\e[0m
+      \e[32m+ssh-ed25519 AAAA… deploy@example\e[0m
+  \e[36m[M]\e[0m \e[36metc/systemd/system/app.service → app-start/bin/app-start\e[0m
+      \e[2m@@ -1,4 +1,4 @@\e[0m
+       #!/bin/sh
+       set -eu
+      \e[31m-exec app --workers \e[0m\e[1;31m4\e[0m
+      \e[32m+exec app --workers \e[0m\e[1;32m8\e[0m
+  \e[35m[T]\e[0m \e[35metc/systemd/system/debug-shell.service\e[0m  file -> external link /dev/null
+  \e[36m[M]\e[0m \e[36metc/udev/hwdb.bin\e[0m  (content not fetched, 13.5 MiB -> 13.6 MiB)
+  57 hash-only (store hash churn; --expand-churn shows them)
+  3 version-only (store path version bumps; --expand-churn shows them)
+\e[1mBoot\e[0m
+  kernel: linux-6.12.40 -> linux-6.12.48
+  initrd: initrd-linux-6.12.40 -> initrd-linux-6.12.48
+  kernel-modules: linux-6.12.48-modules (rebuilt)
+  kernel-params: quiet loglevel=4 -> quiet loglevel=4 mitigations=auto
+  \e[32m[A]\e[0m \e[32mspecialisation debug\e[0m
+
+\e[1mweb-b · nixos (root@web-b)\e[0m
+  \e[31merror: ssh root@web-b: connect to host web-b port 22: Connection refused\e[0m
+
+\e[1mweb-c · nixos (root@web-c)\e[0m
+  \e[2mold /nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-nixos-system-web-c-25.05.20250801.6027c30\e[0m
+  \e[2mnew /nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-nixos-system-web-c-25.11.20251001.9a8b7c6\e[0m
+  system 25.05.20250801.6027c30 -> 25.11.20251001.9a8b7c6
+\e[1mPackages  1.2 GiB -> 1.2 GiB (+2.0 KiB)\e[0m
+  \e[36m[U]\e[0m \e[36mopenssl\e[0m  +120 B 3.0.13 -> 3.0.14  (also in 1)
+\e[1mFiles\e[0m
+  \e[36m[M]\e[0m \e[36metc/nix/nix.conf\e[0m  (also in 1)
+      \e[2m@@ -11,3 +11,3 @@\e[0m
+       substituters = https://cache.example
+      \e[31m-trusted-public-keys = cache-a:AAAA\e[0m
+      \e[32m+trusted-public-keys = cache-a:AAAA\e[0m\e[1;32m cache-b:BBBB\e[0m
+       max-jobs = auto
+
+\e[1mweb-d · nixos (root@web-d)\e[0m
+  \e[2mno changes, already running /nix/store/h4qa0r1sxv7lgm2c9dyk5nfzbw8p6ij3-nixos-system-web-d-25.11.20251001.9a8b7c6\e[0m

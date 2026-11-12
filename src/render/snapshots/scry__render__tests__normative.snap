@@ -1,0 +1,67 @@
+---
+source: src/render/tests.rs
+expression: "render(&normative(), false, false)"
+---
+Shared across configurations
+  [U] openssl  3.0.13 -> 3.0.14  web-a, web-c
+  [M] etc/nix/nix.conf           web-a, web-c
+
+web-a · nixos (root@web-a)
+  old /nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-nixos-system-web-a-25.05.20250801.6027c30
+  new /nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-nixos-system-web-a-25.11.20251001.9a8b7c6
+  system 25.05.20250801.6027c30 -> 25.11.20251001.9a8b7c6
+Packages  1.2 GiB -> 1.3 GiB (+41.0 MiB)
+  [U] openssl         +100 B     3.0.13 -> 3.0.14  (also in 1)
+  [U] systemd         +1.2 MiB   257.5 -> 258.1
+  [C] my-tool         +4.0 KiB   1.2.0-1a2b3c4 -> 1.2.0-9f8e7d6
+  [A] new-agent       +2.0 MiB   1.4.0
+  [R] old-lib         -300.0 KiB 0.9
+  [S] linux-firmware  +12.0 MiB  20250801
+  412 rebuilt (same version, new hash, +3.1 MiB)
+Files
+  [L] etc/mtab  /proc/mounts -> /proc/self/mounts
+  [M] etc/nix/nix.conf  (also in 1)
+      @@ -11,3 +11,3 @@
+       substituters = https://cache.example
+      -trusted-public-keys = cache-a:AAAA
+      +trusted-public-keys = cache-a:AAAA cache-b:BBBB
+       max-jobs = auto
+  [A] etc/ssh/authorized_keys.d/deploy
+      @@ -0,0 +1,1 @@
+      +ssh-ed25519 AAAA… deploy@example
+  [M] etc/systemd/system/app.service → app-start/bin/app-start
+      @@ -1,4 +1,4 @@
+       #!/bin/sh
+       set -eu
+      -exec app --workers 4
+      +exec app --workers 8
+  [T] etc/systemd/system/debug-shell.service  file -> external link /dev/null
+  [M] etc/udev/hwdb.bin  (content not fetched, 13.5 MiB -> 13.6 MiB)
+  57 hash-only (store hash churn; --expand-churn shows them)
+  3 version-only (store path version bumps; --expand-churn shows them)
+Boot
+  kernel: linux-6.12.40 -> linux-6.12.48
+  initrd: initrd-linux-6.12.40 -> initrd-linux-6.12.48
+  kernel-modules: linux-6.12.48-modules (rebuilt)
+  kernel-params: quiet loglevel=4 -> quiet loglevel=4 mitigations=auto
+  [A] specialisation debug
+
+web-b · nixos (root@web-b)
+  error: ssh root@web-b: connect to host web-b port 22: Connection refused
+
+web-c · nixos (root@web-c)
+  old /nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-nixos-system-web-c-25.05.20250801.6027c30
+  new /nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-nixos-system-web-c-25.11.20251001.9a8b7c6
+  system 25.05.20250801.6027c30 -> 25.11.20251001.9a8b7c6
+Packages  1.2 GiB -> 1.2 GiB (+2.0 KiB)
+  [U] openssl  +120 B 3.0.13 -> 3.0.14  (also in 1)
+Files
+  [M] etc/nix/nix.conf  (also in 1)
+      @@ -11,3 +11,3 @@
+       substituters = https://cache.example
+      -trusted-public-keys = cache-a:AAAA
+      +trusted-public-keys = cache-a:AAAA cache-b:BBBB
+       max-jobs = auto
+
+web-d · nixos (root@web-d)
+  no changes, already running /nix/store/h4qa0r1sxv7lgm2c9dyk5nfzbw8p6ij3-nixos-system-web-d-25.11.20251001.9a8b7c6

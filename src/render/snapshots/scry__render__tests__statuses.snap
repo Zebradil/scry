@@ -1,0 +1,18 @@
+---
+source: src/render/tests.rs
+expression: "render(&report(Mode::Deployed, configurations), false, false)"
+---
+web-a · unknown (root@web-a)
+  old /nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-toplevel-a
+  new /nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-toplevel-b
+Packages  1.0 MiB -> 1.0 MiB (+512 B)
+  no package changes
+
+web-b · nixos (root@web-b)
+  error: evaluating toplevel: attribute missing
+
+web-c · nixos (local)
+  timeout after 60 s
+
+web-d · nixos (root@web-d)
+  no changes, already running /nix/store/h4qa0r1sxv7lgm2c9dyk5nfzbw8p6ij3-toplevel-c
