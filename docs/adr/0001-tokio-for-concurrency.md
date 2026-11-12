@@ -22,5 +22,4 @@ We use tokio, multi-threaded runtime:
 
 - Threads with blocking `std::process`: every timeout needs a watchdog that finds and kills the
   right children, and Ctrl-C needs the same bookkeeping for all of them.
-- smol or async-std: smaller, but tokio alone covers processes, signals, timers and channels, and
-  ratatui's ecosystem assumes it.
+- smol or async-std: smaller, but tokio alone covers processes, signals, timers and channels.
