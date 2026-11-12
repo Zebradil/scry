@@ -147,9 +147,11 @@ pub struct Packages {
 pub struct PackageChange {
     pub kind: PackageChangeKind,
     pub pname: String,
-    /// The pname's versions in the old closure, sorted; empty when added.
+    /// The full set of the pname's versions in the old closure, in byte order; empty when added.
+    /// A versionless name has the version `""`. With several versions on a side, the text shows
+    /// the set difference, old-only `->` new-only (spec 7.2); the full sets stay here.
     pub old_versions: Vec<String>,
-    /// Sorted; empty when removed.
+    /// The full set in the new closure, in byte order; empty when removed.
     pub new_versions: Vec<String>,
     pub size_delta: i64,
 }
