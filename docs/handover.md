@@ -122,6 +122,18 @@ Collected from the reports and reviews so far; pass the relevant ones to each im
   GNU `ls`/`find` output on a real Linux target, fish as login shell. This Mac (nix-darwin plus
   home-manager) covers acceptance check 3 locally.
 
+## Usage limits
+
+The user wants a hand-over written before the usage limit cuts the session off, not after: a
+resumed session starts with cold caches. Claude Code's status line saves the limits to
+`~/.config/personal-claude/state/rate-limits.json`
+(`{t, rate_limits: {five_hour: {used_percentage, resets_at}, seven_day: …}}`, `resets_at` in Unix
+seconds; it is `null` until the first status line refresh with data). Read it with
+`jq -c '{age_s: (now - .t | floor), rate_limits}' ~/.config/personal-claude/state/rate-limits.json`
+before starting any subagent and after every merge. From 80 % of the five-hour window: start no new
+subagent, let running ones finish, write their results into this file instead of starting fix
+rounds, and stop.
+
 ## Cautions
 
 - Do not run `nix flake update`: the current nixpkgs-unstable has no cached rustfmt for
