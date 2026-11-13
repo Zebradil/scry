@@ -387,6 +387,7 @@ async fn colmena(
         }
         None => None,
     };
+    let _ = writeln!(err, "scry: evaluating the hive");
     let nodes = colmena::nodes(&**exec, &env.cwd)
         .await
         .context("evaluating the hive")?;
@@ -412,6 +413,7 @@ async fn colmena(
         })
         .collect();
 
+    progress_evaluating(err, selected.len(), "node", revision.is_some());
     let evals = Arc::new(Semaphore::new(args.common.eval_jobs.get()));
     let head = selected.iter().map(|s| {
         let (exec, dir, name, error) = (
@@ -518,6 +520,7 @@ async fn flake(
             Some(open.await?)
         }
     };
+    let _ = writeln!(err, "scry: listing the configurations of {reference}");
     let entries = flake::list(&**exec, reference).await?;
     if entries.is_empty() {
         bail!("{reference} has no nixosConfigurations, darwinConfigurations or homeConfigurations");
@@ -576,6 +579,7 @@ async fn flake(
         .collect();
     let entry = |i: usize| entries[chosen[i]].clone();
 
+    progress_evaluating(err, selected.len(), "configuration", revision.is_some());
     let evals = Arc::new(Semaphore::new(args.common.eval_jobs.get()));
     let head = selected.iter().enumerate().map(|(i, s)| {
         let (exec, flake, entry, error) = (
@@ -700,6 +704,14 @@ async fn build_revision(
 }
 
 /// A build that could not start gets a line of its own; the run goes on (spec 4.4).
+/// Evaluation captures its output and can take seconds per configuration, so the run says what
+/// it waits on (spec 4.4).
+fn progress_evaluating(err: &mut impl Write, count: usize, noun: &str, revision: bool) {
+    let plural = if count == 1 { "" } else { "s" };
+    let sides = if revision { " at head and base" } else { "" };
+    let _ = writeln!(err, "scry: evaluating {count} {noun}{plural}{sides}");
+}
+
 fn not_built(err: &mut impl Write, built: Result<(), ExecError>) {
     if let Err(error) = built {
         let _ = writeln!(err, "scry: the build step did not run: {error}");

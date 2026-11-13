@@ -532,7 +532,9 @@ async fn flake_default_selection_on_this_host() {
     insta::assert_snapshot!(ran.stdout);
     assert_eq!(
         ran.stderr,
-        "scry: warning: --target web-b=root@web-b: web-b is not selected\n"
+        "scry: listing the configurations of .\n\
+         scry: warning: --target web-b=root@web-b: web-b is not selected\n\
+         scry: evaluating 2 configurations\n"
     );
     assert_eq!(ran.codes(), (0, 1));
     assert_eq!(ran.left, 0);
@@ -960,6 +962,12 @@ async fn colmena_revision_mode() {
     )
     .await;
     insta::assert_snapshot!(ran.stdout);
+    assert!(
+        ran.stderr
+            .starts_with("scry: evaluating the hive\nscry: evaluating 3 nodes at head and base\n"),
+        "{}",
+        ran.stderr
+    );
     assert_eq!(ran.codes(), (1, 2));
     assert!(repository.worktrees.lock().unwrap().is_empty());
 

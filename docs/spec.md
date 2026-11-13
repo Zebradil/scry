@@ -220,6 +220,10 @@ The current system is resolved on the old side's machine, with that machine's en
 
 Without `--no-build`, the tool builds the new side, and in revision mode the base side too, before the
 UI opens. The build output passes through to stderr, so stdout stays clean for text and JSON.
+Evaluation before it captures its output and can take seconds, so the tool announces each wait on
+stderr: `scry: evaluating the hive` (colmena step 1) or `scry: listing the configurations of <ref>`
+(flake), then `scry: evaluating N nodes` or `N configurations`, with ` at head and base` in revision
+mode.
 
 - colmena, deployed mode: one `colmena build --on <names>` for the selected nodes. It honours
   `buildOnTarget`, so for those nodes colmena copies derivations to the target and builds there. That
