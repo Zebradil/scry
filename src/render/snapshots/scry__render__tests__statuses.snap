@@ -5,6 +5,7 @@ expression: "render(&report(Mode::Deployed, configurations), false, false)"
 web-a · unknown (root@web-a)
   old /nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-toplevel-a
   new /nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-toplevel-b
+  unknown closure kind: no followed trees, no Boot section
 Packages  1.0 MiB -> 1.0 MiB (+512 B)
   no package changes
 

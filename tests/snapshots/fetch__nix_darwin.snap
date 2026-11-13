@@ -1,0 +1,196 @@
+---
+source: tests/fetch.rs
+expression: configuration
+---
+{
+  "name": "web-a",
+  "source": "colmena",
+  "kind": "nix-darwin",
+  "status": "done",
+  "packages": {
+    "size_old": 3268,
+    "size_new": 3268,
+    "changes": [],
+    "rebuilt": {
+      "count": 4,
+      "size_delta": 0,
+      "items": [
+        {
+          "pname": "etc",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
+        },
+        {
+          "pname": "launchd",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
+        },
+        {
+          "pname": "system-applications",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
+        },
+        {
+          "pname": "user-launchd",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
+        }
+      ]
+    }
+  },
+  "files": {
+    "changes": [
+      {
+        "path": "Library/LaunchDaemons/org.nixos.gc.plist",
+        "via": [],
+        "status": "modified",
+        "class": "real",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 121,
+        "size_new": 121,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 1,
+            "new_start": 1,
+            "new_lines": 1,
+            "lines": [
+              {
+                "op": "-",
+                "text": "<plist><dict><key>Label</key><string>org.nixos.gc</string><key>StartInterval</key><integer>3600</integer></dict></plist>",
+                "spans": [
+                  [
+                    91,
+                    95
+                  ]
+                ]
+              },
+              {
+                "op": "+",
+                "text": "<plist><dict><key>Label</key><string>org.nixos.gc</string><key>StartInterval</key><integer>7200</integer></dict></plist>",
+                "spans": [
+                  [
+                    91,
+                    95
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "etc/zshrc",
+        "via": [],
+        "status": "modified",
+        "class": "real",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 4,
+        "size_new": 4,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 1,
+            "new_start": 1,
+            "new_lines": 1,
+            "lines": [
+              {
+                "op": "-",
+                "text": "# o",
+                "spans": [
+                  [
+                    2,
+                    3
+                  ]
+                ]
+              },
+              {
+                "op": "+",
+                "text": "# n",
+                "spans": [
+                  [
+                    2,
+                    3
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "user/Library/LaunchAgents/org.example.sync.plist",
+        "via": [],
+        "status": "modified",
+        "class": "real",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 125,
+        "size_new": 125,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 1,
+            "new_start": 1,
+            "new_lines": 1,
+            "lines": [
+              {
+                "op": "-",
+                "text": "<plist><dict><key>Label</key><string>org.example.sync</string><key>StartInterval</key><integer>3600</integer></dict></plist>",
+                "spans": [
+                  [
+                    95,
+                    99
+                  ]
+                ]
+              },
+              {
+                "op": "+",
+                "text": "<plist><dict><key>Label</key><string>org.example.sync</string><key>StartInterval</key><integer>7200</integer></dict></plist>",
+                "spans": [
+                  [
+                    95,
+                    99
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "boot": null,
+  "old": {
+    "path": "/nix/store/jy910cc24kxmif7sqv7injwx4j1dyfhq-darwin-system-26.11.ff0e21a",
+    "system_version": "26.11.ff0e21a",
+    "location": "local"
+  },
+  "new": {
+    "path": "/nix/store/vvj9036d7g7jkzgn99dv9gfl8y00mfpv-darwin-system-26.11.ff0e21a",
+    "system_version": "26.11.ff0e21a",
+    "location": "local"
+  }
+}

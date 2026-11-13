@@ -224,6 +224,10 @@ pub fn configuration(mode: &Mode, shared: &[SharedChange], c: &Configuration) ->
                 }
             }
             rows.extend(system(c).map(|line| Node::text(2, line, Style::PLAIN)));
+            if c.kind == ClosureKind::Unknown {
+                let note = "unknown closure kind: no followed trees, no Boot section";
+                rows.push(Node::text(2, note, Style::PLAIN));
+            }
             let also = AlsoIn::new(shared);
             sections.push(packages(&s.packages, &also));
             sections.extend(files(&s.files, &also));

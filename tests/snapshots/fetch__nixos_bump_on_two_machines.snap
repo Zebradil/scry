@@ -1,0 +1,832 @@
+---
+source: tests/fetch.rs
+expression: configuration
+---
+{
+  "name": "web-a",
+  "source": "colmena",
+  "kind": "nixos",
+  "target": "root@web-a",
+  "status": "done",
+  "packages": {
+    "size_old": 39859652,
+    "size_new": 39860880,
+    "changes": [
+      {
+        "kind": "upgraded",
+        "pname": "initrd-linux",
+        "old_versions": [
+          "6.12.40"
+        ],
+        "new_versions": [
+          "6.12.48"
+        ],
+        "size_delta": 0
+      },
+      {
+        "kind": "upgraded",
+        "pname": "openssl",
+        "old_versions": [
+          "3.0.13"
+        ],
+        "new_versions": [
+          "3.0.14"
+        ],
+        "size_delta": 0
+      },
+      {
+        "kind": "changed",
+        "pname": "linux",
+        "old_versions": [
+          "6.12.40",
+          "6.12.48-modules"
+        ],
+        "new_versions": [
+          "6.12.48",
+          "6.12.48-modules"
+        ],
+        "size_delta": 0
+      },
+      {
+        "kind": "added",
+        "pname": "new-agent",
+        "old_versions": [],
+        "new_versions": [
+          "1.4.0"
+        ],
+        "size_delta": 326
+      },
+      {
+        "kind": "added",
+        "pname": "resolv.conf",
+        "old_versions": [],
+        "new_versions": [
+          ""
+        ],
+        "size_delta": 140
+      },
+      {
+        "kind": "removed",
+        "pname": "unit-debug-shell.service",
+        "old_versions": [
+          ""
+        ],
+        "new_versions": [],
+        "size_delta": -227
+      }
+    ],
+    "rebuilt": {
+      "count": 12,
+      "size_delta": 470,
+      "items": [
+        {
+          "pname": "app-helper",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
+        },
+        {
+          "pname": "app-start",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
+        },
+        {
+          "pname": "app.json",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
+        },
+        {
+          "pname": "bash",
+          "versions": [
+            "5.2p37"
+          ],
+          "size_delta": 0
+        },
+        {
+          "pname": "etc",
+          "versions": [
+            ""
+          ],
+          "size_delta": 363
+        },
+        {
+          "pname": "nix.conf",
+          "versions": [
+            ""
+          ],
+          "size_delta": 13
+        },
+        {
+          "pname": "openssl.cnf",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
+        },
+        {
+          "pname": "profile",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
+        },
+        {
+          "pname": "system-path",
+          "versions": [
+            ""
+          ],
+          "size_delta": 173
+        },
+        {
+          "pname": "system-units",
+          "versions": [
+            ""
+          ],
+          "size_delta": -79
+        },
+        {
+          "pname": "unit-app.service",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
+        },
+        {
+          "pname": "user-environment",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
+        }
+      ]
+    }
+  },
+  "files": {
+    "changes": [
+      {
+        "path": "activate",
+        "via": [],
+        "status": "modified",
+        "class": "version-only",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 166,
+        "size_new": 166,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 2,
+            "new_start": 1,
+            "new_lines": 2,
+            "lines": [
+              {
+                "op": "-",
+                "text": "#!/nix/store/cib3xd27pi09wwg8zifzndzcwcmgkj3n-bash-5.2p37/bin/bash",
+                "spans": [],
+                "hash_only": true
+              },
+              {
+                "op": "-",
+                "text": "systemConfig=/nix/store/7hxhq9fwq4sp17qr1mnl7dy3rpkywvv1-nixos-system-web-a-26.05.20261102.7dcdd87",
+                "spans": [
+                  [
+                    24,
+                    56
+                  ],
+                  [
+                    79,
+                    81
+                  ],
+                  [
+                    82,
+                    90
+                  ],
+                  [
+                    91,
+                    98
+                  ]
+                ]
+              },
+              {
+                "op": "+",
+                "text": "#!/nix/store/48y6kcryarxipp91d3qwb8pdmx4s6k0r-bash-5.2p37/bin/bash",
+                "spans": [],
+                "hash_only": true
+              },
+              {
+                "op": "+",
+                "text": "systemConfig=/nix/store/w3fzn58f5mfcypjnw4knm81m44g1r4dv-nixos-system-web-a-26.11.20261110.9a8b7c6",
+                "spans": [
+                  [
+                    24,
+                    56
+                  ],
+                  [
+                    79,
+                    81
+                  ],
+                  [
+                    82,
+                    90
+                  ],
+                  [
+                    91,
+                    98
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "app-helper/bin/app-helper",
+        "via": [],
+        "status": "modified",
+        "class": "real",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 137,
+        "size_new": 137,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 3,
+            "new_start": 1,
+            "new_lines": 3,
+            "lines": [
+              {
+                "op": "-",
+                "text": "#!/nix/store/cib3xd27pi09wwg8zifzndzcwcmgkj3n-bash-5.2p37/bin/bash",
+                "spans": [],
+                "hash_only": true
+              },
+              {
+                "op": "-",
+                "text": "# from /nix/store/wbfxnk0946k986ln8njhk93kwp9mmrs8-app-helper",
+                "spans": [],
+                "hash_only": true
+              },
+              {
+                "op": "-",
+                "text": "echo v1",
+                "spans": [
+                  [
+                    5,
+                    7
+                  ]
+                ]
+              },
+              {
+                "op": "+",
+                "text": "#!/nix/store/48y6kcryarxipp91d3qwb8pdmx4s6k0r-bash-5.2p37/bin/bash",
+                "spans": [],
+                "hash_only": true
+              },
+              {
+                "op": "+",
+                "text": "# from /nix/store/dclclnm4df9917y90ldiycv73666cv10-app-helper",
+                "spans": [],
+                "hash_only": true
+              },
+              {
+                "op": "+",
+                "text": "echo v2",
+                "spans": [
+                  [
+                    5,
+                    7
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "etc/binary.db",
+        "via": [],
+        "status": "modified",
+        "class": "real",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": true,
+        "content_fetched": true,
+        "size_old": 2,
+        "size_new": 2,
+        "link_old": null,
+        "link_new": null,
+        "hunks": []
+      },
+      {
+        "path": "etc/mtab",
+        "via": [],
+        "status": "link-changed",
+        "class": "real",
+        "type_old": "external-link",
+        "type_new": "external-link",
+        "binary": false,
+        "content_fetched": false,
+        "size_old": null,
+        "size_new": null,
+        "link_old": "/proc/mounts",
+        "link_new": "/proc/self/mounts",
+        "hunks": []
+      },
+      {
+        "path": "etc/nix/nix.conf",
+        "via": [],
+        "status": "modified",
+        "class": "real",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 88,
+        "size_new": 101,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 3,
+            "new_start": 1,
+            "new_lines": 3,
+            "lines": [
+              {
+                "op": " ",
+                "text": "substituters = https://cache.example",
+                "spans": []
+              },
+              {
+                "op": "-",
+                "text": "trusted-public-keys = cache-a:AAAA",
+                "spans": []
+              },
+              {
+                "op": "+",
+                "text": "trusted-public-keys = cache-a:AAAA cache-b:BBBB",
+                "spans": [
+                  [
+                    34,
+                    47
+                  ]
+                ]
+              },
+              {
+                "op": " ",
+                "text": "max-jobs = auto",
+                "spans": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "etc/profile",
+        "via": [],
+        "status": "modified",
+        "class": "hash-only",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 78,
+        "size_new": 78,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 1,
+            "new_start": 1,
+            "new_lines": 1,
+            "lines": [
+              {
+                "op": "-",
+                "text": "export PATH=/nix/store/cib3xd27pi09wwg8zifzndzcwcmgkj3n-bash-5.2p37/bin:$PATH",
+                "spans": [],
+                "hash_only": true
+              },
+              {
+                "op": "+",
+                "text": "export PATH=/nix/store/48y6kcryarxipp91d3qwb8pdmx4s6k0r-bash-5.2p37/bin:$PATH",
+                "spans": [],
+                "hash_only": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "etc/resolv.conf",
+        "via": [],
+        "status": "type-changed",
+        "class": "real",
+        "type_old": "dangling-link",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": false,
+        "size_old": null,
+        "size_new": 20,
+        "link_old": "/nix/store/v192vdnf38dhf0lmy7jqxaaz3n5vjygq-gone/resolv.conf",
+        "link_new": null,
+        "hunks": []
+      },
+      {
+        "path": "etc/ssh/authorized_keys.d/deploy",
+        "via": [],
+        "status": "added",
+        "class": "real",
+        "type_old": null,
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": null,
+        "size_new": 32,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 0,
+            "old_lines": 0,
+            "new_start": 1,
+            "new_lines": 1,
+            "lines": [
+              {
+                "op": "+",
+                "text": "ssh-ed25519 AAAA deploy@example",
+                "spans": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "etc/ssl/openssl.cnf",
+        "via": [],
+        "status": "modified",
+        "class": "version-only",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 87,
+        "size_new": 87,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 1,
+            "new_start": 1,
+            "new_lines": 1,
+            "lines": [
+              {
+                "op": "-",
+                "text": "include /nix/store/0x2yr6g9idyjxyid9s5bl96rd5c3fncg-openssl-3.0.13/etc/ssl/openssl.cnf",
+                "spans": [
+                  [
+                    19,
+                    51
+                  ],
+                  [
+                    64,
+                    66
+                  ]
+                ]
+              },
+              {
+                "op": "+",
+                "text": "include /nix/store/7c1a3asp2izlfnv5h2a4dxqjgcfl1f8b-openssl-3.0.14/etc/ssl/openssl.cnf",
+                "spans": [
+                  [
+                    19,
+                    51
+                  ],
+                  [
+                    64,
+                    66
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "etc/systemd/system-generators/dev-disk-by\\x2dlabel.mount",
+        "via": [],
+        "status": "modified",
+        "class": "real",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": false,
+        "size_old": 8,
+        "size_new": 19,
+        "link_old": null,
+        "link_new": null,
+        "hunks": []
+      },
+      {
+        "path": "etc/systemd/system/app.service",
+        "via": [],
+        "status": "modified",
+        "class": "hash-only",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 88,
+        "size_new": 88,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 2,
+            "new_start": 1,
+            "new_lines": 2,
+            "lines": [
+              {
+                "op": " ",
+                "text": "[Service]",
+                "spans": []
+              },
+              {
+                "op": "-",
+                "text": "ExecStart=/nix/store/x6ymgjz2wzl7rjx9xcrn0f0a36vr7s05-app-start/bin/app-start",
+                "spans": [],
+                "hash_only": true
+              },
+              {
+                "op": "+",
+                "text": "ExecStart=/nix/store/mj1872wgazx2bx726rly4w8f8hmmgnxm-app-start/bin/app-start",
+                "spans": [],
+                "hash_only": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "etc/systemd/system/app.service",
+        "via": [
+          "app-start/bin/app-start"
+        ],
+        "status": "modified",
+        "class": "real",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 215,
+        "size_new": 215,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 4,
+            "new_start": 1,
+            "new_lines": 4,
+            "lines": [
+              {
+                "op": "-",
+                "text": "#!/nix/store/cib3xd27pi09wwg8zifzndzcwcmgkj3n-bash-5.2p37/bin/bash",
+                "spans": [],
+                "hash_only": true
+              },
+              {
+                "op": "+",
+                "text": "#!/nix/store/48y6kcryarxipp91d3qwb8pdmx4s6k0r-bash-5.2p37/bin/bash",
+                "spans": [],
+                "hash_only": true
+              },
+              {
+                "op": " ",
+                "text": "set -eu",
+                "spans": []
+              },
+              {
+                "op": "-",
+                "text": "cd /nix/store/x6ymgjz2wzl7rjx9xcrn0f0a36vr7s05-app-start",
+                "spans": [],
+                "hash_only": true
+              },
+              {
+                "op": "-",
+                "text": "exec app --config /nix/store/wc6ihc60mnw68ick60nj2sckc9shyanc-app.json --workers 4",
+                "spans": [
+                  [
+                    29,
+                    61
+                  ],
+                  [
+                    81,
+                    82
+                  ]
+                ]
+              },
+              {
+                "op": "+",
+                "text": "cd /nix/store/mj1872wgazx2bx726rly4w8f8hmmgnxm-app-start",
+                "spans": [],
+                "hash_only": true
+              },
+              {
+                "op": "+",
+                "text": "exec app --config /nix/store/ncmc27rc6az54vpj6rrhbkp3x4aml55v-app.json --workers 8",
+                "spans": [
+                  [
+                    29,
+                    61
+                  ],
+                  [
+                    81,
+                    82
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "etc/systemd/system/app.service",
+        "via": [
+          "app-start/bin/app-start",
+          "app.json"
+        ],
+        "status": "modified",
+        "class": "real",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 15,
+        "size_new": 15,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 1,
+            "new_start": 1,
+            "new_lines": 1,
+            "lines": [
+              {
+                "op": "-",
+                "text": "{\"workers\": 4}",
+                "spans": [
+                  [
+                    12,
+                    13
+                  ]
+                ]
+              },
+              {
+                "op": "+",
+                "text": "{\"workers\": 8}",
+                "spans": [
+                  [
+                    12,
+                    13
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "etc/systemd/system/debug-shell.service",
+        "via": [],
+        "status": "type-changed",
+        "class": "real",
+        "type_old": "file",
+        "type_new": "external-link",
+        "binary": false,
+        "content_fetched": false,
+        "size_old": 7,
+        "size_new": null,
+        "link_old": null,
+        "link_new": "/dev/null",
+        "hunks": []
+      },
+      {
+        "path": "etc/udev/hwdb.bin",
+        "via": [],
+        "status": "modified",
+        "class": "real",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": false,
+        "size_old": 5000,
+        "size_new": 5000,
+        "link_old": null,
+        "link_new": null,
+        "hunks": []
+      },
+      {
+        "path": "user-environment/bin/tool",
+        "via": [],
+        "status": "modified",
+        "class": "real",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 1,
+        "size_new": 1,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 1,
+            "new_start": 1,
+            "new_lines": 1,
+            "lines": [
+              {
+                "op": "-",
+                "text": "a",
+                "spans": [
+                  [
+                    0,
+                    1
+                  ]
+                ],
+                "no_newline": true
+              },
+              {
+                "op": "+",
+                "text": "b",
+                "spans": [
+                  [
+                    0,
+                    1
+                  ]
+                ],
+                "no_newline": true
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "boot": {
+    "kernel": {
+      "old": "linux-6.12.40",
+      "new": "linux-6.12.48",
+      "rebuilt": false
+    },
+    "initrd": {
+      "old": "initrd-linux-6.12.40",
+      "new": "initrd-linux-6.12.48",
+      "rebuilt": false
+    },
+    "kernel_modules": {
+      "old": "linux-6.12.48-modules",
+      "new": "linux-6.12.48-modules",
+      "rebuilt": true
+    },
+    "kernel_params": {
+      "old": "quiet loglevel=4",
+      "new": "quiet loglevel=4 mitigations=auto"
+    },
+    "specialisations": {
+      "added": [
+        "debug"
+      ],
+      "removed": [],
+      "changed": []
+    }
+  },
+  "old": {
+    "path": "/nix/store/7hxhq9fwq4sp17qr1mnl7dy3rpkywvv1-nixos-system-web-a-26.05.20261102.7dcdd87",
+    "system_version": "26.05.20261102.7dcdd87",
+    "location": "root@web-a"
+  },
+  "new": {
+    "path": "/nix/store/w3fzn58f5mfcypjnw4knm81m44g1r4dv-nixos-system-web-a-26.11.20261110.9a8b7c6",
+    "system_version": "26.11.20261110.9a8b7c6",
+    "location": "local"
+  }
+}

@@ -20,10 +20,13 @@ use crate::transport::script::Script;
 /// - a name with a newline is reported by the first alternative, because `ls` prints the newline
 ///   as `?` and `cksum` and `-print` split the line;
 /// - `ls -ldn` prints numeric ids, so an owner or group name with a space cannot shift fields;
-/// - `-a` binds tighter than `-o`, so no parentheses are needed.
+/// - `-a` binds tighter than `-o`, so no parentheses are needed;
+/// - GNU `ls` reads its quoting, block size and time style from the environment, which would
+///   quote names with spaces or change the size and date columns.
 pub const LISTING: Script = Script::new(
     r#"LC_ALL=C
 export LC_ALL
+unset QUOTING_STYLE BLOCK_SIZE LS_BLOCK_SIZE TIME_STYLE
 nl="
 "
 list() {
@@ -600,8 +603,13 @@ lrwxr-xr-x 1 0 0 72 Jan  1  1970 /nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-etc
 
         let run = |roots: &[String]| {
             let command = listing_command(roots);
+            // Each would change GNU `ls -l` output if the script left it set.
             let mut child = std::process::Command::new(&command.program)
                 .args(&command.args)
+                .env("QUOTING_STYLE", "shell-escape")
+                .env("BLOCK_SIZE", "1K")
+                .env("LS_BLOCK_SIZE", "1K")
+                .env("TIME_STYLE", "+%Y/%m/%d")
                 .stdin(std::process::Stdio::piped())
                 .stdout(std::process::Stdio::piped())
                 .spawn()

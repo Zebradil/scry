@@ -2,19 +2,24 @@
 //! and naming the comparison results `referrer → name` (spec 7.4). Fetching them, and the depth
 //! loop, belong to the fetch pipeline.
 
-use crate::files::churn::store_refs;
+use crate::files::churn::{StoreRef, store_refs};
 use crate::files::highlight;
 use crate::report::FileChange;
+use crate::store::name::parse_drv_name;
 
 /// Store path pairs `(old, new)` to compare for a modified text file: on lines paired as for
-/// word highlight, the j-th reference of the old line with the j-th of the new one. Pairs whose
-/// paths differ, de-duplicated, in first-seen order. Empty for files without hunks.
+/// word highlight, the j-th reference of the old line with the j-th of the new one when both
+/// name the same pname (ADR 0031). Pairs whose paths differ, de-duplicated, in first-seen
+/// order. Empty for files without hunks.
 pub fn pairs(change: &FileChange) -> Vec<(String, String)> {
     let mut out = Vec::new();
     for hunk in &change.hunks {
         for (r, a) in highlight::pairs(&hunk.lines) {
             let (old, new) = (&hunk.lines[r].text, &hunk.lines[a].text);
             for (o, n) in store_refs(old).into_iter().zip(store_refs(new)) {
+                if pname(old, &o) != pname(new, &n) {
+                    continue;
+                }
                 let pair = (old[o.range].to_owned(), new[n.range].to_owned());
                 if pair.0 != pair.1 && !out.contains(&pair) {
                     out.push(pair);
@@ -23,6 +28,10 @@ pub fn pairs(change: &FileChange) -> Vec<(String, String)> {
         }
     }
     out
+}
+
+fn pname<'a>(text: &'a str, reference: &StoreRef) -> &'a str {
+    parse_drv_name(&text[reference.name.clone()]).0
 }
 
 /// Names the changes from comparing one reference pair. `name` is the store name
@@ -123,6 +132,25 @@ mod tests {
                 (p(H1, "app-start"), p(H2, "app-start")),
                 (p(H1, "env"), p(H3, "env")),
             ]
+        );
+    }
+
+    #[test]
+    fn pairs_only_references_of_one_pname() {
+        // The second reference changed package: comparing `dbus` with `glib` only adds noise.
+        let old = format!(
+            "PATH={}/bin:{}/bin\n",
+            p(H1, "xdg-utils-1.2"),
+            p(H1, "dbus-1.14")
+        );
+        let new = format!(
+            "PATH={}/bin:{}/bin\n",
+            p(H2, "xdg-utils-1.3"),
+            p(H2, "glib-2.80")
+        );
+        assert_eq!(
+            pairs(&modified("f", &old, &new)),
+            [(p(H1, "xdg-utils-1.2"), p(H2, "xdg-utils-1.3"))]
         );
     }
 

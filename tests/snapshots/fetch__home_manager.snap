@@ -1,0 +1,204 @@
+---
+source: tests/fetch.rs
+expression: configuration
+---
+{
+  "name": "web-a",
+  "source": "colmena",
+  "kind": "home-manager",
+  "target": "alice@db-a",
+  "status": "done",
+  "packages": {
+    "size_old": 1880,
+    "size_new": 1880,
+    "changes": [],
+    "rebuilt": {
+      "count": 4,
+      "size_delta": 0,
+      "items": [
+        {
+          "pname": "hm_gitconfig",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
+        },
+        {
+          "pname": "home-manager-agents",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
+        },
+        {
+          "pname": "home-manager-files",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
+        },
+        {
+          "pname": "home-manager-path",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
+        }
+      ]
+    }
+  },
+  "files": {
+    "changes": [
+      {
+        "path": "LaunchAgents/org.example.agent.plist",
+        "via": [],
+        "status": "modified",
+        "class": "real",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 17,
+        "size_new": 17,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 1,
+            "new_start": 1,
+            "new_lines": 1,
+            "lines": [
+              {
+                "op": "-",
+                "text": "<plist>o</plist>",
+                "spans": [
+                  [
+                    7,
+                    8
+                  ]
+                ]
+              },
+              {
+                "op": "+",
+                "text": "<plist>n</plist>",
+                "spans": [
+                  [
+                    7,
+                    8
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "home-files/.config/git/config",
+        "via": [],
+        "status": "modified",
+        "class": "real",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 34,
+        "size_new": 34,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 2,
+            "new_start": 1,
+            "new_lines": 2,
+            "lines": [
+              {
+                "op": " ",
+                "text": "[user]",
+                "spans": []
+              },
+              {
+                "op": "-",
+                "text": "\temail = alice@example.org",
+                "spans": [
+                  [
+                    23,
+                    26
+                  ]
+                ]
+              },
+              {
+                "op": "+",
+                "text": "\temail = alice@example.com",
+                "spans": [
+                  [
+                    23,
+                    26
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "home-manager-path/bin/tool",
+        "via": [],
+        "status": "modified",
+        "class": "real",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 1,
+        "size_new": 1,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 1,
+            "new_start": 1,
+            "new_lines": 1,
+            "lines": [
+              {
+                "op": "-",
+                "text": "o",
+                "spans": [
+                  [
+                    0,
+                    1
+                  ]
+                ],
+                "no_newline": true
+              },
+              {
+                "op": "+",
+                "text": "n",
+                "spans": [
+                  [
+                    0,
+                    1
+                  ]
+                ],
+                "no_newline": true
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "boot": null,
+  "old": {
+    "path": "/nix/store/qa0gzi72pl4panvx96y65zjx9hsy23zh-home-manager-generation",
+    "system_version": "26.11",
+    "location": "alice@db-a"
+  },
+  "new": {
+    "path": "/nix/store/bbk9svdi1br4irf85rw63dy99akpq6w1-home-manager-generation",
+    "system_version": "26.11",
+    "location": "local"
+  }
+}

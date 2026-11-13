@@ -1,0 +1,94 @@
+---
+source: tests/fetch.rs
+expression: configuration
+---
+{
+  "name": "web-a",
+  "source": "colmena",
+  "kind": "unknown",
+  "status": "done",
+  "packages": {
+    "size_old": 1170,
+    "size_new": 1176,
+    "changes": [],
+    "rebuilt": {
+      "count": 2,
+      "size_delta": 3,
+      "items": [
+        {
+          "pname": "etc",
+          "versions": [
+            ""
+          ],
+          "size_delta": 3
+        },
+        {
+          "pname": "tool",
+          "versions": [
+            "1.0"
+          ],
+          "size_delta": 0
+        }
+      ]
+    }
+  },
+  "files": {
+    "changes": [
+      {
+        "path": "hello",
+        "via": [],
+        "status": "modified",
+        "class": "real",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 3,
+        "size_new": 6,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 1,
+            "new_start": 1,
+            "new_lines": 1,
+            "lines": [
+              {
+                "op": "-",
+                "text": "hi",
+                "spans": [
+                  [
+                    0,
+                    2
+                  ]
+                ]
+              },
+              {
+                "op": "+",
+                "text": "hello",
+                "spans": [
+                  [
+                    0,
+                    5
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "boot": null,
+  "old": {
+    "path": "/nix/store/j4zapwq4q9yv0q7cc2wg4s9hp31v6yq0-custom-system",
+    "system_version": null,
+    "location": "local"
+  },
+  "new": {
+    "path": "/nix/store/2sb3q5cg9q2c3m192aaqmckjpzgp6hfd-custom-system",
+    "system_version": null,
+    "location": "local"
+  }
+}
