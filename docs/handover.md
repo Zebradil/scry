@@ -7,26 +7,23 @@ spec is [`spec.md`](spec.md).
 
 ## Where things stand
 
-- Done and merged into `main`: M0, M1, M2, M3, M4. Every milestone passed a review subagent, and
-  the review findings were fixed before the merge.
-- In flight when this was last updated (2026-11-13, 01:00 CET), both under `.worktrees/`; a new
-  session cannot resume the old subagents, so spawn fresh ones:
-  - **M5** (fetch pipeline), branch `wt/261113-000329-m5-fetch`: implemented, gate passed (121
-    tests), **reviewed**; findings below, to be fixed on the branch by an implementer (effort
-    xhigh), then merged. Review evidence: 26 real toplevel pairs on this Mac (14 NixOS with 413–1088
-    changed paths, 6 nix-darwin, 5 home-manager, 1 unknown) through the real seam, BSD and GNU
-    tools: 0 missing, extra or wrong-status files against an independent walk and `diff -rq`;
-    round trips within budget (NixOS 8 of 9); a NixOS bump took 4.4–5.6 s locally, about 3 s of it
-    in reference round trips; cancellation at 7 points left no child and no temp file.
-  - **M7** (TUI), branch `wt/261113-002750-m7-tui`: implemented, gate passed (159 tests, clippy
-    clean), checked by its author in tmux; **not reviewed yet**. Review against spec 8.4/8.5, fix,
-    merge.
-- Next after M5: **M6** (sources and run). After M6 and M7: M8, then M9.
-- Open item for the M5 fix round or M6: the `unknown closure kind: no followed trees, no Boot
-  section` note (spec 5) has no report field and M3 does not render it; render it in
-  `render::view` for a `done` configuration of kind `unknown`.
-- ADRs: 0001–0006 (M0), 0010–0012 (M4), 0020 (M3), 0030 (M5); M7 numbers from 0040. The next ADR
-  takes the next free number after the highest.
+- Done and merged into `main`: M0, M1, M2, M3, M4, M5, M7. Every milestone passed a review
+  subagent, and the review findings were fixed before the merge. Commits are signed through
+  1Password and need the user's in-person approval; when the user is away a commit fails with
+  "1Password: failed to fill whole buffer". Never bypass signing: keep working uncommitted and
+  commit once the user is back.
+- **M6** (sources and run), worktree `.worktrees/wt-261113-052109-m6-run`, branch
+  `wt/261113-052109-m6-run`: implementation committed and `main` (with M5 and M7) merged in, gate
+  passed (184 + 12 + 14 + 3 tests, clippy and fmt clean). **Reviewed; the findings below are not
+  fixed yet.** Next: fix them (send them to an implementer in that worktree), wire the TUI into
+  `run` (the marked comment in `work()` in `src/run.rs`: `tui::run(header, names, receiver,
+  tui::Options { .. })`, `!all_finished` to `exit::Outcome::of_report`; until then `auto` on a
+  terminal prints text), re-run the gate, squash-merge. ADRs 0050 (no out-link for colmena builds;
+  acceptance check 7 from colmena 0.5.0's source: a failed node build does not stop the others, an
+  evaluation failure skips its chunk) and 0051 (readings of 4.2, 4.5, 6.3).
+- After M6: M8, then M9.
+- ADRs: 0001–0006 (M0), 0010–0012 (M4), 0020 (M3), 0030–0031 (M5), 0040 (M7), 0050–0051 (M6). The
+  next ADR takes the next free number after the highest.
 - No git remote. GitHub, CI and the binary cache are a follow-up (roadmap).
 
 ## How each milestone runs
@@ -103,44 +100,32 @@ Collected from the reports and reviews so far; pass the relevant ones to each im
 - Where both sides are on one machine, their commands share round trips (6.1). Respect the round
   trip budget of 6.1.
 
-### M5 review findings (fix before merging M5)
+### M6 review findings (fix before merging M6)
 
-1. Confirmed: `src/fetch/references.rs:87` starts a small-rebuild job with an empty `chain`, so a
-   script naming its own package is followed again at depth 2 (32–67 junk `pkg/bin/a → pkg/bin/b`
-   rows per real comparison). Fix: `chain: vec![(s.old.clone(), s.new.clone())]`; add a test.
-2. Confirmed by measurement: `src/fetch.rs:150` archives whole ≤ 1 MiB directories in the
-   reference round trip though only `bin/` is compared (47 MB raw, 20.6 MB gzipped on a NixOS
-   bump; `bin/` only cuts 35 %), and starts one `find` per root (about 1000). Fix: use `$r/bin`
-   for directory roots and batch roots like `tree::LISTING`. Acceptance check 1's 5 s target
-   depends on it.
-3. Confirmed: the fixture cross-check test (`src/fixture.rs:574`) fails with macOS's own tools:
-   `bsdtar` adds `._name` entries for files with `com.apple.provenance` (383 of 1094 entries in a
-   real stream); it passes only because the dev shell puts GNU tools first. Fix: set and export
-   `COPYFILE_DISABLE=1` in the content and reference scripts; run that test with `/usr/bin` first
-   on macOS.
-4. Confirmed: `src/fetch.rs:123` does not check that a resolved toplevel is under `/nix/store/`:
-   `scry paths /tmp X` walks `/tmp`, and `nix path-info` may treat a directory as a flake
-   reference (evaluating, possibly writing to a target's store). Fix: in the probe,
-   `case $t in /nix/store/?*) ;; *) <not in the store> ;; esac`, with spec 9's wording.
-5. Confirmed: GNU tar 1.35 rewrites backslash escapes in `-T` names (`\\`, `\t`, `\101`): the
-   configuration fails ("Cannot stat") or fetches a different file. systemd's `\x2d` is safe.
-   Fix: report such paths as content not fetched (simplest and correct).
-6. Plausible: GNU `ls` reads `QUOTING_STYLE` and `BLOCK_SIZE` from the environment;
-   `QUOTING_STYLE=shell-escape` quotes names with spaces and fails the run with a misleading error.
-   Fix: unset both in the listing script (`tree::LISTING`, next to `LC_ALL=C`).
-7. Plausible: `src/fetch.rs:168` keeps probe results inside the future, so when M6 drops it on
-   `--timeout` the report shows kind `unknown` and empty sides, though 8.1 expects what is known.
-   Fix: let the caller pass a shared state cell, or apply the timeout inside `configuration`;
-   coordinate with M6.
-8. Test gaps: a small rebuild that references itself; the BSD userland path (see 3). Move the
-   NixOS, nix-darwin and home-manager closure builders from `tests/fetch.rs` into `fixture`, since
-   M8's fixture run mode needs them.
+Send these to an implementer (effort xhigh) working in the M6 worktree; it commits
+each step if signing works, else leaves the changes uncommitted:
 
-Decision (orchestrator, record as an ADR in the fix round): pair the j-th references of two lines
-(7.4) only when their pnames are equal (`store::name::parse_drv_name` of the store names). Real
-data paired different packages (an `xdg-utils` reference with `dbus` and `glib`), producing whole
-`bin/` `[R]`/`[A]` noise. 7.4 states the pairing without a *must*, and this evidence justifies the
-narrowing.
+1. High, confirmed: `src/source/flake.rs:70-73`: `nix eval` writes `flake.lock` into the user's
+   repository (and `git add -N` it) when the lock is missing or outdated, in deployed and revision
+   mode, even with `--no-build` (4.4: nothing written outside the run's temp dir). Fix: pass
+   `--no-write-lock-file` on every `nix` invocation that takes a flake reference (eval and build);
+   check whether `colmena eval`/`build` on a flake hive can write the lock too, and record it.
+2. Medium, confirmed: `src/run.rs:466-471` (flake) and `src/run.rs:309-314` (colmena): when the
+   base revision has no flake or hive at that path (added after `REV`), every configuration fails
+   with an error that leaks the temp path; 4.5 says configurations missing at base are
+   `absent-at-base`, not failures. Fix: a base path without `flake.nix`/hive is an empty listing.
+3. Low, plausible: `src/revision.rs:133-140`: Ctrl-C during `git worktree add` leaves the entry
+   locked ("initializing"); `remove --force` and `prune` refuse a locked worktree. Fix:
+   `git worktree remove --force --force`.
+4. Tests (`tests/run.rs`): `--show-prefix` is always empty (line 229), so subdirectory flakes are
+   untested (add a `sub/` case); the `--target` "not selected" warning on stderr is unchecked;
+   fake rules assert on argv (lines 151, 184) against the "assert on output" rule: let rules
+   return `None` instead.
+
+Review evidence: synthetic git flake in a subdirectory with names `a.b`, `q"x`, `d$x`,
+`user@host` (quoting correct), local `paths` generations, SIGINT during build and `nix eval`
+(no child left, worktree and temp dir removed), usage errors, `--target` warning, broken pipe,
+`--exit-code`. Not checked: real colmena, `SCRY_DEBUG`, `--jobs` bounds under load.
 
 ### M6: sources and run (spec 4.1–4.8, 6.3, 9)
 
