@@ -7,43 +7,24 @@ spec is [`spec.md`](spec.md).
 
 ## Where things stand
 
-- Done and merged into `main`: M0, M1, M2, M3, M4, M5, M6, M7. Every milestone passed a review
+- Done and merged into `main`: M0–M8. Every milestone passed a review
   subagent, and the review findings were fixed before the merge. Commits are signed through
   1Password and need the user's in-person approval; when the user is away a commit fails with
   "1Password: failed to fill whole buffer". Never bypass signing: keep working uncommitted and
   commit once the user is back.
-- **M8** (fixture mode, completions, README), worktree
-  `.worktrees/wt-261113-105208-m8-fixture-completions`, branch
-  `wt/261113-105208-m8-fixture-completions`: committed as `b5e1aaf` on top of M6's last commit.
-  **Reviewed; fix round running** (findings: viewer join unbounded after the terminal goes away,
-  inherited from M6; bash `COMP_WORDBREAKS` splitting `@ : =`; zsh `\#` escape; `--base` git
-  in the wrong directory; no completion timeout; debug output while completing). Implementer's
-  report:
-  - Fixture mode: a non-empty `SCRY_FIXTURE` swaps the real seam for the fake one
-    (`SCRY_FIXTURE=1 scry colmena|flake [--base main] [--format text|json]`), with a stderr notice;
-    five configurations (unchanged; two sharing churn with binary, Boot and specialisation
-    changes; one absent at base in revision mode; one failing evaluation). ADR 0060.
-  - Completion: `clap_complete` dynamic engine; `--on`, `--base`, `REF#` completers attached at
-    runtime, reusing `colmena::nodes`, `flake::list` and `git` through the seam; silent on error;
-    tested on the fake. Bash checked by hand, zsh not.
-  - Oldest Nix: 2.13 where scry builds (`drv^out`), 2.4 otherwise and on targets; tested 2.4–2.13
-    and 2.31 clients against a 2.35 daemon, darwin only. ADR 0061.
-  - Gate: test, clippy, fmt, `nix fmt`, `nix build path:$PWD`, completions in `result/share`,
-    `nix flake check path:$PWD`, fixture text and JSON, TUI under tmux: all pass.
-  - Open: the TUI exited at once under `script -q /dev/null` (M6's pty checks with `script`
-    worked); README's install URL is a placeholder until the GitHub follow-up.
-  Next: send the review's findings to the M8 implementer, gate, squash-merge as
-  `feat: fixture mode, completions and README (M8)`.
-- **M9** (acceptance checks), worktree `.worktrees/wt-261113-151732-m9-acceptance` from `main`.
-  Local phase running (no SSH): check 3 on this Mac, check 6 with a hanging `ProxyCommand`, check
-  9 on a synthetic subdirectory flake, check 4 partly on a copy of the user's hive repo; ADRs from
-  0070; it also drafts the SSH run plan. The user offered the colmena hive in `../znix` (flake
-  output `colmenaHive`, five x86_64-linux NixOS nodes, tags). Never write to that repo; no Linux
-  builder here, so prefer `scry paths` between generations on a node or `--build-on-target`.
-  Each SSH connection needs the user's Touch ID: run the SSH phase only with the user present,
-  and tell them first.
+- **M9** (acceptance checks), worktree `.worktrees/wt-261113-151732-m9-acceptance`, `main` merged
+  in. Local phase done and committed (ADR 0070: checks 3, 6, 9 pass, check 4 partly; home-manager
+  now follows `LaunchAgentDomains`, `LaunchAgentRestartTriggers`, `putter.json`; `--help` wording
+  for `NIX_SSHOPTS`). SSH phase, approved by the user for every step except `daddy`
+  (unavailable): auto mode's classifier blocks a subagent's SSH commands ("Remote Shell Writes"),
+  so the main session runs them; the user approves manually only when the classifier blocks.
+  Findings so far: each node keeps one system generation, so checks 1 and 2 use deployed mode
+  with `buildOnTarget` on a scratch hive copy checked out one and five nixpkgs bumps back
+  (`<session scratchpad>/m9/znix`, branches `m9-base-1`, `m9-base-5`, `m9-check7-broken`);
+  revision mode contacts no machine and builds locally, so check 4 in full needs scry on a Linux
+  machine. Step script and logs: `<session scratchpad>/m9/run/`.
 - ADRs: 0001–0006 (M0), 0010–0012 (M4), 0020 (M3), 0030–0031 (M5), 0040 (M7), 0050–0051 (M6),
-  0060–0061 (M8). The
+  0060–0061 (M8), 0070 (M9). The
   next ADR takes the next free number after the highest.
 - No git remote. GitHub, CI and the binary cache are a follow-up (roadmap).
 

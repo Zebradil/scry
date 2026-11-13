@@ -28,8 +28,8 @@ that is not done.
 | M5 | Fetch pipeline: probe, level listing, content fetch, references and small rebuilds; pipeline tests | 6.2, 6.3, 7.4 | M1, M2, M4 | done |
 | M6 | Sources and run: selection, colmena, flake, paths, build step, revision mode, parallelism, cleanup, exit codes | 4.1–4.8, 6.3, 9 | M3, M5 | done |
 | M7 | TUI: state, rendering, keys, filter, tree view, wrap, live status, OSC 52 | 8.4 | M3 | done |
-| M8 | Fixture run mode, dynamic shell completions, README | 10, 11, 13 | M6, M7 | in review |
-| M9 | Acceptance checks on real machines, recorded as ADRs | 11.1 | all | todo |
+| M8 | Fixture run mode, dynamic shell completions, README | 10, 11, 13 | M6, M7 | done |
+| M9 | Acceptance checks on real machines, recorded as ADRs | 11.1 | all | in progress |
 
 ## Follow-ups (not in this plan)
 
@@ -54,3 +54,5 @@ that is not done.
   1Password approval from 05:20 to 08:30.
 - 2026-11-13: M6 merged after three review rounds; the TUI is wired into the run. M8 implemented
   (ADRs 0060, 0061), in review.
+- 2026-11-13: M8 merged after three review rounds (bash completion needed its own registration).
+  M9 local checks pass (ADR 0070); SSH checks running against the user's hive.
