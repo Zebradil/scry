@@ -15,7 +15,10 @@ spec is [`spec.md`](spec.md).
 - **M8** (fixture mode, completions, README), worktree
   `.worktrees/wt-261113-105208-m8-fixture-completions`, branch
   `wt/261113-105208-m8-fixture-completions`: committed as `b5e1aaf` on top of M6's last commit.
-  **Review running.** Implementer's report:
+  **Reviewed; fix round running** (findings: viewer join unbounded after the terminal goes away,
+  inherited from M6; bash `COMP_WORDBREAKS` splitting `@ : =`; zsh `\#` escape; `--base` git
+  in the wrong directory; no completion timeout; debug output while completing). Implementer's
+  report:
   - Fixture mode: a non-empty `SCRY_FIXTURE` swaps the real seam for the fake one
     (`SCRY_FIXTURE=1 scry colmena|flake [--base main] [--format text|json]`), with a stderr notice;
     five configurations (unchanged; two sharing churn with binary, Boot and specialisation
@@ -31,7 +34,14 @@ spec is [`spec.md`](spec.md).
     worked); README's install URL is a placeholder until the GitHub follow-up.
   Next: send the review's findings to the M8 implementer, gate, squash-merge as
   `feat: fixture mode, completions and README (M8)`.
-- After M8: M9 (needs a NixOS SSH target and a colmena hive from the user).
+- **M9** (acceptance checks), worktree `.worktrees/wt-261113-151732-m9-acceptance` from `main`.
+  Local phase running (no SSH): check 3 on this Mac, check 6 with a hanging `ProxyCommand`, check
+  9 on a synthetic subdirectory flake, check 4 partly on a copy of the user's hive repo; ADRs from
+  0070; it also drafts the SSH run plan. The user offered the colmena hive in `../znix` (flake
+  output `colmenaHive`, five x86_64-linux NixOS nodes, tags). Never write to that repo; no Linux
+  builder here, so prefer `scry paths` between generations on a node or `--build-on-target`.
+  Each SSH connection needs the user's Touch ID: run the SSH phase only with the user present,
+  and tell them first.
 - ADRs: 0001–0006 (M0), 0010–0012 (M4), 0020 (M3), 0030–0031 (M5), 0040 (M7), 0050–0051 (M6),
   0060–0061 (M8). The
   next ADR takes the next free number after the highest.
