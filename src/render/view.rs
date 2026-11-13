@@ -10,7 +10,7 @@
 //!   (its hunk lines); see [`Node::collapsible`]. Every other node always shows its children.
 //!   Within one configuration's tree a collapsible node's `Kind` is unique, so it can key the
 //!   TUI's open state.
-//! - Writing: `text::write_nodes` writes nodes under any open state (the TUI's `y`);
+//! - Writing: `text::write_nodes` writes nodes under any open state;
 //!   `text::write_as_text` writes them as text output does (the TUI's `Y`): everything open
 //!   except the rebuilt group, churn groups only with `--expand-churn`, and a closed churn
 //!   group's row with the `--expand-churn` hint.

@@ -1,0 +1,10 @@
+---
+source: src/tui/tests.rs
+expression: "screen(&mut app, 48, 6)"
+---
+"┏━━━━━━━━━━━━━━┓┌ localhost ───────────────────┐"
+"┃> 1 localhost ┃│>fetching…                    │"
+"┃              ┃│                              │"
+"┃              ┃│                              │"
+"┗━━━━━━━━━━━━━━┛└──────────────────────────────┘"
+"/web                                            "

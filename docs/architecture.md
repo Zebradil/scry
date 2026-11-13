@@ -80,9 +80,10 @@ and the exit code with unfinished configurations counted as failed.
 Live status is a `tokio::sync::mpsc::unbounded_channel::<report::Configuration>`: each
 configuration is sent once, when final. The TUI is given the report header (a `Report` with empty
 `configurations` and `shared`), the selected names in name order, and the receiver; rows without
-a received configuration show `fetching…`. It runs its blocking event loop on its own thread,
-drains the receiver with `try_recv`, and says on return whether every configuration had
-finished. Text and JSON wait for the full `Report`.
+a received configuration show `fetching…`. `tui::run` blocks on the caller's thread (the run
+picks which) until the user quits, drains the receiver with `try_recv`, and returns whether
+every configuration had finished, with the configurations received. Text and JSON wait for
+the full `Report`.
 
 ## Errors
 

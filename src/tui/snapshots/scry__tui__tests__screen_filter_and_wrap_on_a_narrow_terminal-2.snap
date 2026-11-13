@@ -1,0 +1,22 @@
+---
+source: src/tui/tests.rs
+expression: "screen(&mut app, 64, 18)"
+---
+"┌───────────────────┐┏ web-a [filter: nix] ━━━━━━━━━━━━━━━━━━━━┓"
+"│    All    3 shared│┃ web-a · nixos (root@web-a)              ┃"
+"│  1 db-a   error   │┃   old /nix/store/11111111111111111111111┃"
+"│> 2 web-a  done +41│┃   new /nix/store/99999999999999999999999┃"
+"│  3 web-b  done +41│┃   system 25.11                          ┃"
+"│                   │┃ Files                                   ┃"
+"│                   │┃   etc/nix/  (1)                         ┃"
+"│                   │┃>    [M] nix.conf  (also in 1)           ┃"
+"│                   │┃         @@ -1,1 +1,1 @@                 ┃"
+"│                   │┃         -substituters = https://cache.ex┃"
+"│                   │┃         +substituters = https://cache.ex┃"
+"│                   │┃ Boot                                    ┃"
+"│                   │┃   kernel: linux-6.12.40 -> linux-6.12.48┃"
+"│                   │┃                                         ┃"
+"│                   │┃                                         ┃"
+"│                   │┃                                         ┃"
+"└───────────────────┘┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛"
+"j/k move  enter fold  / filter  w wrap  t tree  y/Y copy  tab pa"

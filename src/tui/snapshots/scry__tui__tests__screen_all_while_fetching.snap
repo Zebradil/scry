@@ -1,0 +1,16 @@
+---
+source: src/tui/tests.rs
+expression: "screen(&mut app, 100, 12)"
+---
+"┏━━━━━━━━━━━━━━━━━━━━━━━━━┓┌ All ──────────────────────────────────────────────────────────────────┐"
+"┃>   All    0 shared      ┃│>no shared changes yet                                                 │"
+"┃  1 db-a   error         ┃│                                                                       │"
+"┃  2 web-a  done +41.0 MiB┃│                                                                       │"
+"┃  3 web-b  fetching…     ┃│                                                                       │"
+"┃                         ┃│                                                                       │"
+"┃                         ┃│                                                                       │"
+"┃                         ┃│                                                                       │"
+"┃                         ┃│                                                                       │"
+"┃                         ┃│                                                                       │"
+"┗━━━━━━━━━━━━━━━━━━━━━━━━━┛└───────────────────────────────────────────────────────────────────────┘"
+"j/k move  enter fold  / filter  w wrap  t tree  y/Y copy  tab pane  q quit                          "

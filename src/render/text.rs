@@ -72,7 +72,7 @@ fn hint_churn(nodes: &mut [Node]) {
 }
 
 /// Writes `nodes` one row per line, the children of the nodes `open` accepts, with or without
-/// ANSI colour. The TUI's `y` passes its own open state.
+/// ANSI colour.
 pub fn write_nodes(
     nodes: &[Node],
     open: impl Fn(&Node) -> bool,
