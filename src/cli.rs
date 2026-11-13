@@ -14,7 +14,8 @@ pub const DEBUG_ENV: &str = "SCRY_DEBUG";
 const ENVIRONMENT_HELP: &str = "\
 Environment:
   NO_COLOR     A non-empty value disables colour under --color auto
-  NIX_SSHOPTS  Options for every ssh invocation, split on whitespace; they win over scry's own
+  NIX_SSHOPTS  Options for every ssh invocation, split shell-style as Nix does (quotes group
+               words); they win over scry's own
   SCRY_DEBUG   A non-empty value logs the full argv and stderr of every external command to stderr";
 
 /// Shows what a change to a Nix fleet does to each machine: packages, config files and boot.

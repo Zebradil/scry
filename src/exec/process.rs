@@ -312,10 +312,11 @@ pub(crate) fn classify(machine: &Machine, output: Output) -> Result<Output, Exec
 fn ssh_error(remote: &Remote, stderr: &[u8]) -> ExecError {
     let stderr = String::from_utf8_lossy(stderr);
     let lines = || stderr.lines().filter(|l| !l.trim().is_empty());
-    // `StrictHostKeyChecking=accept-new` and the like warn before the error itself.
+    // ssh prints its verdict last, after warnings (`StrictHostKeyChecking=accept-new`) and
+    // banners such as the `@@@` box of a changed host key.
     let line = lines()
-        .find(|l| !l.starts_with("Warning:"))
-        .or_else(|| lines().next())
+        .rfind(|l| !l.starts_with("Warning:"))
+        .or_else(|| lines().next_back())
         .unwrap_or("exit 255");
     ExecError::Ssh {
         target: remote.target.to_string(),
@@ -501,6 +502,15 @@ mod tests {
                 "Warning: Permanently added 'web-a' (ED25519) to the list of known hosts.\n\
                  root@web-a: Permission denied (publickey).\n",
                 "root@web-a: Permission denied (publickey).",
+            ),
+            (
+                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\
+                 @    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @\n\
+                 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\
+                 IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!\n\
+                 Host key for web-a has changed and you have requested strict checking.\n\
+                 Host key verification failed.\n",
+                "Host key verification failed.",
             ),
             ("", "exit 255"),
         ] {

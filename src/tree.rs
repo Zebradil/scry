@@ -66,7 +66,8 @@ pub const EXCLUDED: [&str; 6] = [
     "etc/profiles/per-user",
 ];
 
-/// Trees under the toplevel whose files are compared, store links dereferenced (spec 5).
+/// Trees under the toplevel whose files are compared, store links dereferenced (spec 5). An
+/// entry may also be a single file.
 pub fn followed_trees(kind: ClosureKind) -> &'static [&'static str] {
     match kind {
         ClosureKind::Nixos => &["etc"],
@@ -76,7 +77,14 @@ pub fn followed_trees(kind: ClosureKind) -> &'static [&'static str] {
             "Library/LaunchDaemons",
             "user/Library/LaunchAgents",
         ],
-        ClosureKind::HomeManager => &["home-files", "LaunchAgents"],
+        // `putter.json` is a link to one store file, followed like a tree.
+        ClosureKind::HomeManager => &[
+            "home-files",
+            "LaunchAgents",
+            "LaunchAgentDomains",
+            "LaunchAgentRestartTriggers",
+            "putter.json",
+        ],
         ClosureKind::Unknown => &[],
     }
 }

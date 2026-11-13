@@ -29,12 +29,13 @@ that is not done.
 | M6 | Sources and run: selection, colmena, flake, paths, build step, revision mode, parallelism, cleanup, exit codes | 4.1–4.8, 6.3, 9 | M3, M5 | done |
 | M7 | TUI: state, rendering, keys, filter, tree view, wrap, live status, OSC 52 | 8.4 | M3 | done |
 | M8 | Fixture run mode, dynamic shell completions, README | 10, 11, 13 | M6, M7 | done |
-| M9 | Acceptance checks on real machines, recorded as ADRs | 11.1 | all | in progress |
+| M9 | Acceptance checks on real machines, recorded as ADRs | 11.1 | all | done |
 
 ## Follow-ups (not in this plan)
 
 - GitHub repository, CI building every package and dev shell, binary cache, release-please.
-- Acceptance checks that need a NixOS target over SSH or a colmena hive: ask the user for one.
+- Acceptance check 4 with builds and Ctrl-C during a build, on a Linux machine with working
+  network; check 8 with fish as the login shell (ADR 0071).
 
 ## Log
 
@@ -56,3 +57,5 @@ that is not done.
   (ADRs 0060, 0061), in review.
 - 2026-11-13: M8 merged after three review rounds (bash completion needed its own registration).
   M9 local checks pass (ADR 0070); SSH checks running against the user's hive.
+- 2026-11-13: M9 merged: acceptance checks recorded in ADRs 0070 and 0071. Two fixes came out of
+  them: home-manager follows three more entries, and ssh errors show ssh's last stderr line.

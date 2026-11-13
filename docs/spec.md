@@ -305,7 +305,7 @@ toplevel probes (section 6.2):
 |---|---|---|---|
 | `nixos-version` | NixOS | `etc` | yes |
 | `darwin-version` | nix-darwin | `etc`, `Library/LaunchAgents`, `Library/LaunchDaemons`, `user/Library/LaunchAgents` | no |
-| `hm-version` | home-manager | `home-files`, `LaunchAgents` | no |
+| `hm-version` | home-manager | `home-files`, `LaunchAgents`, `LaunchAgentDomains`, `LaunchAgentRestartTriggers`, `putter.json` | no |
 | none of them | unknown | none | no |
 
 - An unknown kind still gets Packages and the toplevel's regular files, plus a visible note
@@ -317,6 +317,8 @@ toplevel probes (section 6.2):
   `26.11.ff0e21a`, both seen on real toplevels.
 - Toplevel files shown elsewhere are excluded from Files: the marker files, `darwin-version.json`
   and `kernel-params`.
+- A followed entry may be a link to a single store file (`putter.json`); its content is compared like
+  any other file.
 - Followed trees are an allow-list: package trees such as `sw`, `home-path`, `Applications` and
   `Library/Fonts` are never followed. A new symlink to a package tree must not pull a whole package
   into the comparison. An allow-list fails towards missing content, which is visible and cheap to fix.
@@ -835,7 +837,8 @@ output stays readable on dark and light terminals. No colour when it is disabled
   `; run without --no-build` under `--no-build`. A missing current system reads
   `no current system at <path> on <machine>`.
 - A missing external command on a side: `` `<cmd>` not found on <this machine|target> ``.
-- An SSH failure (exit 255): `ssh <target>: <first stderr line>`.
+- An SSH failure (exit 255): `ssh <target>: <last stderr line that is not a warning>`; ssh prints its
+  verdict last, after warnings and banners such as the box of a changed host key.
 - Any other failed command: `` `<program>` failed (exit N): <first stderr line> ``. The full argv and
   stderr go to the log only when a debug flag or environment variable asks for it (implementer's
   choice, documented in `--help`).

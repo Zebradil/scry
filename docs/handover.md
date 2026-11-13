@@ -7,24 +7,19 @@ spec is [`spec.md`](spec.md).
 
 ## Where things stand
 
-- Done and merged into `main`: M0–M8. Every milestone passed a review
+- Done and merged into `main`: M0–M9. The implementation plan is complete. Every milestone passed a review
   subagent, and the review findings were fixed before the merge. Commits are signed through
   1Password and need the user's in-person approval; when the user is away a commit fails with
   "1Password: failed to fill whole buffer". Never bypass signing: keep working uncommitted and
   commit once the user is back.
-- **M9** (acceptance checks), worktree `.worktrees/wt-261113-151732-m9-acceptance`, `main` merged
-  in. Local phase done and committed (ADR 0070: checks 3, 6, 9 pass, check 4 partly; home-manager
-  now follows `LaunchAgentDomains`, `LaunchAgentRestartTriggers`, `putter.json`; `--help` wording
-  for `NIX_SSHOPTS`). SSH phase, approved by the user for every step except `daddy`
-  (unavailable): auto mode's classifier blocks a subagent's SSH commands ("Remote Shell Writes"),
-  so the main session runs them; the user approves manually only when the classifier blocks.
-  Findings so far: each node keeps one system generation, so checks 1 and 2 use deployed mode
-  with `buildOnTarget` on a scratch hive copy checked out one and five nixpkgs bumps back
-  (`<session scratchpad>/m9/znix`, branches `m9-base-1`, `m9-base-5`, `m9-check7-broken`);
-  revision mode contacts no machine and builds locally, so check 4 in full needs scry on a Linux
-  machine. Step script and logs: `<session scratchpad>/m9/run/`.
+- M9's acceptance checks are recorded in ADRs 0070 (local: checks 3, 6, 9, part of 4) and 0071
+  (over SSH against the user's colmena hive: checks 1, 2, 7, 8 for macOS, 10). Open, listed in
+  the roadmap's follow-ups: check 4 with builds and Ctrl-C during a build on a Linux machine with
+  working network (the node tried had broken outbound TLS); check 8 with fish as login shell.
+- In auto mode the classifier blocks SSH commands from subagents ("Remote Shell Writes"); a script
+  run from the main session was allowed. The user approves manually when blocked.
 - ADRs: 0001–0006 (M0), 0010–0012 (M4), 0020 (M3), 0030–0031 (M5), 0040 (M7), 0050–0051 (M6),
-  0060–0061 (M8), 0070 (M9). The
+  0060–0061 (M8), 0070–0071 (M9). The
   next ADR takes the next free number after the highest.
 - No git remote. GitHub, CI and the binary cache are a follow-up (roadmap).
 

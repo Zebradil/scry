@@ -68,6 +68,14 @@ fn usage_error_exits_2_with_and_without_exit_code() {
 }
 
 #[test]
+fn help_says_nix_sshopts_splits_like_nix() {
+    // A value such as `-o 'ProxyCommand=sleep 600'` needs its quotes; "split on whitespace"
+    // would tell the user to drop them.
+    let stdout = String::from_utf8(scry(&["--help"]).stdout).unwrap();
+    assert!(stdout.contains("split shell-style as Nix does"), "{stdout}");
+}
+
+#[test]
 fn fixture_mode_runs_on_the_synthetic_fleet() {
     let fixture = [("SCRY_FIXTURE", "1")];
     let output = scry_with(&fixture, &["colmena", "--format", "json"]);

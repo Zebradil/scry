@@ -437,6 +437,42 @@ async fn home_manager() {
     );
 }
 
+/// home-manager's launchd domains, restart triggers and `putter.json` (a link to one store
+/// file) are followed too: a change there shows in Files.
+#[tokio::test]
+async fn home_manager_agent_domains_and_putter() {
+    let mut local = Host::new();
+    let mut generation = |seed: &str, domain: &str, target: &str| {
+        let t = fixture::home_manager(&mut local, seed, "alice@example.org");
+        let domains = sp(seed, "home-manager-agent-domains");
+        let triggers = sp(seed, "home-manager-agent-restart-triggers");
+        let putter = sp(seed, "hm-putter.json");
+        local
+            .file(&format!("{domains}/org.example.agent.domain"), domain)
+            .dir(&triggers)
+            .file(&putter, format!("{{\"target\":\"{target}\"}}\n"))
+            .link(&format!("{t}/LaunchAgentDomains"), &domains)
+            .link(&format!("{t}/LaunchAgentRestartTriggers"), &triggers)
+            .link(&format!("{t}/putter.json"), &putter);
+        t
+    };
+    let old = generation("o", "gui\n", "/home/alice/.a");
+    let new = generation("n", "user\n", "/home/alice/.b");
+    let fleet = Arc::new(Fleet::new().host(Machine::Local, local));
+    let configuration = run(
+        &fleet,
+        &job(built(Machine::Local, &old), built(Machine::Local, &new)),
+    )
+    .await;
+    let changes = changes(&configuration);
+    for path in ["LaunchAgentDomains/org.example.agent.domain", "putter.json"] {
+        assert!(
+            changes.contains(&format!("Modified Real {path}")),
+            "{path} missing: {changes:#?}"
+        );
+    }
+}
+
 #[tokio::test]
 async fn binary_and_over_limit_files() {
     let (fleet, job) = two_machines();
