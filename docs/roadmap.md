@@ -33,9 +33,9 @@ that is not done.
 
 ## Follow-ups (not in this plan)
 
-- GitHub repository, CI building every package and dev shell, binary cache, release-please.
-- Acceptance check 4 with builds and Ctrl-C during a build, on a Linux machine with working
-  network; check 8 with fish as the login shell (ADR 0071).
+Tracked as issues in the private GitHub repository `zebradil/scry` (created 2026-11-13, not
+pushed yet): #1 check 4 with builds on Linux, #2 check 8 with fish, #3 CI and binary cache,
+#4 release-please, #5 licence, #6 nixpkgs pin, #7 TUI and completion on Linux.
 
 ## Log
 
