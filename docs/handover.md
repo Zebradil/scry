@@ -13,16 +13,40 @@ spec is [`spec.md`](spec.md).
   "1Password: failed to fill whole buffer". Never bypass signing: keep working uncommitted and
   commit once the user is back.
 - **M6** (sources and run), worktree `.worktrees/wt-261113-052109-m6-run`, branch
-  `wt/261113-052109-m6-run`: implementation committed and `main` (with M5 and M7) merged in, gate
-  passed (184 + 12 + 14 + 3 tests, clippy and fmt clean). **Reviewed; the findings below are not
-  fixed yet.** Next: fix them (send them to an implementer in that worktree), wire the TUI into
-  `run` (the marked comment in `work()` in `src/run.rs`: `tui::run(header, names, receiver,
-  tui::Options { .. })`, `!all_finished` to `exit::Outcome::of_report`; until then `auto` on a
-  terminal prints text), re-run the gate, squash-merge. ADRs 0050 (no out-link for colmena builds;
-  acceptance check 7 from colmena 0.5.0's source: a failed node build does not stop the others, an
-  evaluation failure skips its chunk) and 0051 (readings of 4.2, 4.5, 6.3).
-- After M6: M8, then M9.
-- ADRs: 0001–0006 (M0), 0010–0012 (M4), 0020 (M3), 0030–0031 (M5), 0040 (M7), 0050–0051 (M6). The
+  `wt/261113-052109-m6-run`: implementation committed (`9d671ce`), `main` merged in (`9ecd5f3`).
+  **Done**: three review rounds, all findings fixed, TUI wired into `run` (viewer on
+  `spawn_blocking` after evaluation and build; a quit flag for SIGINT/SIGTERM/SIGHUP; a `viewer`
+  field on `Env` for tests), gate passed (187 + 3 + 14 + 18 tests). The fixes are **uncommitted**
+  in that worktree because signing failed (user away). Backup:
+  `<session scratchpad>/m6-final.patch` (binary diff against `9ecd5f3`). When signing works:
+  commit them there as `fix(run): M6 review findings and TUI wiring`, then squash-merge the branch
+  as `feat: sources and run (M6)`, remove the worktree and branch.
+- **M8** (fixture mode, completions, README), worktree
+  `.worktrees/wt-261113-105208-m8-fixture-completions`, branched from the M6 branch head with
+  M6's uncommitted fixes **staged** as its base; M8's own changes are **unstaged** and untracked
+  (backups: `<session scratchpad>/m8-unstaged.patch`, `m8-untracked.tar`, `m8-untracked.txt`).
+  **Implemented, not reviewed yet.** Implementer's report:
+  - Fixture mode: a non-empty `SCRY_FIXTURE` swaps the real seam for the fake one
+    (`SCRY_FIXTURE=1 scry colmena|flake [--base main] [--format text|json]`), with a stderr notice;
+    five configurations (unchanged; two sharing churn with binary, Boot and specialisation
+    changes; one absent at base in revision mode; one failing evaluation). ADR 0060.
+  - Completion: `clap_complete` dynamic engine; `--on`, `--base`, `REF#` completers attached at
+    runtime, reusing `colmena::nodes`, `flake::list` and `git` through the seam; silent on error;
+    tested on the fake. Bash checked by hand, zsh not.
+  - Oldest Nix: 2.13 where scry builds (`drv^out`), 2.4 otherwise and on targets; tested 2.4–2.13
+    and 2.31 clients against a 2.35 daemon, darwin only. ADR 0061.
+  - Gate: test, clippy, fmt, `nix fmt`, `nix build path:$PWD`, completions in `result/share`,
+    `nix flake check path:$PWD`, fixture text and JSON, TUI under tmux: all pass.
+  - Open: the TUI exited at once under `script -q /dev/null` (M6's pty checks with `script`
+    worked); README's install URL is a placeholder until the GitHub follow-up.
+  Next: review M8 (opus, high), with these points to check: the `script` exit, `SCRY_FIXTURE` as
+  an env var in the release binary (spec 11 says "build option or hidden flag"), completion
+  silence and latency, zsh and fish registration, the README against the code. After M6 is
+  committed: in the M8 worktree, `git reset --soft <M6 fix commit>` (the staged content equals
+  it), then M8's changes are the only diff; fix, commit, merge.
+- After M8: M9 (needs a NixOS SSH target and a colmena hive from the user).
+- ADRs: 0001–0006 (M0), 0010–0012 (M4), 0020 (M3), 0030–0031 (M5), 0040 (M7), 0050–0051 (M6),
+  0060–0061 (M8). The
   next ADR takes the next free number after the highest.
 - No git remote. GitHub, CI and the binary cache are a follow-up (roadmap).
 
