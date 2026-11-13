@@ -7,25 +7,15 @@ spec is [`spec.md`](spec.md).
 
 ## Where things stand
 
-- Done and merged into `main`: M0, M1, M2, M3, M4, M5, M7. Every milestone passed a review
+- Done and merged into `main`: M0, M1, M2, M3, M4, M5, M6, M7. Every milestone passed a review
   subagent, and the review findings were fixed before the merge. Commits are signed through
   1Password and need the user's in-person approval; when the user is away a commit fails with
   "1Password: failed to fill whole buffer". Never bypass signing: keep working uncommitted and
   commit once the user is back.
-- **M6** (sources and run), worktree `.worktrees/wt-261113-052109-m6-run`, branch
-  `wt/261113-052109-m6-run`: implementation committed (`9d671ce`), `main` merged in (`9ecd5f3`).
-  **Done**: three review rounds, all findings fixed, TUI wired into `run` (viewer on
-  `spawn_blocking` after evaluation and build; a quit flag for SIGINT/SIGTERM/SIGHUP; a `viewer`
-  field on `Env` for tests), gate passed (187 + 3 + 14 + 18 tests). The fixes are **uncommitted**
-  in that worktree because signing failed (user away). Backup:
-  `<session scratchpad>/m6-final.patch` (binary diff against `9ecd5f3`). When signing works:
-  commit them there as `fix(run): M6 review findings and TUI wiring`, then squash-merge the branch
-  as `feat: sources and run (M6)`, remove the worktree and branch.
 - **M8** (fixture mode, completions, README), worktree
-  `.worktrees/wt-261113-105208-m8-fixture-completions`, branched from the M6 branch head with
-  M6's uncommitted fixes **staged** as its base; M8's own changes are **unstaged** and untracked
-  (backups: `<session scratchpad>/m8-unstaged.patch`, `m8-untracked.tar`, `m8-untracked.txt`).
-  **Implemented, not reviewed yet.** Implementer's report:
+  `.worktrees/wt-261113-105208-m8-fixture-completions`, branch
+  `wt/261113-105208-m8-fixture-completions`: committed as `b5e1aaf` on top of M6's last commit.
+  **Review running.** Implementer's report:
   - Fixture mode: a non-empty `SCRY_FIXTURE` swaps the real seam for the fake one
     (`SCRY_FIXTURE=1 scry colmena|flake [--base main] [--format text|json]`), with a stderr notice;
     five configurations (unchanged; two sharing churn with binary, Boot and specialisation
@@ -39,11 +29,8 @@ spec is [`spec.md`](spec.md).
     `nix flake check path:$PWD`, fixture text and JSON, TUI under tmux: all pass.
   - Open: the TUI exited at once under `script -q /dev/null` (M6's pty checks with `script`
     worked); README's install URL is a placeholder until the GitHub follow-up.
-  Next: review M8 (opus, high), with these points to check: the `script` exit, `SCRY_FIXTURE` as
-  an env var in the release binary (spec 11 says "build option or hidden flag"), completion
-  silence and latency, zsh and fish registration, the README against the code. After M6 is
-  committed: in the M8 worktree, `git reset --soft <M6 fix commit>` (the staged content equals
-  it), then M8's changes are the only diff; fix, commit, merge.
+  Next: send the review's findings to the M8 implementer, gate, squash-merge as
+  `feat: fixture mode, completions and README (M8)`.
 - After M8: M9 (needs a NixOS SSH target and a colmena hive from the user).
 - ADRs: 0001–0006 (M0), 0010–0012 (M4), 0020 (M3), 0030–0031 (M5), 0040 (M7), 0050–0051 (M6),
   0060–0061 (M8). The
