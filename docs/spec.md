@@ -1,6 +1,6 @@
 # scry specification
 
-Status: settled 2026-11-12. Terms follow [`CONTEXT.md`](../CONTEXT.md). Record decisions you make while
+Status: settled 2026-11-12. Terms follow [`GLOSSARY.md`](../GLOSSARY.md). Record decisions you make while
 implementing as ADRs in [`docs/adr/`](adr/), with measurements where a decision rests on one.
 
 This spec sets behaviour and hard constraints. It leaves internal structure open: module layout,

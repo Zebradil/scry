@@ -1,6 +1,6 @@
 # Architecture
 
-How the code is cut. Behaviour is in [`spec.md`](spec.md), terms in [`CONTEXT.md`](../CONTEXT.md),
+How the code is cut. Behaviour is in [`spec.md`](spec.md), terms in [`GLOSSARY.md`](../GLOSSARY.md),
 decisions in [`adr/`](adr/). Read all of this file before starting a milestone.
 
 ## Module map

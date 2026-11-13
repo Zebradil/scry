@@ -2,7 +2,7 @@
 
 State of the implementation and how to continue it in a new session. Read with
 [`roadmap.md`](roadmap.md) (milestones and status), [`architecture.md`](architecture.md) (module
-ownership, seam, concurrency, errors, testing) and [`../CONTEXT.md`](../CONTEXT.md) (terms). The
+ownership, seam, concurrency, errors, testing) and [`../GLOSSARY.md`](../GLOSSARY.md) (terms). The
 spec is [`spec.md`](spec.md).
 
 ## Where things stand
@@ -36,7 +36,7 @@ only reports, diff stats and test results.
    allowed tuning the effort. The prompt carries:
    - the worktree path and branch, "do not touch main or other worktrees";
    - Conventional Commits, with the two trailer lines the session's system reminder gives;
-   - what to read: `CONTEXT.md`, `docs/architecture.md`, `docs/adr/*`, `src/report.rs`, and the
+   - what to read: `GLOSSARY.md`, `docs/architecture.md`, `docs/adr/*`, `src/report.rs`, and the
      spec sections by number (`rg -n '^#' docs/spec.md` finds them), never the whole spec unless
      needed;
    - toolchain: `nix develop -c cargo …` (the `cargo` on PATH outside the dev shell is a nightly);

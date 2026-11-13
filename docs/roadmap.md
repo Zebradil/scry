@@ -1,7 +1,7 @@
 # Roadmap
 
 Implementation plan for [`spec.md`](spec.md). This file is the hand-over point: whoever picks the work
-up reads this file, [`handover.md`](handover.md), `CONTEXT.md` and `docs/architecture.md`, then continues with the first milestone
+up reads this file, [`handover.md`](handover.md), `GLOSSARY.md` and `docs/architecture.md`, then continues with the first milestone
 that is not done.
 
 ## How the work runs
