@@ -1,0 +1,162 @@
+---
+source: tests/run.rs
+expression: ran.stdout
+---
+Shared across configurations
+  [U] initrd-linux              6.12.40 -> 6.12.48                                                         web-a, web-b
+  [U] openssl                   3.0.13 -> 3.0.14                                                           web-a, web-b
+  [C] linux                     6.12.40 -> 6.12.48                                                         web-a, web-b
+  [A] new-agent                 1.4.0                                                                      web-a, web-b
+  [A] resolv.conf                                                                                          web-a, web-b
+  [R] unit-debug-shell.service                                                                             web-a, web-b
+  [M] app-helper/bin/app-helper                                                                            web-a, web-b
+  [B] etc/binary.db  (binary)                                                                              web-a, web-b
+  [L] etc/mtab  /proc/mounts -> /proc/self/mounts                                                          web-a, web-b
+  [M] etc/nix/nix.conf                                                                                     web-a, web-b
+  [T] etc/resolv.conf  dangling link /nix/store/v192vdnf38dhf0lmy7jqxaaz3n5vjygq-gone/resolv.conf -> file  web-a, web-b
+  [A] etc/ssh/authorized_keys.d/deploy                                                                     web-a, web-b
+  [M] etc/systemd/system-generators/dev-disk-by\x2dlabel.mount  (content not fetched)                      web-a, web-b
+  [M] etc/systemd/system/app.service → app-start/bin/app-start                                             web-a, web-b
+  [M] etc/systemd/system/app.service → app-start/bin/app-start → app.json                                  web-a, web-b
+  [T] etc/systemd/system/debug-shell.service  file -> external link /dev/null                              web-a, web-b
+  [M] etc/udev/hwdb.bin  (content not fetched)                                                             web-a, web-b
+  [M] user-environment/bin/tool                                                                            web-a, web-b
+  kernel: linux-6.12.40 -> linux-6.12.48                                                                   web-a, web-b
+  initrd: initrd-linux-6.12.40 -> initrd-linux-6.12.48                                                     web-a, web-b
+  kernel-modules: linux-6.12.48-modules (rebuilt)                                                          web-a, web-b
+  kernel-params: quiet loglevel=4 -> quiet loglevel=4 mitigations=auto                                     web-a, web-b
+  [A] specialisation debug                                                                                 web-a, web-b
+
+db-a · nixos (local)
+  no changes, already running /nix/store/w3fzn58f5mfcypjnw4knm81m44g1r4dv-nixos-system-web-a-26.11.20261110.9a8b7c6
+
+web-a · nixos (root@web-a)
+  old /nix/store/7hxhq9fwq4sp17qr1mnl7dy3rpkywvv1-nixos-system-web-a-26.05.20261102.7dcdd87
+  new /nix/store/w3fzn58f5mfcypjnw4knm81m44g1r4dv-nixos-system-web-a-26.11.20261110.9a8b7c6
+  system 26.05.20261102.7dcdd87 -> 26.11.20261110.9a8b7c6
+Packages  38.0 MiB -> 38.0 MiB (+1.2 KiB)
+  [U] initrd-linux              0 B    6.12.40 -> 6.12.48  (also in 1)
+  [U] openssl                   0 B    3.0.13 -> 3.0.14  (also in 1)
+  [C] linux                     0 B    6.12.40 -> 6.12.48  (also in 1)
+  [A] new-agent                 +326 B 1.4.0  (also in 1)
+  [A] resolv.conf               +140 B  (also in 1)
+  [R] unit-debug-shell.service  -227 B  (also in 1)
+  12 rebuilt (same version, new hash, +470 B)
+Files
+  [M] app-helper/bin/app-helper  (also in 1)
+      @@ -1,3 +1,3 @@
+      -#!/nix/store/cib3xd27pi09wwg8zifzndzcwcmgkj3n-bash-5.2p37/bin/bash
+      -# from /nix/store/wbfxnk0946k986ln8njhk93kwp9mmrs8-app-helper
+      -echo v1
+      +#!/nix/store/48y6kcryarxipp91d3qwb8pdmx4s6k0r-bash-5.2p37/bin/bash
+      +# from /nix/store/dclclnm4df9917y90ldiycv73666cv10-app-helper
+      +echo v2
+  [B] etc/binary.db  (binary, 2 B -> 2 B)  (also in 1)
+  [L] etc/mtab  /proc/mounts -> /proc/self/mounts  (also in 1)
+  [M] etc/nix/nix.conf  (also in 1)
+      @@ -1,3 +1,3 @@
+       substituters = https://cache.example
+      -trusted-public-keys = cache-a:AAAA
+      +trusted-public-keys = cache-a:AAAA cache-b:BBBB
+       max-jobs = auto
+  [T] etc/resolv.conf  dangling link /nix/store/v192vdnf38dhf0lmy7jqxaaz3n5vjygq-gone/resolv.conf -> file  (also in 1)
+  [A] etc/ssh/authorized_keys.d/deploy  (also in 1)
+      @@ -0,0 +1,1 @@
+      +ssh-ed25519 AAAA deploy@example
+  [M] etc/systemd/system-generators/dev-disk-by\x2dlabel.mount  (content not fetched, 8 B -> 19 B)  (also in 1)
+  [M] etc/systemd/system/app.service → app-start/bin/app-start  (also in 1)
+      @@ -1,4 +1,4 @@
+      -#!/nix/store/cib3xd27pi09wwg8zifzndzcwcmgkj3n-bash-5.2p37/bin/bash
+      +#!/nix/store/48y6kcryarxipp91d3qwb8pdmx4s6k0r-bash-5.2p37/bin/bash
+       set -eu
+      -cd /nix/store/x6ymgjz2wzl7rjx9xcrn0f0a36vr7s05-app-start
+      -exec app --config /nix/store/wc6ihc60mnw68ick60nj2sckc9shyanc-app.json --workers 4
+      +cd /nix/store/mj1872wgazx2bx726rly4w8f8hmmgnxm-app-start
+      +exec app --config /nix/store/ncmc27rc6az54vpj6rrhbkp3x4aml55v-app.json --workers 8
+  [M] etc/systemd/system/app.service → app-start/bin/app-start → app.json  (also in 1)
+      @@ -1,1 +1,1 @@
+      -{"workers": 4}
+      +{"workers": 8}
+  [T] etc/systemd/system/debug-shell.service  file -> external link /dev/null  (also in 1)
+  [M] etc/udev/hwdb.bin  (content not fetched, 4.9 KiB -> 4.9 KiB)  (also in 1)
+  [M] user-environment/bin/tool  (also in 1)
+      @@ -1,1 +1,1 @@
+      -a
+      \ No newline at end of file
+      +b
+      \ No newline at end of file
+  2 hash-only (store hash churn; --expand-churn shows them)
+  2 version-only (store path version bumps; --expand-churn shows them)
+Boot
+  kernel: linux-6.12.40 -> linux-6.12.48  (also in 1)
+  initrd: initrd-linux-6.12.40 -> initrd-linux-6.12.48  (also in 1)
+  kernel-modules: linux-6.12.48-modules (rebuilt)  (also in 1)
+  kernel-params: quiet loglevel=4 -> quiet loglevel=4 mitigations=auto  (also in 1)
+  [A] specialisation debug  (also in 1)
+
+web-b · nixos (root@web-b)
+  old /nix/store/7hxhq9fwq4sp17qr1mnl7dy3rpkywvv1-nixos-system-web-a-26.05.20261102.7dcdd87
+  new /nix/store/w3fzn58f5mfcypjnw4knm81m44g1r4dv-nixos-system-web-a-26.11.20261110.9a8b7c6
+  system 26.05.20261102.7dcdd87 -> 26.11.20261110.9a8b7c6
+Packages  38.0 MiB -> 38.0 MiB (+1.2 KiB)
+  [U] initrd-linux              0 B    6.12.40 -> 6.12.48  (also in 1)
+  [U] openssl                   0 B    3.0.13 -> 3.0.14  (also in 1)
+  [C] linux                     0 B    6.12.40 -> 6.12.48  (also in 1)
+  [A] new-agent                 +326 B 1.4.0  (also in 1)
+  [A] resolv.conf               +140 B  (also in 1)
+  [R] unit-debug-shell.service  -227 B  (also in 1)
+  12 rebuilt (same version, new hash, +470 B)
+Files
+  [M] app-helper/bin/app-helper  (also in 1)
+      @@ -1,3 +1,3 @@
+      -#!/nix/store/cib3xd27pi09wwg8zifzndzcwcmgkj3n-bash-5.2p37/bin/bash
+      -# from /nix/store/wbfxnk0946k986ln8njhk93kwp9mmrs8-app-helper
+      -echo v1
+      +#!/nix/store/48y6kcryarxipp91d3qwb8pdmx4s6k0r-bash-5.2p37/bin/bash
+      +# from /nix/store/dclclnm4df9917y90ldiycv73666cv10-app-helper
+      +echo v2
+  [B] etc/binary.db  (binary, 2 B -> 2 B)  (also in 1)
+  [L] etc/mtab  /proc/mounts -> /proc/self/mounts  (also in 1)
+  [M] etc/nix/nix.conf  (also in 1)
+      @@ -1,3 +1,3 @@
+       substituters = https://cache.example
+      -trusted-public-keys = cache-a:AAAA
+      +trusted-public-keys = cache-a:AAAA cache-b:BBBB
+       max-jobs = auto
+  [T] etc/resolv.conf  dangling link /nix/store/v192vdnf38dhf0lmy7jqxaaz3n5vjygq-gone/resolv.conf -> file  (also in 1)
+  [A] etc/ssh/authorized_keys.d/deploy  (also in 1)
+      @@ -0,0 +1,1 @@
+      +ssh-ed25519 AAAA deploy@example
+  [M] etc/systemd/system-generators/dev-disk-by\x2dlabel.mount  (content not fetched, 8 B -> 19 B)  (also in 1)
+  [M] etc/systemd/system/app.service → app-start/bin/app-start  (also in 1)
+      @@ -1,4 +1,4 @@
+      -#!/nix/store/cib3xd27pi09wwg8zifzndzcwcmgkj3n-bash-5.2p37/bin/bash
+      +#!/nix/store/48y6kcryarxipp91d3qwb8pdmx4s6k0r-bash-5.2p37/bin/bash
+       set -eu
+      -cd /nix/store/x6ymgjz2wzl7rjx9xcrn0f0a36vr7s05-app-start
+      -exec app --config /nix/store/wc6ihc60mnw68ick60nj2sckc9shyanc-app.json --workers 4
+      +cd /nix/store/mj1872wgazx2bx726rly4w8f8hmmgnxm-app-start
+      +exec app --config /nix/store/ncmc27rc6az54vpj6rrhbkp3x4aml55v-app.json --workers 8
+  [M] etc/systemd/system/app.service → app-start/bin/app-start → app.json  (also in 1)
+      @@ -1,1 +1,1 @@
+      -{"workers": 4}
+      +{"workers": 8}
+  [T] etc/systemd/system/debug-shell.service  file -> external link /dev/null  (also in 1)
+  [M] etc/udev/hwdb.bin  (content not fetched, 4.9 KiB -> 4.9 KiB)  (also in 1)
+  [M] user-environment/bin/tool  (also in 1)
+      @@ -1,1 +1,1 @@
+      -a
+      \ No newline at end of file
+      +b
+      \ No newline at end of file
+  2 hash-only (store hash churn; --expand-churn shows them)
+  2 version-only (store path version bumps; --expand-churn shows them)
+Boot
+  kernel: linux-6.12.40 -> linux-6.12.48  (also in 1)
+  initrd: initrd-linux-6.12.40 -> initrd-linux-6.12.48  (also in 1)
+  kernel-modules: linux-6.12.48-modules (rebuilt)  (also in 1)
+  kernel-params: quiet loglevel=4 -> quiet loglevel=4 mitigations=auto  (also in 1)
+  [A] specialisation debug  (also in 1)
+
+web-c · nixos (root@web-c)
+  error: ssh root@web-c: connect to host web-c port 22: Connection refused

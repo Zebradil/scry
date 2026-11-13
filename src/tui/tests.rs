@@ -12,7 +12,7 @@ use ratatui::backend::TestBackend;
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 use super::app::{App, Focus};
-use super::{Guard, Options, draw, lock, osc52};
+use super::{Guard, Options, draw, finish, lock, osc52};
 use crate::report::{
     Boot, ChurnClass, ClosureKind, Configuration, FileChange, FileStatus, FileType, Files, Hunk,
     Line, LineOp, LinkChange, Mode, PackageChange, PackageChangeKind, Packages, Rebuilt,
@@ -384,6 +384,15 @@ fn quitting_early_reports_what_arrived() {
 
     let app = fleet(vec![web_b(), db_a(), web_a()]);
     assert!(app.finish().all_finished);
+}
+
+#[test]
+fn a_configuration_queued_before_quitting_counts_as_finished() {
+    let mut app = fleet(vec![web_b(), db_a()]);
+    let (sender, mut events) = tokio::sync::mpsc::unbounded_channel();
+    sender.send(web_a()).unwrap();
+    press(&mut app, "q");
+    assert!(finish(app, &mut events).all_finished);
 }
 
 #[test]

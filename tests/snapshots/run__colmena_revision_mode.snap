@@ -1,0 +1,21 @@
+---
+source: tests/run.rs
+expression: ran.stdout
+---
+web-a · unknown (1a2b3c4 -> working tree)
+  old /nix/store/j4zapwq4q9yv0q7cc2wg4s9hp31v6yq0-custom-system
+  new /nix/store/2sb3q5cg9q2c3m192aaqmckjpzgp6hfd-custom-system
+  unknown closure kind: no followed trees, no Boot section
+Packages  1.1 KiB -> 1.1 KiB (+6 B)
+  2 rebuilt (same version, new hash, +3 B)
+Files
+  [M] hello
+      @@ -1,1 +1,1 @@
+      -hi
+      +hello
+
+web-b · unknown (1a2b3c4 -> working tree)
+  not present at base 1a2b3c4
+
+web-c · unknown (1a2b3c4 -> working tree)
+  error: at base 1a2b3c4: `colmena` failed (exit 1): error: attribute 'web-c' missing

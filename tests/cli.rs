@@ -23,14 +23,30 @@ fn version_names_the_revision() {
 }
 
 #[test]
-fn unimplemented_subcommand_fails_as_fatal_error() {
-    let output = scry(&["colmena"]);
+fn fatal_error_exits_1_or_2_with_exit_code() {
+    let output = scry(&["completions", "bash"]);
     assert_eq!(output.status.code(), Some(1));
     assert_eq!(
         String::from_utf8_lossy(&output.stderr),
         "scry: not implemented yet\n"
     );
-    assert_eq!(scry(&["colmena", "--exit-code"]).status.code(), Some(2));
+    // A path that is not a toplevel fails its configuration; only `sh` runs.
+    let paths = [
+        "paths",
+        "/nonexistent-old",
+        "/nonexistent-new",
+        "--format",
+        "json",
+    ];
+    let output = scry(&paths);
+    assert_eq!(output.status.code(), Some(1));
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        stdout.contains("/nonexistent-new is not in the store on this machine"),
+        "{stdout}"
+    );
+    let with_exit_code = [&paths[..], &["--exit-code"]].concat();
+    assert_eq!(scry(&with_exit_code).status.code(), Some(2));
 }
 
 #[test]

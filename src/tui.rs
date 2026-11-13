@@ -10,6 +10,7 @@
 
 use std::io::{self, Write};
 use std::panic::PanicHookInfo;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use std::time::Duration;
 
@@ -47,8 +48,8 @@ pub struct Finished {
     pub configurations: Vec<Configuration>,
 }
 
-/// Runs the viewer on the calling thread until the user quits, then restores the terminal,
-/// also on an error or a panic.
+/// Runs the viewer on the calling thread until the user quits or `quit` is set (a signal, or a
+/// failure on the run's side), then restores the terminal, also on an error or a panic.
 ///
 /// `header` gives the mode (its configurations and shared changes are ignored); `names` are
 /// the selected configurations in name order, each sent once on `events` when final.
@@ -57,6 +58,7 @@ pub fn run(
     names: Vec<String>,
     mut events: UnboundedReceiver<Configuration>,
     options: Options,
+    quit: &AtomicBool,
 ) -> io::Result<Finished> {
     let mut app = app::App::new(header.mode, names, options);
     let _guard = Guard::install(ratatui::restore);
@@ -65,7 +67,7 @@ pub fn run(
     let mut terminal = Terminal::new(CrosstermBackend::new(io::stdout()))?;
     let mut connected = true;
     let mut dirty = true;
-    while !app.quit {
+    while !app.quit && !quit.load(Ordering::Relaxed) {
         while connected {
             match events.try_recv() {
                 Ok(configuration) => {
@@ -98,7 +100,15 @@ pub fn run(
             out.flush()?;
         }
     }
-    Ok(app.finish())
+    Ok(finish(app, &mut events))
+}
+
+/// What arrived since the last poll is finished too.
+fn finish(mut app: app::App, events: &mut UnboundedReceiver<Configuration>) -> Finished {
+    while let Ok(configuration) = events.try_recv() {
+        app.arrive(configuration);
+    }
+    app.finish()
 }
 
 type Hook = Box<dyn Fn(&PanicHookInfo<'_>) + Send + Sync>;

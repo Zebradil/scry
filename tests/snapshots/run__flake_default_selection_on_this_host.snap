@@ -1,0 +1,90 @@
+---
+source: tests/run.rs
+expression: ran.stdout
+---
+alice@web-a · home-manager (local)
+  old /nix/store/qa0gzi72pl4panvx96y65zjx9hsy23zh-home-manager-generation
+  new /nix/store/bbk9svdi1br4irf85rw63dy99akpq6w1-home-manager-generation
+  system 26.11
+Packages  1.8 KiB -> 1.8 KiB (0 B)
+  4 rebuilt (same version, new hash, 0 B)
+Files
+  [M] LaunchAgents/org.example.agent.plist
+      @@ -1,1 +1,1 @@
+      -<plist>o</plist>
+      +<plist>n</plist>
+  [M] home-files/.config/git/config
+      @@ -1,2 +1,2 @@
+       [user]
+      -	email = alice@example.org
+      +	email = alice@example.com
+  [M] home-manager-path/bin/tool
+      @@ -1,1 +1,1 @@
+      -o
+      \ No newline at end of file
+      +n
+      \ No newline at end of file
+
+web-a · nixos (local)
+  old /nix/store/7hxhq9fwq4sp17qr1mnl7dy3rpkywvv1-nixos-system-web-a-26.05.20261102.7dcdd87
+  new /nix/store/w3fzn58f5mfcypjnw4knm81m44g1r4dv-nixos-system-web-a-26.11.20261110.9a8b7c6
+  system 26.05.20261102.7dcdd87 -> 26.11.20261110.9a8b7c6
+Packages  38.0 MiB -> 38.0 MiB (+1.2 KiB)
+  [U] initrd-linux              0 B    6.12.40 -> 6.12.48
+  [U] openssl                   0 B    3.0.13 -> 3.0.14
+  [C] linux                     0 B    6.12.40 -> 6.12.48
+  [A] new-agent                 +326 B 1.4.0
+  [A] resolv.conf               +140 B
+  [R] unit-debug-shell.service  -227 B
+  12 rebuilt (same version, new hash, +470 B)
+Files
+  [M] app-helper/bin/app-helper
+      @@ -1,3 +1,3 @@
+      -#!/nix/store/cib3xd27pi09wwg8zifzndzcwcmgkj3n-bash-5.2p37/bin/bash
+      -# from /nix/store/wbfxnk0946k986ln8njhk93kwp9mmrs8-app-helper
+      -echo v1
+      +#!/nix/store/48y6kcryarxipp91d3qwb8pdmx4s6k0r-bash-5.2p37/bin/bash
+      +# from /nix/store/dclclnm4df9917y90ldiycv73666cv10-app-helper
+      +echo v2
+  [B] etc/binary.db  (binary, 2 B -> 2 B)
+  [L] etc/mtab  /proc/mounts -> /proc/self/mounts
+  [M] etc/nix/nix.conf
+      @@ -1,3 +1,3 @@
+       substituters = https://cache.example
+      -trusted-public-keys = cache-a:AAAA
+      +trusted-public-keys = cache-a:AAAA cache-b:BBBB
+       max-jobs = auto
+  [T] etc/resolv.conf  dangling link /nix/store/v192vdnf38dhf0lmy7jqxaaz3n5vjygq-gone/resolv.conf -> file
+  [A] etc/ssh/authorized_keys.d/deploy
+      @@ -0,0 +1,1 @@
+      +ssh-ed25519 AAAA deploy@example
+  [M] etc/systemd/system-generators/dev-disk-by\x2dlabel.mount  (content not fetched, 8 B -> 19 B)
+  [M] etc/systemd/system/app.service → app-start/bin/app-start
+      @@ -1,4 +1,4 @@
+      -#!/nix/store/cib3xd27pi09wwg8zifzndzcwcmgkj3n-bash-5.2p37/bin/bash
+      +#!/nix/store/48y6kcryarxipp91d3qwb8pdmx4s6k0r-bash-5.2p37/bin/bash
+       set -eu
+      -cd /nix/store/x6ymgjz2wzl7rjx9xcrn0f0a36vr7s05-app-start
+      -exec app --config /nix/store/wc6ihc60mnw68ick60nj2sckc9shyanc-app.json --workers 4
+      +cd /nix/store/mj1872wgazx2bx726rly4w8f8hmmgnxm-app-start
+      +exec app --config /nix/store/ncmc27rc6az54vpj6rrhbkp3x4aml55v-app.json --workers 8
+  [M] etc/systemd/system/app.service → app-start/bin/app-start → app.json
+      @@ -1,1 +1,1 @@
+      -{"workers": 4}
+      +{"workers": 8}
+  [T] etc/systemd/system/debug-shell.service  file -> external link /dev/null
+  [M] etc/udev/hwdb.bin  (content not fetched, 4.9 KiB -> 4.9 KiB)
+  [M] user-environment/bin/tool
+      @@ -1,1 +1,1 @@
+      -a
+      \ No newline at end of file
+      +b
+      \ No newline at end of file
+  2 hash-only (store hash churn; --expand-churn shows them)
+  2 version-only (store path version bumps; --expand-churn shows them)
+Boot
+  kernel: linux-6.12.40 -> linux-6.12.48
+  initrd: initrd-linux-6.12.40 -> initrd-linux-6.12.48
+  kernel-modules: linux-6.12.48-modules (rebuilt)
+  kernel-params: quiet loglevel=4 -> quiet loglevel=4 mitigations=auto
+  [A] specialisation debug

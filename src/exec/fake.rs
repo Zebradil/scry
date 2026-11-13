@@ -11,7 +11,8 @@ use super::{BoxFuture, Command, Exec, ExecError, Output, Stderr};
 use crate::transport::machine::Machine;
 use crate::transport::script;
 
-type Rule = Box<dyn Fn(&Machine, &Command) -> Option<Output> + Send + Sync>;
+/// `Some(None)` answers by never finishing, like a target that hangs.
+type Rule = Box<dyn Fn(&Machine, &Command) -> Option<Option<Output>> + Send + Sync>;
 
 #[derive(Default)]
 pub struct Fake {
@@ -28,7 +29,21 @@ impl Fake {
         mut self,
         rule: impl Fn(&Machine, &Command) -> Option<Output> + Send + Sync + 'static,
     ) -> Self {
-        self.rules.push(Box::new(rule));
+        self.rules.push(Box::new(move |machine, command| {
+            rule(machine, command).map(Some)
+        }));
+        self
+    }
+
+    /// Adds a rule after the existing ones: the commands it accepts never finish, until
+    /// dropped by a timeout or Ctrl-C.
+    pub fn hang(
+        mut self,
+        when: impl Fn(&Machine, &Command) -> bool + Send + Sync + 'static,
+    ) -> Self {
+        self.rules.push(Box::new(move |machine, command| {
+            when(machine, command).then_some(None)
+        }));
         self
     }
 
@@ -73,7 +88,7 @@ impl Exec for Fake {
         {
             panic!("{error}");
         }
-        let mut output = self
+        let answer = self
             .rules
             .iter()
             .find_map(|rule| rule(machine, &command))
@@ -83,6 +98,9 @@ impl Exec for Fake {
                     command.program, command.args
                 )
             });
+        let Some(mut output) = answer else {
+            return Box::pin(std::future::pending());
+        };
         if command.stderr == Stderr::Inherit {
             output.stderr.clear();
         }
@@ -154,6 +172,19 @@ mod tests {
             error.to_string(),
             "ssh root@web-a: Could not resolve hostname web-a"
         );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn hang_never_answers() {
+        let fake = Fake::new()
+            .hang(|m, _| *m == web_a())
+            .rule(|_, _| Some(ok("")));
+        let target = web_a();
+        let hung = fake.run(&target, Command::new("true", [] as [&str; 0]));
+        let timeout = std::time::Duration::from_secs(60);
+        assert!(tokio::time::timeout(timeout, hung).await.is_err());
+        let local = fake.run(&Machine::Local, Command::new("true", [] as [&str; 0]));
+        assert!(local.await.is_ok());
     }
 
     #[tokio::test]
