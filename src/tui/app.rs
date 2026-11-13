@@ -1,7 +1,9 @@
 //! The viewer's state and what each key does to it (spec 8.4), with no terminal: the event loop
 //! feeds it keys, sizes and arrivals, and draws it.
 
+use std::cell::RefCell;
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use ratatui::layout::Rect;
@@ -79,6 +81,20 @@ pub struct App {
     pub quit: bool,
     /// Terminal width and height.
     pub size: (u16, u16),
+    /// Counts [`App::arrive`] calls, so the rows cache sees a replaced configuration.
+    arrivals: usize,
+    /// [`App::rows`] by its inputs: building them is the costly part of a key press.
+    rows_cache: RefCell<Option<(RowsKey, Rc<Vec<Row>>)>>,
+}
+
+/// What [`App::rows`] depends on besides fixed state.
+#[derive(PartialEq)]
+struct RowsKey {
+    selected: usize,
+    arrivals: usize,
+    filter: String,
+    tree: bool,
+    open: HashMap<Key, bool>,
 }
 
 impl App {
@@ -102,6 +118,8 @@ impl App {
             clipboard: None,
             quit: false,
             size: (80, 24),
+            arrivals: 0,
+            rows_cache: RefCell::new(None),
         }
     }
 
@@ -119,6 +137,7 @@ impl App {
                 received.insert(at, configuration);
             }
             app.shared = shared::shared(&app.received);
+            app.arrivals += 1;
         });
         self.settle();
     }
@@ -275,7 +294,26 @@ impl App {
     }
 
     /// The selected entry's rows as the detail pane shows them, before wrapping.
-    pub fn rows(&self) -> Vec<Row> {
+    pub fn rows(&self) -> Rc<Vec<Row>> {
+        let key = RowsKey {
+            selected: self.selected,
+            arrivals: self.arrivals,
+            filter: self.filter.clone(),
+            tree: self.tree,
+            open: self.views[self.selected].open.clone(),
+        };
+        let mut cache = self.rows_cache.borrow_mut();
+        match &*cache {
+            Some((k, rows)) if *k == key => Rc::clone(rows),
+            _ => {
+                let rows = Rc::new(self.build_rows());
+                *cache = Some((key, Rc::clone(&rows)));
+                rows
+            }
+        }
+    }
+
+    fn build_rows(&self) -> Vec<Row> {
         let (nodes, rebuilt) = match self.entry(self.selected) {
             Entry::All => (view::shared(&self.shared), None),
             Entry::Configuration(i) => match self.configuration(i) {
