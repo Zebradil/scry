@@ -68,7 +68,9 @@ Spec 4 leaves some cases open. These readings fill them; `tests/run.rs` pins the
   (`q`, or Ctrl-C, which raw mode delivers as a key) drops what still fetches and cleans up
   as after Ctrl-C; unfinished configurations count as failed (4.7). A signal, or a failure on
   the run's side (a task that panicked), tells the viewer to quit through a flag its poll loop
-  reads; the run waits for the terminal to be restored, then cleans up and ends.
+  reads; the run waits up to 1 s for the terminal to be restored, then cleans up and ends.
+  A viewer stuck in crossterm's `read` on a terminal that hung up (its poll reports the tty
+  readable, and the read then blocks) is left behind: the process exits without it.
 - **Signals**: `SIGTERM` and `SIGHUP` are handled as `SIGINT` (Ctrl-C): the run drops its
   work, the viewer quits and restores the terminal, the base worktree, the temporary directory
   and the SSH masters are released, and the run exits as interrupted. Spec 6.3 names only

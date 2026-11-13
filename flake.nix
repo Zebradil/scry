@@ -51,8 +51,16 @@
         default = pkgs.rustPlatform.buildRustPackage (
           cargoArgs
           // {
-            # Shell completions for bash, zsh and fish get installed here (M8):
-            # installShellFiles in nativeBuildInputs, installShellCompletion in postInstall.
+            nativeBuildInputs = [ pkgs.installShellFiles ];
+            # `tests/cli.rs` drives the bash completion script, with its `complete` builtin.
+            nativeCheckInputs = [ pkgs.bashInteractive ];
+            # The scripts come from the built binary, which a cross build cannot run.
+            postInstall = lib.optionalString (pkgs.stdenv.buildPlatform.canExecute pkgs.stdenv.hostPlatform) ''
+              installShellCompletion --cmd scry \
+                --bash <($out/bin/scry completions bash) \
+                --zsh <($out/bin/scry completions zsh) \
+                --fish <($out/bin/scry completions fish)
+            '';
             meta = {
               description = "Preview what a change to a Nix fleet does to each machine";
               mainProgram = "scry";

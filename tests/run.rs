@@ -1196,6 +1196,23 @@ fn until_told(
     })
 }
 
+/// Lets [`stuck`] return, so the test's runtime can shut down.
+static UNSTUCK: AtomicBool = AtomicBool::new(false);
+
+/// A viewer blocked on a terminal that hung up: it never looks at the quit flag.
+fn stuck(
+    _: Report,
+    _: Vec<String>,
+    _: UnboundedReceiver<Configuration>,
+    _: tui::Options,
+    _: &AtomicBool,
+) -> std::io::Result<Finished> {
+    while !UNSTUCK.load(Ordering::Relaxed) {
+        std::thread::sleep(Duration::from_millis(5));
+    }
+    Err(std::io::Error::other("unstuck"))
+}
+
 /// Revision mode with `web-a` to fetch and `web-b` absent at base, the fetch answered by
 /// `fetching`.
 fn viewed(fetching: Fake, repository: &Arc<Repository>) -> Fake {
@@ -1304,6 +1321,31 @@ async fn viewer_quits_and_the_run_cleans_up() {
         2,
         "the viewer was told to quit"
     );
+    assert_eq!(ran.codes(), (1, 2));
+    assert!(repository.worktrees.lock().unwrap().is_empty());
+    assert_eq!(ran.left, 0);
+}
+
+#[tokio::test]
+async fn a_stuck_viewer_does_not_keep_the_run_alive() {
+    let temp = TempDir::new().unwrap();
+    let env = Env {
+        stdout_is_terminal: true,
+        viewer: stuck,
+        ..env(&temp)
+    };
+    let repository = Repository::new();
+    let hanging = Fake::new().hang(|_, c| is_fetch(c));
+    let signal = tokio::time::sleep(Duration::from_millis(50));
+    let ran = bounded(scry_until(
+        viewed(hanging, &repository),
+        env,
+        &["flake", "--base", "main"],
+        signal,
+    ))
+    .await;
+    UNSTUCK.store(true, Ordering::Relaxed);
+    assert_eq!(ran.error(), "interrupted");
     assert_eq!(ran.codes(), (1, 2));
     assert!(repository.worktrees.lock().unwrap().is_empty());
     assert_eq!(ran.left, 0);

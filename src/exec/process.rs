@@ -45,6 +45,14 @@ impl Process {
         ))
     }
 
+    /// Without the `SCRY_DEBUG` log, for shell completion, whose stderr is the user's prompt.
+    pub fn quiet(self) -> Self {
+        Self {
+            debug: false,
+            ..self
+        }
+    }
+
     fn new(ssh: &str, nix_sshopts: Vec<String>, debug: bool) -> Self {
         Self {
             ssh: ssh.to_owned(),

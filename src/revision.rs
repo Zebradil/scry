@@ -34,7 +34,8 @@ struct Added {
     worktree: PathBuf,
 }
 
-fn git<'a>(dir: &Path, args: impl IntoIterator<Item = &'a str>) -> Command {
+/// `git -C <dir> <args…>`.
+pub(crate) fn git<'a>(dir: &Path, args: impl IntoIterator<Item = &'a str>) -> Command {
     let mut command = Command::new("git", args);
     let dir = dir.to_string_lossy().into_owned();
     command.args.splice(0..0, ["-C".to_owned(), dir]);

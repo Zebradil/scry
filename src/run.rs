@@ -27,28 +27,39 @@ use crate::revision::{self, Cleanup, Revision};
 use crate::source::select::{self, Candidate};
 use crate::source::{Evaluated, Selected, colmena, flake, paths};
 use crate::transport::machine::Machine;
-use crate::{build_step, render, shared, tui};
+use crate::{build_step, fixture, render, shared, tui};
 
 /// The binary's entry point: parses the command line (clap exits 2 on a usage error), runs the
 /// subcommand, prints a fatal error as `scry: <message>` (spec 9) and maps the outcome to the
 /// exit code (spec 4.7).
 pub fn main() -> ExitCode {
+    crate::completions::complete_from_env();
     let cli = Cli::parse();
     let diff_style = cli.command.common().is_some_and(|common| common.exit_code);
     let outcome = dispatch(&cli.command).unwrap_or_else(|error| {
-        eprintln!("scry: {error:#}");
+        // Not `eprintln!`, which panics when stderr is a terminal that hung up.
+        let _ = writeln!(std::io::stderr(), "scry: {error:#}");
         Outcome::of_error(&error)
     });
     ExitCode::from(outcome.exit_code(diff_style))
 }
 
 fn dispatch(command: &Command) -> Result<Outcome> {
-    if let Command::Completions { .. } = command {
-        bail!("not implemented yet");
+    if let Command::Completions { shell } = command {
+        let mut stdout = std::io::stdout().lock();
+        let written = crate::completions::registration(*shell, &mut stdout);
+        ignore_broken_pipe(written).context("writing the completion script")?;
+        return Ok(Outcome::NoChanges);
+    }
+    if fixture::demo::enabled() {
+        eprintln!(
+            "scry: {} is set: a synthetic fleet, no machine is contacted",
+            fixture::demo::ENV
+        );
     }
     let runtime = tokio::runtime::Runtime::new().context("starting the async runtime")?;
-    runtime.block_on(async {
-        let exec: Arc<dyn Exec> = Arc::new(Process::from_env()?);
+    let outcome = runtime.block_on(async {
+        let exec = exec_from_env()?;
         let env = Env::from_process()?;
         // Not locked: the viewer writes to stdout from its own thread.
         let mut stdout = std::io::BufWriter::new(std::io::stdout());
@@ -61,7 +72,19 @@ fn dispatch(command: &Command) -> Result<Outcome> {
             signal(),
         )
         .await
-    })
+    });
+    // A viewer thread stuck on a hung-up terminal must not keep the process alive.
+    runtime.shutdown_background();
+    outcome
+}
+
+/// The command seam: the fixture's fake when `SCRY_FIXTURE` is set (spec 11), else real
+/// processes.
+pub fn exec_from_env() -> Result<Arc<dyn Exec>> {
+    if fixture::demo::enabled() {
+        return Ok(Arc::new(fixture::demo::fake()));
+    }
+    Ok(Arc::new(Process::from_env()?))
 }
 
 /// `SIGINT`, `SIGTERM` or `SIGHUP`, whichever comes first. Children run in their own process
@@ -165,6 +188,9 @@ enum Plan {
     Done(Configuration),
 }
 
+/// How long the run waits for the viewer to restore the terminal once told to quit.
+const VIEWER_GRACE: Duration = Duration::from_secs(1);
+
 /// `--format auto` on a terminal opens the viewer (spec 4.6).
 fn viewer(format: Format, stdout_is_terminal: bool) -> bool {
     format == Format::Auto && stdout_is_terminal
@@ -197,7 +223,9 @@ async fn work(
                 Mode::Paths,
                 vec![Plan::Fetch(paths::job(args))],
             ),
-            Command::Completions { .. } => bail!("not implemented yet"),
+            Command::Completions { .. } => {
+                bail!("`scry completions` prints a script, not a report")
+            }
         })
     };
     let (common, mode, plans) = tokio::select! {
@@ -261,7 +289,10 @@ async fn work(
             }
         };
         quit.store(true, Ordering::Relaxed);
-        let _ = viewer.await;
+        // A viewer blocked reading a terminal that hung up never sees the flag (crossterm's
+        // poll blocks in `read` on such a tty), so the run cleans up without it; `dispatch`
+        // does not wait for its thread either.
+        let _ = tokio::time::timeout(VIEWER_GRACE, viewer).await;
         return Err(failure);
     }
 

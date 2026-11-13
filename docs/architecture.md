@@ -67,7 +67,8 @@ machine, their commands share round trips (6.1).
 - On a remote machine the argv is single-quoted word by word into one `ssh` command line. Scripts
   are `sh -c <script>` built with `transport::script`; data goes on stdin.
 - Dropping the future kills the child. `shutdown()` runs once at the end, also after Ctrl-C.
-- The run holds an `Arc<dyn Exec>`: real in production, fake in tests and the fixture mode.
+- The run holds an `Arc<dyn Exec>`: real in production, fake in tests and the fixture mode
+  (`SCRY_FIXTURE`, `run::exec_from_env`, ADR 0060). Completion uses the same choice.
 
 ## Concurrency
 
@@ -86,8 +87,10 @@ runtime's workers meanwhile; it drains the receiver with `try_recv` and returns,
 quits, whether every configuration had finished, with the configurations received. The run
 then drops what still fetches and cleans up as after Ctrl-C. In raw mode Ctrl-C is a key that
 quits the viewer; a signal (`SIGINT`, `SIGTERM`, `SIGHUP`) or a failed task sets the quit flag
-`tui::run` polls, and the run waits for the restored terminal before it cleans up. Tests swap
-the viewer through `run::Env::viewer`. Text and JSON wait for the full `Report`.
+`tui::run` polls, and the run waits up to 1 s for the restored terminal before it cleans up:
+on a terminal that hung up, crossterm blocks in `read` and the viewer never looks again, so
+`dispatch` also shuts the runtime down without joining its thread. Tests swap the viewer
+through `run::Env::viewer`. Text and JSON wait for the full `Report`.
 
 ## Errors
 
@@ -134,6 +137,6 @@ nix build && nix flake check
 ```
 
 `build.rs` stamps the revision for `--version`: `SCRY_GIT_REV` from the flake (no `.git` in the
-sandbox), else `git`. The flake's package installs shell completions from M8 on (marked spot in
-`flake.nix`). A flake only sees git-tracked files: `git add` new files before `nix build`.
-Add a dependency in the milestone that first uses it.
+sandbox), else `git`. The flake's package installs shell completions by running the built
+binary, so a cross build skips them. A flake only sees git-tracked files: `git add` new files
+before `nix build`. Add a dependency in the milestone that first uses it.

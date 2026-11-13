@@ -2,7 +2,7 @@
 //! [`Fake`] that answers [`fetch::SCRIPT`] in every mode by computing what the real script prints
 //! for them: `find`/`ls -ldn`/`cksum` lines, `nix path-info --json` with references scanned from
 //! contents and link targets as Nix does, and real `tar` streams, gzipped when the host has
-//! `gzip`. Pipeline tests and the fixture run mode (M8) build on it.
+//! `gzip`. Pipeline tests and the fixture run mode build on it.
 
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::io::Write;
@@ -15,6 +15,9 @@ use crate::files::churn::store_refs;
 use crate::store::name::STORE_PREFIX;
 use crate::transport::machine::Machine;
 use crate::tree::LISTING;
+
+/// The fleet of the fixture run mode, behind `SCRY_FIXTURE`.
+pub mod demo;
 
 /// A store path with a hash derived from `seed` and `name`, from Nix's base32 alphabet.
 pub fn store_path(seed: &str, name: &str) -> String {
@@ -540,10 +543,16 @@ impl Fleet {
 }
 
 /// One NixOS generation of `web-a`: `old` before a nixpkgs bump and a config change, `!old`
+/// after. See [`nixos_of`].
+pub fn nixos(h: &mut Host, old: bool) -> String {
+    nixos_of(h, old, "web-a")
+}
+
+/// One NixOS generation of `host`: `old` before a nixpkgs bump and a config change, `!old`
 /// after. Link depth 3 (`etc` → `etc/systemd/system` → `app.service`); followed references to
 /// depth 2 (`app.service` → `app-start/bin/app-start` → `app.json`), but neither `app-start`'s
 /// reference to itself, nor `app-helper`'s (a small rebuild), nor `activate`'s to the toplevel.
-pub fn nixos(h: &mut Host, old: bool) -> String {
+pub fn nixos_of(h: &mut Host, old: bool, host: &str) -> String {
     let s = if old { "o" } else { "n" };
     let pick = |o: &'static str, n: &'static str| if old { o } else { n };
     let bash = store_path(s, "bash-5.2p37");
@@ -674,7 +683,7 @@ pub fn nixos(h: &mut Host, old: bool) -> String {
     }
 
     let version = pick("26.05.20261102.7dcdd87", "26.11.20261110.9a8b7c6");
-    let t = store_path(s, &format!("nixos-system-web-a-{version}"));
+    let t = store_path(s, &format!("nixos-system-{host}-{version}"));
     h.file(&format!("{t}/nixos-version"), format!("{version}\n"))
         .file(
             &format!("{t}/kernel-params"),
@@ -690,7 +699,7 @@ pub fn nixos(h: &mut Host, old: bool) -> String {
             format!("#!{bash}/bin/bash\nsystemConfig={t}\n"),
         );
     if !old {
-        let debug = store_path("n", "nixos-system-web-a-debug-26.11");
+        let debug = store_path("n", &format!("nixos-system-{host}-debug-26.11"));
         h.file(&format!("{debug}/nixos-version"), "26.11\n")
             .link(&format!("{t}/specialisation/debug"), &debug);
     }
