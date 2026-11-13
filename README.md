@@ -29,11 +29,11 @@ sides on two different remote machines, and home-manager used as a NixOS or nix-
 ## Install
 
 ```sh
-nix profile install github:<owner>/scry
-nix run github:<owner>/scry -- --help
+nix profile install github:zebradil/scry
+nix run github:zebradil/scry -- --help
 ```
 
-Or as a flake input: `inputs.scry.url = "github:<owner>/scry";`, then
+Or as a flake input: `inputs.scry.url = "github:zebradil/scry";`, then
 `inputs.scry.packages.${system}.default`. The package installs shell completions for bash, zsh
 and fish.
 
