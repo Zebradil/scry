@@ -939,9 +939,11 @@ Every heuristic in one place. Change a value only with a measurement recorded in
   `checks.clippy` with `-D warnings`; `devShells.default`; `formatter` with nixfmt and rustfmt through
   treefmt. Shell completions are installed by the package.
 - CI (`.github/workflows/ci.yml`, through `zebradil/nix-ci`) builds every package, check and dev
-  shell for all three systems and pushes them to a binary cache. release-please is a follow-up.
-- Commit messages and, later, PR titles are Conventional Commits; once on GitHub, squash-merge only, and
-  release-please with the `rust` release type cuts versions from them.
+  shell for all three systems and pushes them to a binary cache.
+- Commit messages and PR titles are Conventional Commits; squash-merge only, and release-please
+  (`.github/workflows/release-please.yml`, `rust` release type) cuts versions from them. Merging its
+  release PR bumps `Cargo.toml`, `Cargo.lock` and `CHANGELOG.md` and tags `vX.Y.Z`; the release
+  commit's CI run pushes its closure to the cache, so a release needs no build of its own.
 - No environment-specific names (hostnames, IPs, keys, internal URLs) in code, docs or fixtures.
   Licensed `MIT OR Apache-2.0`; keep the code licence-clean, and do not link GPL crates (`deny.toml`,
   `cargo deny check licenses`).
