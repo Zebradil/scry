@@ -176,8 +176,8 @@ rounds, then schedule a one-shot wake-up (`CronCreate`) a few minutes after `res
 
 ## Cautions
 
-- Do not run `nix flake update`: the current nixpkgs-unstable has no cached rustfmt for
-  aarch64-darwin and builds LLVM from source (roadmap log).
+- Before committing a `nix flake update`, dry-run the outputs (`nix build --dry-run`) and stop
+  if it builds LLVM or rustc from source (roadmap log, 2026-11-14).
 - Never commit real store contents or hostnames; fixtures are synthetic (`web-a`,
   `cache.example`).
 - Never read a subagent's output file; wait for its notification.
