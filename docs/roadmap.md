@@ -59,3 +59,4 @@ pushed yet): #1 check 4 with builds on Linux, #2 check 8 with fish, #3 CI and bi
   M9 local checks pass (ADR 0070); SSH checks running against the user's hive.
 - 2026-11-13: M9 merged: acceptance checks recorded in ADRs 0070 and 0071. Two fixes came out of
   them: home-manager follows three more entries, and ssh errors show ssh's last stderr line.
+- 2026-11-14: check 8 with fish as login shell passed against `daddy` (ADR 0072, issue #2).

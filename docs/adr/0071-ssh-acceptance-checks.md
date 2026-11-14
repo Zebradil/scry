@@ -55,7 +55,8 @@ not produce it`. Exit 1. No change to the build step is needed.
 
 ## Check 8: fish login shell and a macOS target
 
-- No account on the nodes has fish as its login shell, and none was created: not verified.
+- No account on the nodes has fish as its login shell, and none was created: not verified here;
+  see ADR 0072.
 - A macOS target reached non-interactively: this Mac over `localhost`, `scry paths --target
   <user>@localhost` between two nix-darwin generations. The report equals that of a local run
   apart from `location`; 1 s. The first attempt hit a stale `localhost` host key, and the error
@@ -76,6 +77,6 @@ Ctrl-C cleanup on the Mac.
 ## Still unverified
 
 - Check 4 with builds and Ctrl-C during a build, on a Linux machine with working network.
-- Check 8 with fish as the login shell.
+- Check 8 with fish as the login shell: see ADR 0072.
 - The 5 s and 10 s targets with the handshake inside the measurement: the timed runs above reused
   no master, but approvals were quick; a slow approval adds to the first run only.
