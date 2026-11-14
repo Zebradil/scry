@@ -139,7 +139,7 @@ and an uncommitted change, `scry flake ./sub --base HEAD~1` from the repository 
 - Check 3 against this Mac's real nix-darwin flake in deployed mode, and over SSH to a macOS
   target (check 8).
 - Check 4 with the build step: the toplevels need an x86_64-linux builder, or a run on a Linux
-  machine.
+  machine: see ADR 0073.
 - Checks 1, 2, 7, 8 and 10, and the 5 s and 10 s targets over a real connection: see ADR 0071.
 
 ## Run plan for the SSH checks
