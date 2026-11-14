@@ -1,0 +1,31 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:best-practices',
+    'helpers:pinGitHubActionDigestsToSemver',
+    'schedule:nonOfficeHours',
+  ],
+  // Machine-readable update classes for pr-autopilot. prHeader, not prBodyNotes: notes are
+  // compiled per upgrade, so the upgrades loop would render an empty list there.
+  prHeader: '<!-- pr-autopilot:upgrades [{{#each upgrades}}{"depName":"{{{depName}}}","updateType":"{{{updateType}}}","currentValue":"{{{currentValue}}}","newValue":"{{{newValue}}}"}{{#unless @last}},{{/unless}}{{/each}}] -->',
+  gitIgnoredAuthors: [
+    'renovate[bot]@users.noreply.github.com',
+    'github-actions[bot]@users.noreply.github.com',
+  ],
+  packageRules: [
+    // Group PRs for GitHub Action updates into a single PR
+    {
+      description: "Group GitHub Action updates into a single PR",
+      matchManagers: ["github-actions"],
+      groupName: "github actions",
+      groupSlug: "github-actions",
+    },
+    // docs/package.json and .github/workflows/docs.yml pin the same docs-kit tag: the workflow
+    // runs the help2md the package installs. Last, so it wins over other groups.
+    {
+      description: "Bump the docs-kit package and its reusable workflow together",
+      matchPackageNames: ["@zebradil/docs-kit", "Zebradil/docs-kit"],
+      groupName: "docs-kit",
+    },
+  ],
+}
