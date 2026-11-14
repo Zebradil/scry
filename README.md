@@ -43,7 +43,7 @@ binary cache. Add it to skip the build:
 ```nix
 nix.settings = {
   substituters = [ "https://znix.zebradil.dev" ];
-  trusted-public-keys = [ "kasha-ci-1:KNW/sz+Zz800U/IFZ38vH5rvlHtM3Fb0Q/wmDJquG+U=" ];
+  trusted-public-keys = [ "znix.zebradil.dev:nvr0OQFRddbHGopQbyLbLXQnntFBDKp23tqQq+msppw=" ];
 };
 ```
 
