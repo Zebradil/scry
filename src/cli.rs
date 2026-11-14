@@ -128,7 +128,7 @@ pub struct CommonArgs {
     pub jobs: NonZeroUsize,
     /// Concurrent `nix eval` / `colmena eval` calls; one NixOS evaluation takes about one core
     /// and 1 GB. Defaults to the CPU count
-    #[arg(long, value_name = "N", default_value_t = cpu_count())]
+    #[arg(long, value_name = "N", default_value_t = cpu_count(), hide_default_value = true)]
     pub eval_jobs: NonZeroUsize,
     /// Seconds per configuration for fetching; builds and evaluations have no timeout
     #[arg(long, value_name = "SECONDS", default_value_t = 60,
