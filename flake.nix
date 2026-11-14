@@ -69,7 +69,10 @@
         );
       });
 
+      # CI builds and publishes `checks.<system>` as one set, so the package and dev shell are here too.
       checks = forAllSystems (pkgs: {
+        build = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
+        devShell = self.devShells.${pkgs.stdenv.hostPlatform.system}.default;
         clippy = pkgs.rustPlatform.buildRustPackage (
           cargoArgs
           // {

@@ -37,6 +37,16 @@ Or as a flake input: `inputs.scry.url = "github:zebradil/scry";`, then
 `inputs.scry.packages.${system}.default`. The package installs shell completions for bash, zsh
 and fish.
 
+CI builds the package for `x86_64-linux`, `aarch64-linux` and `aarch64-darwin` and pushes it to a
+binary cache. Add it to skip the build:
+
+```nix
+nix.settings = {
+  substituters = [ "https://znix.zebradil.dev" ];
+  trusted-public-keys = [ "znix.zebradil.dev:nvr0OQFRddbHGopQbyLbLXQnntFBDKp23tqQq+msppw=" ];
+};
+```
+
 Requirements:
 
 - **Nix 2.13** on this machine when scry builds (`scry flake`, revision mode); 2.4 otherwise.
