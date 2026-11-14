@@ -13,13 +13,14 @@ spec is [`spec.md`](spec.md).
   "1Password: failed to fill whole buffer". Never bypass signing: keep working uncommitted and
   commit once the user is back.
 - M9's acceptance checks are recorded in ADRs 0070 (local: checks 3, 6, 9, part of 4) and 0071
-  (over SSH against the user's colmena hive: checks 1, 2, 7, 8 for macOS, 10). Open, listed in
+  (over SSH against the user's colmena hive: checks 1, 2, 7, 8 for macOS, 10) and 0072 (check 8 with
+  fish as login shell). Open, listed in
   the roadmap's follow-ups: check 4 with builds and Ctrl-C during a build on a Linux machine with
-  working network (the node tried had broken outbound TLS); check 8 with fish as login shell.
+  working network (the node tried had broken outbound TLS).
 - In auto mode the classifier blocks SSH commands from subagents ("Remote Shell Writes"); a script
   run from the main session was allowed. The user approves manually when blocked.
 - ADRs: 0001–0006 (M0), 0010–0012 (M4), 0020 (M3), 0030–0031 (M5), 0040 (M7), 0050–0051 (M6),
-  0060–0061 (M8), 0070–0071 (M9). The
+  0060–0061 (M8), 0070–0072 (M9). The
   next ADR takes the next free number after the highest.
 - Remote `origin` is the public repository `zebradil/scry`, with CI on every push and pull
   request; follow-ups are its issues #1–#7 (roadmap).

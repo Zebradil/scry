@@ -66,3 +66,4 @@ Tracked as issues in the GitHub repository `zebradil/scry` (created 2026-11-13, 
 - 2026-11-14: repository made public. CI (#3) builds packages, checks and dev shells on
   x86_64-linux, aarch64-linux and aarch64-darwin through `zebradil/nix-ci` and pushes them to the
   Zebradil cache, the same setup as sito and znix.
+- 2026-11-14: check 8 with fish as login shell passed against `daddy` (ADR 0072, issue #2).
