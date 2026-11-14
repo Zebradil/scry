@@ -1,0 +1,33 @@
+name: CI
+
+# nix-ci evaluates the flake, then builds every package, check and dev shell on a runner of its
+# system and pushes the result to the Zebradil cache. Every run that can read the cache secrets
+# publishes: main and same-repo pull requests alike, so a pull request's build is a cache hit on
+# main after the merge. Fork pull requests get no secrets and build without publishing.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: zebradil/nix-ci/.github/workflows/ci.yaml@fa4ea864c879251657017bb0e4aed9009c0d8b2b # v2.0.2
+    with:
+      # The package runs cargo test in its checkPhase, so `packages` is also the test run.
+      discovery-types: |
+        packages
+        checks
+        devShells
+      runner-mapping: |
+        x86_64-linux:ubuntu-latest
+        aarch64-linux:ubuntu-24.04-arm
+        aarch64-darwin:macos-26
+    secrets:
+      cache-signing-key: ${{ secrets.CACHE_SIGNING_KEY }}
+      cache-s3-url: ${{ vars.CACHE_S3_URL }}
+      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

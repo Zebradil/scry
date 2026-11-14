@@ -21,8 +21,8 @@ spec is [`spec.md`](spec.md).
 - ADRs: 0001–0006 (M0), 0010–0012 (M4), 0020 (M3), 0030–0031 (M5), 0040 (M7), 0050–0051 (M6),
   0060–0061 (M8), 0070–0071 (M9). The
   next ADR takes the next free number after the highest.
-- Remote `origin` is the private repository `zebradil/scry`, not pushed yet; follow-ups are its
-  issues #1–#7 (roadmap).
+- Remote `origin` is the public repository `zebradil/scry`, with CI on every push and pull
+  request; follow-ups are its issues #1–#7 (roadmap).
 
 ## How each milestone runs
 

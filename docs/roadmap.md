@@ -33,8 +33,8 @@ that is not done.
 
 ## Follow-ups (not in this plan)
 
-Tracked as issues in the private GitHub repository `zebradil/scry` (created 2026-11-13, not
-pushed yet): #1 check 4 with builds on Linux, #2 check 8 with fish, #3 CI and binary cache,
+Tracked as issues in the GitHub repository `zebradil/scry` (created 2026-11-13, public since
+2026-11-14): #1 check 4 with builds on Linux, #2 check 8 with fish, #3 CI and binary cache,
 #4 release-please, #5 licence, #6 nixpkgs pin, #7 TUI and completion on Linux.
 
 ## Log
@@ -59,3 +59,6 @@ pushed yet): #1 check 4 with builds on Linux, #2 check 8 with fish, #3 CI and bi
   M9 local checks pass (ADR 0070); SSH checks running against the user's hive.
 - 2026-11-13: M9 merged: acceptance checks recorded in ADRs 0070 and 0071. Two fixes came out of
   them: home-manager follows three more entries, and ssh errors show ssh's last stderr line.
+- 2026-11-14: repository made public. CI (#3) builds packages, checks and dev shells on
+  x86_64-linux, aarch64-linux and aarch64-darwin through `zebradil/nix-ci` and pushes them to the
+  Zebradil cache, the same setup as sito and znix.
