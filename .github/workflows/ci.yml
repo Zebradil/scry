@@ -1,0 +1,59 @@
+name: CI
+
+# Every run that can read the cache secrets publishes: main and same-repo pull
+# requests alike, so a pull request's build is a cache hit on main after the
+# merge. Fork pull requests get no secrets and build without publishing.
+# nix-ci's build action follows each push with the kasha manifest that keeps
+# it alive through kasha's GC.
+#
+# Not nix-ci's reusable ci.yaml: its discover step emits leaf attributes, and
+# the build action's attr-set push expects a set, so it silently pushes
+# nothing. Building `checks.<system>` as one set, as sito does, avoids that.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: zebradil/nix-ci/.github/actions/setup-nix@fa4ea864c879251657017bb0e4aed9009c0d8b2b # v2.0.2
+
+      # checks.<system> holds the package (cargo test runs in its checkPhase),
+      # the dev shell and clippy, so the build job below covers all three;
+      # --no-build here only proves every system's outputs still evaluate.
+      - run: nix flake check --all-systems --no-build
+
+  build:
+    needs: check
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - system: x86_64-linux
+            runner: ubuntu-latest
+          - system: aarch64-linux
+            runner: ubuntu-24.04-arm
+          - system: aarch64-darwin
+            runner: macos-26
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: zebradil/nix-ci/.github/actions/setup-nix@fa4ea864c879251657017bb0e4aed9009c0d8b2b # v2.0.2
+        with:
+          signing-key: ${{ secrets.CACHE_SIGNING_KEY }}
+
+      - uses: zebradil/nix-ci/.github/actions/build@fa4ea864c879251657017bb0e4aed9009c0d8b2b # v2.0.2
+        with:
+          attr: checks.${{ matrix.system }}
+          # Empty without the AWS secrets, so a fork pull request builds without
+          # attempting a push it has no credentials for.
+          cache-s3-url: ${{ secrets.AWS_ACCESS_KEY_ID != '' && vars.CACHE_S3_URL || '' }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
