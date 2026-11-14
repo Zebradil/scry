@@ -64,6 +64,10 @@
             meta = {
               description = "Preview what a change to a Nix fleet does to each machine";
               mainProgram = "scry";
+              license = with lib.licenses; [
+                mit
+                asl20
+              ];
             };
           }
         );

@@ -153,3 +153,8 @@ nix build && nix flake check
 
 Behaviour is specified in [`docs/spec.md`](docs/spec.md), structure in
 [`docs/architecture.md`](docs/architecture.md), decisions in [`docs/adr/`](docs/adr/).
+
+## License
+
+Licensed under either of [Apache License, Version 2.0](LICENSE-APACHE) or [MIT license](LICENSE-MIT)
+at your option.

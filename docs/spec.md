@@ -943,7 +943,8 @@ Every heuristic in one place. Change a value only with a measurement recorded in
 - Commit messages and, later, PR titles are Conventional Commits; once on GitHub, squash-merge only, and
   release-please with the `rust` release type cuts versions from them.
 - No environment-specific names (hostnames, IPs, keys, internal URLs) in code, docs or fixtures.
-  Licence to be decided; keep the code licence-clean, and do not link GPL crates.
+  Licensed `MIT OR Apache-2.0`; keep the code licence-clean, and do not link GPL crates (`deny.toml`,
+  `cargo deny check licenses`).
 - Comments explain the non-obvious why, never history.
 
 ## 14. Out of scope
