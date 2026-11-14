@@ -41,3 +41,6 @@ reference:
     bin: scry
     build: cargo build --release
     path: target/release/scry
+
+# Past releases next to the default branch: the newest minor versions and the newest minor of each major.
+versions: { minors: 3, majors: 3 }
