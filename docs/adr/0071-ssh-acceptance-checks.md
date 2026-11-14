@@ -71,12 +71,13 @@ scry built on the Linux node with `nix build` in 112–156 s. `scry colmena --on
 LAN substituter and to github.com (a flake input tarball), while cache.nixos.org worked. That is
 the node's network, not scry. After each failed run, and after a SIGINT run that failed the same
 way, the base worktree was gone, no temporary directory or process was left. The build part and
-Ctrl-C during a build stay unverified on Linux; ADR 0070 covers the evaluation in a worktree and
-Ctrl-C cleanup on the Mac.
+Ctrl-C during a build stayed unverified on Linux here; ADR 0070 covers the evaluation in a
+worktree and Ctrl-C cleanup on the Mac, and ADR 0073 covers both on a Linux host.
 
 ## Still unverified
 
-- Check 4 with builds and Ctrl-C during a build, on a Linux machine with working network.
+- Check 4 with builds and Ctrl-C during a build, on a Linux machine with working network: see
+  ADR 0073.
 - Check 8 with fish as the login shell: see ADR 0072.
 - The 5 s and 10 s targets with the handshake inside the measurement: the timed runs above reused
   no master, but approvals were quick; a slow approval adds to the first run only.

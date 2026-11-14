@@ -901,7 +901,7 @@ Before 1.0, run and record each in an ADR:
    target.
 3. nix-darwin and home-manager on macOS: launchd plists and dotfiles show; only BSD tools on the side.
 4. Revision mode on a colmena hive: `colmena eval` inside a temporary worktree works, and the worktree is
-   gone afterwards, also after Ctrl-C. Not verified yet.
+   gone afterwards, also after Ctrl-C.
 5. The oldest Nix version that supports every `nix` call used, documented in the README. Not verified
    yet.
 6. A target that hangs: `timeout after 60 s`, while the others finish.
