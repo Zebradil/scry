@@ -33,8 +33,8 @@ that is not done.
 
 ## Follow-ups (not in this plan)
 
-Tracked as issues in the private GitHub repository `zebradil/scry` (created 2026-11-13, not
-pushed yet): #1 check 4 with builds on Linux, #2 check 8 with fish, #3 CI and binary cache,
+Tracked as issues in the GitHub repository `zebradil/scry` (created 2026-11-13, public since
+2026-11-14): #1 check 4 with builds on Linux, #2 check 8 with fish, #3 CI and binary cache,
 #4 release-please, #5 licence, #6 nixpkgs pin, #7 TUI and completion on Linux.
 
 ## Log
@@ -42,7 +42,7 @@ pushed yet): #1 check 4 with builds on Linux, #2 check 8 with fish, #3 CI and bi
 - 2026-11-12: plan set. Project is personal; spec adjusted to drop employer assumptions.
 - 2026-11-12: M0 merged (ADRs 0001–0006, `docs/architecture.md`). `flake.lock` pins an August
   nixpkgs-unstable: the current one has no cached rustfmt for aarch64-darwin and builds LLVM from
-  source. Do not run `nix flake update` until the cache catches up.
+  source; held until the 2026-11-14 update below.
 - 2026-11-12: `store::name::{store_name, parse_drv_name}` written on main ahead of wave 2, so M1
   and M2 share one split. Wave 2 (M1, M2, M4) started in parallel. Wave-2 agents number new ADRs
   from 0010 (M4) to avoid collisions; renumber on merge if needed.
@@ -59,4 +59,11 @@ pushed yet): #1 check 4 with builds on Linux, #2 check 8 with fish, #3 CI and bi
   M9 local checks pass (ADR 0070); SSH checks running against the user's hive.
 - 2026-11-13: M9 merged: acceptance checks recorded in ADRs 0070 and 0071. Two fixes came out of
   them: home-manager follows three more entries, and ssh errors show ssh's last stderr line.
+- 2026-11-14: nixpkgs-unstable updated to 2026-11-12 (Rust 1.99.1, #6). The whole toolchain
+  comes from the cache on aarch64-darwin; clippy and rustfmt needed no source changes. Before a
+  future `nix flake update`, run `nix build --dry-run` on the outputs and stop if it builds LLVM
+  or rustc.
+- 2026-11-14: repository made public. CI (#3) builds packages, checks and dev shells on
+  x86_64-linux, aarch64-linux and aarch64-darwin through `zebradil/nix-ci` and pushes them to the
+  Zebradil cache, the same setup as sito and znix.
 - 2026-11-14: check 8 with fish as login shell passed against `daddy` (ADR 0072, issue #2).

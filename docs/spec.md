@@ -938,13 +938,13 @@ Every heuristic in one place. Change a value only with a measurement recorded in
   `aarch64-darwin`, built with `rustPlatform.buildRustPackage` (which runs the tests);
   `checks.clippy` with `-D warnings`; `devShells.default`; `formatter` with nixfmt and rustfmt through
   treefmt. Shell completions are installed by the package.
-- CI builds every package and dev shell and pushes them to a binary cache. The GitHub repository, CI,
-  the cache and release-please are a follow-up after the first implementation; until then, checks run
-  locally (`nix flake check`).
+- CI (`.github/workflows/ci.yml`, through `zebradil/nix-ci`) builds every package, check and dev
+  shell for all three systems and pushes them to a binary cache. release-please is a follow-up.
 - Commit messages and, later, PR titles are Conventional Commits; once on GitHub, squash-merge only, and
   release-please with the `rust` release type cuts versions from them.
 - No environment-specific names (hostnames, IPs, keys, internal URLs) in code, docs or fixtures.
-  Licence to be decided; keep the code licence-clean, and do not link GPL crates.
+  Licensed `MIT OR Apache-2.0`; keep the code licence-clean, and do not link GPL crates (`deny.toml`,
+  `cargo deny check licenses`).
 - Comments explain the non-obvious why, never history.
 
 ## 14. Out of scope
