@@ -57,9 +57,10 @@ only reports, diff stats and test results.
    **plausible**. Reviews so far found real defects every time; do not skip them.
 5. Send the findings back to the implementer with `SendMessage` (it keeps its context, which is
    cheaper than a new agent). Accept a deviation when it is argued from the spec or an ADR.
-6. Squash-merge into `main` (`git merge --squash <branch>` and one `feat: … (Mn)` commit), resolve
-   `Cargo.toml`/`Cargo.lock` conflicts by hand, rerun the tests on `main`, remove the worktree and
-   the branch, and mark the milestone done in `roadmap.md`. Merging needs no approval from the user.
+6. Open a PR and squash-merge it (`gh pr merge --squash`) once CI passes; its title is the
+   Conventional Commit release-please reads. Resolve `Cargo.toml`/`Cargo.lock` conflicts by hand,
+   remove the worktree and the branch, and mark the milestone done in `roadmap.md`. Merging needs
+   no approval from the user.
 7. Ask the user only for real blockers.
 
 ## Notes for the next milestones
