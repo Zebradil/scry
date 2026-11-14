@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=node_modules/@zebradil/docs-kit/schema/site.schema.json
+name: scry
+tagline: Preview what a change to a Nix fleet does to each machine
+repo: https://github.com/Zebradil/scry
+theme: default
+
+install:
+  - label: Nix
+    code: nix profile install github:zebradil/scry
+  - label: Nix (run)
+    code: nix run github:zebradil/scry -- --help
+
+features:
+  - title: Packages
+    body: Added, removed, upgraded, downgraded and resized packages, and the closure size. Same-version rebuilds collapse into one line. # guessed: condensed from README section list
+  - title: Files
+    body: A line diff of every changed file under the followed trees, with store-hash churn collapsed and changed store references followed. # guessed: condensed from README section list
+  - title: Boot
+    body: Kernel, initrd, modules, kernel parameters and specialisations of NixOS configurations. # guessed: condensed from README section list
+  - title: Deployed or revision mode
+    body: Compare against what each machine runs now, or against the same configuration built from a git revision without contacting any machine. # guessed: condensed from README "Two modes"
+  - title: Read-only
+    body: Copies no closure, adds no GC root and activates nothing; the only write to a target is a requested colmena build. # guessed: condensed from README
+  - title: Shared changes once
+    body: Changes that appear identically in several configurations are shown once, in a TUI, plain text or JSON. # guessed: merges README dedup and Output sections
+
+components:
+  title: Commands
+  items:
+    - name: scry colmena
+      body: Compare the nodes of the colmena hive in the current directory.
+    - name: scry flake
+      body: Compare the NixOS, nix-darwin and home-manager configurations of a flake.
+    - name: scry paths
+      body: Compare two toplevels on one machine.
+    - name: scry completions
+      body: Print the shell completion registration script.
+
+reference:
+  cli:
+    bin: scry
+    build: cargo build --release
+    path: target/release/scry
