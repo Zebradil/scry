@@ -418,16 +418,24 @@ mod tests {
             Script::new(r#"sleep 30 & echo $! > "$1"; wait"#).command([pid_file.to_str().unwrap()]);
         let process = local();
         let run = process.run(&Machine::Local, command);
-        assert!(
-            tokio::time::timeout(Duration::from_millis(300), run)
-                .await
-                .is_err()
-        );
-        let pid: libc::pid_t = std::fs::read_to_string(&pid_file)
-            .unwrap()
-            .trim()
-            .parse()
-            .unwrap();
+        // Drop `run` only once the grandchild exists: a fixed delay races shell startup on a
+        // loaded CI runner. The trailing newline marks the `echo` as complete.
+        let read_pid = async {
+            loop {
+                match std::fs::read_to_string(&pid_file) {
+                    Ok(text) if text.ends_with('\n') => break text.trim().parse::<libc::pid_t>(),
+                    _ => tokio::time::sleep(Duration::from_millis(10)).await,
+                }
+            }
+        };
+        let pid = tokio::time::timeout(Duration::from_secs(10), async {
+            tokio::select! {
+                _ = run => panic!("the script exited before it was dropped"),
+                pid = read_pid => pid.unwrap(),
+            }
+        })
+        .await
+        .expect("the script never wrote the grandchild's pid");
         for _ in 0..100 {
             // SAFETY: signal 0 only checks that the process exists.
             if unsafe { libc::kill(pid, 0) } != 0 {
