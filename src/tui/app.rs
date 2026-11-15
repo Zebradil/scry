@@ -5,7 +5,6 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use ratatui::layout::Rect;
 use unicode_width::UnicodeWidthStr;
 
@@ -19,6 +18,40 @@ use crate::size::format_delta;
 
 /// `y`/`Y` warn above this much OSC 52 payload (spec 8.4; a judgement, unmeasured).
 const CLIPBOARD_LIMIT: usize = 100 * 1024;
+
+/// The keys the viewer acts on, apart from the library that reads them: crossterm in a
+/// terminal, the browser's events on wasm.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum KeyCode {
+    Char(char),
+    Enter,
+    Esc,
+    Backspace,
+    Tab,
+    BackTab,
+    Up,
+    Down,
+    PageUp,
+    PageDown,
+    Other,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct KeyEvent {
+    pub code: KeyCode,
+    pub ctrl: bool,
+    pub alt: bool,
+}
+
+impl From<KeyCode> for KeyEvent {
+    fn from(code: KeyCode) -> Self {
+        Self {
+            code,
+            ctrl: false,
+            alt: false,
+        }
+    }
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Focus {
@@ -393,7 +426,7 @@ impl App {
 
     pub fn key(&mut self, key: KeyEvent) {
         self.notice = None;
-        let ctrl = key.modifiers.contains(KeyModifiers::CONTROL);
+        let ctrl = key.ctrl;
         if ctrl && key.code == KeyCode::Char('c') {
             self.quit = true;
             return;
@@ -409,7 +442,7 @@ impl App {
                 KeyCode::Backspace => {
                     text.pop();
                 }
-                KeyCode::Char(c) if !ctrl && !key.modifiers.contains(KeyModifiers::ALT) => {
+                KeyCode::Char(c) if !ctrl && !key.alt => {
                     text.push(c);
                 }
                 _ => {}
