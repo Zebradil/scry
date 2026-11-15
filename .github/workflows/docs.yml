@@ -6,8 +6,7 @@ permissions: { contents: read, pages: write, id-token: write }
 jobs:
   docs:
     name: Build and publish docs
-    # Head of Zebradil/docs-kit#69 (prebuild input); move to its release once published.
-    uses: Zebradil/docs-kit/.github/workflows/docs.yml@d77aa3a582f161ab3a8db7b99acdf7858b322015
+    uses: Zebradil/docs-kit/.github/workflows/docs.yml@b02d0071d467b6a2d7b646ecf05567cf2c11f9de # v0.12.0
     with:
       nix: true
       # The live demo page embeds this build; it also keeps the library compiling for wasm32.
