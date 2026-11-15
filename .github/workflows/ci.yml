@@ -20,17 +20,22 @@ permissions:
 
 jobs:
   check:
+    name: Flake check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: zebradil/nix-ci/.github/actions/setup-nix@fa4ea864c879251657017bb0e4aed9009c0d8b2b # v2.0.2
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Nix
+        uses: zebradil/nix-ci/.github/actions/setup-nix@fa4ea864c879251657017bb0e4aed9009c0d8b2b # v2.0.2
 
       # checks.<system> holds the package (cargo test runs in its checkPhase),
       # the dev shell and clippy, so the build job below covers all three;
       # --no-build here only proves every system's outputs still evaluate.
-      - run: nix flake check --all-systems --no-build
+      - name: Evaluate flake outputs for all systems
+        run: nix flake check --all-systems --no-build
 
   build:
+    name: Build (${{ matrix.system }})
     needs: check
     strategy:
       fail-fast: false
@@ -44,12 +49,15 @@ jobs:
             runner: macos-26
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: zebradil/nix-ci/.github/actions/setup-nix@fa4ea864c879251657017bb0e4aed9009c0d8b2b # v2.0.2
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Nix
+        uses: zebradil/nix-ci/.github/actions/setup-nix@fa4ea864c879251657017bb0e4aed9009c0d8b2b # v2.0.2
         with:
           signing-key: ${{ secrets.CACHE_SIGNING_KEY }}
 
-      - uses: zebradil/nix-ci/.github/actions/build@fa4ea864c879251657017bb0e4aed9009c0d8b2b # v2.0.2
+      - name: Build and cache checks
+        uses: zebradil/nix-ci/.github/actions/build@fa4ea864c879251657017bb0e4aed9009c0d8b2b # v2.0.2
         with:
           attr: checks.${{ matrix.system }}
           # Empty without the AWS secrets, so a fork pull request builds without
