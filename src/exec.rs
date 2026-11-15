@@ -9,8 +9,10 @@ use std::pin::Pin;
 use crate::transport::machine::Machine;
 
 /// Canned output for tests and the fixture run mode. M4.
+#[cfg(not(target_arch = "wasm32"))]
 pub mod fake;
 /// The real implementation: local processes, and remote ones through `ssh`. M4.
+#[cfg(not(target_arch = "wasm32"))]
 pub mod process;
 
 pub type BoxFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
