@@ -4,6 +4,9 @@ Preview what a change to a Nix fleet does to each machine.
 
 ![scry on the fixture fleet: completing --on, browsing web-a, filtering to a followed store reference](docs/public/demo.gif)
 
+**[Try it in your browser](https://zebradil.github.io/scry/demo/)**: the same viewer compiled to
+WebAssembly, on a synthetic fleet, full screen.
+
 For every selected NixOS, nix-darwin or home-manager configuration, scry finds the old and the
 new toplevel and reports three sections:
 

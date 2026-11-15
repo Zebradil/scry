@@ -164,6 +164,9 @@
                 # Exit 1 stands for the fixture's failing configurations; the report is complete.
                 SCRY_FIXTURE=1 cargo run --release --quiet -- colmena --format json >web/report.json || [ $? -eq 1 ]
                 cd web
+                rm -rf fonts && mkdir fonts
+                install -m 644 ${pkgs.jetbrains-mono.src}/OFL.txt fonts/
+                install -m 644 ${pkgs.jetbrains-mono.src}/fonts/webfonts/JetBrainsMono-{Regular,Bold}.woff2 fonts/
                 trunk build --release --public-url ./ --dist "$out"
               '';
             }

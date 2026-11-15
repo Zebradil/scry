@@ -3,5 +3,5 @@
 result
 result-*
 
-# Built by `nix run .#web-demo -- docs/public/viewer` (the docs prebuild).
-/docs/public/viewer
+# Built by `nix run .#web-demo -- docs/public/demo` (the docs prebuild).
+/docs/public/demo
