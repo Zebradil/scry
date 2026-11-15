@@ -2,6 +2,8 @@
 
 Preview what a change to a Nix fleet does to each machine.
 
+![scry on the fixture fleet: completing --on, browsing web-a, filtering to a followed store reference](docs/public/demo.gif)
+
 For every selected NixOS, nix-darwin or home-manager configuration, scry finds the old and the
 new toplevel and reports three sections:
 
@@ -142,6 +144,8 @@ SCRY_FIXTURE=1 scry colmena
 SCRY_FIXTURE=1 scry flake --on '*' --base main --format text
 SCRY_FIXTURE=1 scry colmena --on <Tab>
 ```
+
+The demo above is recorded in this mode from `docs/demo.tape`; `nix run .#demo` re-records it.
 
 ## Development
 

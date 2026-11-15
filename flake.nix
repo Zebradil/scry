@@ -118,6 +118,30 @@
         });
       });
 
+      # `nix run .#demo` in the repository root records docs/demo.tape into docs/public/demo.gif.
+      apps = forAllSystems (pkgs: {
+        demo = {
+          type = "app";
+          meta.description = "Record the README and docs demo";
+          program = lib.getExe (
+            pkgs.writeShellApplication {
+              name = "scry-demo";
+              # VHS drives a headless Chromium. nixpkgs has none for Darwin, where VHS uses an
+              # installed Chrome or downloads one.
+              runtimeInputs = [
+                self.packages.${pkgs.stdenv.hostPlatform.system}.default
+                pkgs.vhs
+                pkgs.ttyd
+                pkgs.ffmpeg
+                pkgs.bashInteractive
+              ]
+              ++ lib.optional pkgs.stdenv.hostPlatform.isLinux pkgs.chromium;
+              text = "exec vhs docs/demo.tape";
+            }
+          );
+        };
+      });
+
       # CI builds and publishes `checks.<system>` as one set, so the package and dev shell are here too.
       checks = forAllSystems (
         pkgs:
