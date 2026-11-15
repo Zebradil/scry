@@ -2,9 +2,14 @@
   description = "scry: preview what a change to a Nix fleet does to each machine";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  inputs.crane.url = "github:ipetkov/crane";
 
   outputs =
-    { self, nixpkgs }:
+    {
+      self,
+      nixpkgs,
+      crane,
+    }:
     let
       inherit (nixpkgs) lib;
       systems = [
@@ -14,25 +19,62 @@
       ];
       forAllSystems = f: lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
 
-      # Shared by the package and the clippy check, so both use the same vendored,
-      # network-free cargo registry.
-      cargoArgs = {
-        pname = "scry";
-        version = (lib.importTOML ./Cargo.toml).package.version;
-        src = lib.fileset.toSource {
-          root = ./.;
-          fileset = lib.fileset.unions [
-            ./Cargo.toml
-            ./Cargo.lock
-            ./build.rs
-            ./src
-            ./tests
-          ];
-        };
-        cargoLock.lockFile = ./Cargo.lock;
-        # The sandbox has no .git, so build.rs reads the revision from here (spec 4.6).
-        env.SCRY_GIT_REV = self.shortRev or self.dirtyShortRev or "unknown";
+      src = lib.fileset.toSource {
+        root = ./.;
+        fileset = lib.fileset.unions [
+          ./Cargo.toml
+          ./Cargo.lock
+          ./build.rs
+          ./src
+          ./tests
+        ];
       };
+      # Dependencies build in their own derivation from crane's dummy source.
+      # crane keeps scry's own version in that source, so a release bump would
+      # still rebuild every dependency; it is stripped from the dummy Cargo.toml
+      # and Cargo.lock (both then read 0.0.0) so only scry recompiles. Cargo.lock
+      # is left out of `depsSrc` because crane copies it from there verbatim.
+      version = (lib.importTOML ./Cargo.toml).package.version;
+      lockVersionLine = v: "name = \"scry\"\nversion = \"${v}\"\n";
+      lock = builtins.readFile ./Cargo.lock;
+      depsLock = builtins.replaceStrings [ (lockVersionLine version) ] [ (lockVersionLine "0.0.0") ] lock;
+      depsSrc = lib.fileset.toSource {
+        root = ./.;
+        fileset = lib.fileset.unions [
+          ./Cargo.toml
+          ./build.rs
+          ./src
+          ./tests
+        ];
+      };
+      mkCrane =
+        pkgs:
+        let
+          craneLib = crane.mkLib pkgs;
+          cargoVendorDir = craneLib.vendorCargoDeps { inherit src; };
+          cargoArtifacts =
+            assert lib.assertMsg (depsLock != lock) "scry's version not found in Cargo.lock";
+            craneLib.buildDepsOnly {
+              pname = "scry";
+              version = "0.0.0";
+              inherit cargoVendorDir;
+              dummySrc = craneLib.mkDummySrc {
+                src = depsSrc;
+                cargoLock = builtins.toFile "Cargo.lock" depsLock;
+                cleanCargoTomlFilter =
+                  path:
+                  craneLib.filters.cargoTomlDefault path
+                  &&
+                    path != [
+                      "package"
+                      "version"
+                    ];
+              };
+            };
+        in
+        {
+          inherit craneLib cargoArtifacts cargoVendorDir;
+        };
 
       treefmt =
         pkgs:
@@ -48,46 +90,56 @@
     in
     {
       packages = forAllSystems (pkgs: {
-        default = pkgs.rustPlatform.buildRustPackage (
-          cargoArgs
-          // {
-            nativeBuildInputs = [ pkgs.installShellFiles ];
-            # `tests/cli.rs` drives the bash completion script, with its `complete` builtin.
-            nativeCheckInputs = [ pkgs.bashInteractive ];
-            # The scripts come from the built binary, which a cross build cannot run.
-            postInstall = lib.optionalString (pkgs.stdenv.buildPlatform.canExecute pkgs.stdenv.hostPlatform) ''
-              installShellCompletion --cmd scry \
-                --bash <($out/bin/scry completions bash) \
-                --zsh <($out/bin/scry completions zsh) \
-                --fish <($out/bin/scry completions fish)
-            '';
-            meta = {
-              description = "Preview what a change to a Nix fleet does to each machine";
-              mainProgram = "scry";
-              license = with lib.licenses; [
-                mit
-                asl20
-              ];
-            };
-          }
-        );
+        default = (mkCrane pkgs).craneLib.buildPackage ({
+          inherit src;
+          inherit (mkCrane pkgs) cargoArtifacts cargoVendorDir;
+          # The sandbox has no .git, so build.rs reads the revision from here (spec 4.6).
+          # Only this derivation carries it: on clippy or the dependency build it would
+          # make every commit a full rebuild.
+          env.SCRY_GIT_REV = self.shortRev or self.dirtyShortRev or "unknown";
+          nativeBuildInputs = [ pkgs.installShellFiles ];
+          # `tests/cli.rs` drives the bash completion script, with its `complete` builtin.
+          nativeCheckInputs = [ pkgs.bashInteractive ];
+          # The scripts come from the built binary, which a cross build cannot run.
+          postInstall = lib.optionalString (pkgs.stdenv.buildPlatform.canExecute pkgs.stdenv.hostPlatform) ''
+            installShellCompletion --cmd scry \
+              --bash <($out/bin/scry completions bash) \
+              --zsh <($out/bin/scry completions zsh) \
+              --fish <($out/bin/scry completions fish)
+          '';
+          meta = {
+            description = "Preview what a change to a Nix fleet does to each machine";
+            mainProgram = "scry";
+            license = with lib.licenses; [
+              mit
+              asl20
+            ];
+          };
+        });
       });
 
       # CI builds and publishes `checks.<system>` as one set, so the package and dev shell are here too.
-      checks = forAllSystems (pkgs: {
-        build = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
-        devShell = self.devShells.${pkgs.stdenv.hostPlatform.system}.default;
-        clippy = pkgs.rustPlatform.buildRustPackage (
-          cargoArgs
-          // {
-            pname = "scry-clippy";
-            nativeBuildInputs = [ pkgs.clippy ];
-            buildPhase = "cargo clippy --all-targets --offline -- -D warnings";
-            doCheck = false;
-            installPhase = "touch $out";
-          }
-        );
-      });
+      checks = forAllSystems (
+        pkgs:
+        let
+          inherit (mkCrane pkgs) craneLib cargoArtifacts cargoVendorDir;
+        in
+        {
+          build = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
+          devShell = self.devShells.${pkgs.stdenv.hostPlatform.system}.default;
+          clippy = craneLib.cargoClippy {
+            inherit src cargoArtifacts cargoVendorDir;
+            cargoClippyExtraArgs = "--all-targets -- -D warnings";
+          };
+          # CI pushes only the output closures of these checks, and the dependency
+          # build is a build-time input of them, so without this it never reaches
+          # the cache and every version bump recompiles it.
+          build-inputs = pkgs.linkFarm "scry-build-inputs" {
+            deps = cargoArtifacts;
+            crane-utils = craneLib.craneUtils;
+          };
+        }
+      );
 
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {
