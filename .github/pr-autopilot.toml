@@ -1,0 +1,28 @@
+# Which dependency pull requests merge themselves, and which wait for a human.
+# Engine: https://github.com/Zebradil/pr-autopilot
+enabled = true
+
+# Documentation only — the engine never reads this table (ADR 0012). It records what onboarding
+# concluded about the repository, and why the policy below looks the way it does.
+#
+# release_mode: release-please cuts vX.Y.Z tags; the release PR is merged by hand.
+# deploys_from_main: nothing is published from main apart from the docs site and signed check
+#   outputs in the binary cache; users install a tagged release.
+# test_confidence: cargo test runs in the package's checkPhase on x86_64-linux, aarch64-linux and
+#   aarch64-darwin — unit tests plus cli, fetch and run integration tests with insta snapshots,
+#   which fail on a behaviour change in clap, serde or the HTTP stack. Clippy runs with -D warnings.
+[risk]
+release_mode      = "release-please"
+deploys_from_main = false
+test_confidence   = "high"
+criticality       = "low"
+
+# The only thing the engine consults. Values are verdicts; an update class that is absent here
+# escalates.
+[policy]
+patch    = "merge"
+minor    = "merge"
+major    = "escalate"
+digest   = "merge"
+pin      = "merge"
+lockfile = "merge"
