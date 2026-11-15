@@ -23,6 +23,11 @@
         height: 100%;
         background: #1a1b26;
       }
+      /* Inline, the window-sized canvas sits on the text baseline and overflows by the
+         descender, which brings up both scrollbars. */
+      canvas {
+        display: block;
+      }
       [tabindex]:focus {
         outline: none;
       }
