@@ -777,7 +777,9 @@ async fn paths_on_one_machine() {
         ],
     )
     .await;
-    insta::assert_snapshot!(ran.stdout);
+    // The real version changes on every release; pin it so release PRs do not break the snapshot.
+    let version = format!("\"tool_version\": \"{}\"", env!("CARGO_PKG_VERSION"));
+    insta::assert_snapshot!(ran.stdout.replace(&version, "\"tool_version\": \"[version]\""));
     assert_eq!(ran.codes(), (0, 1));
 
     let ran = scry(
