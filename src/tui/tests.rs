@@ -9,10 +9,10 @@ use base64::engine::general_purpose::STANDARD;
 use insta::assert_snapshot;
 use ratatui::Terminal;
 use ratatui::backend::TestBackend;
-use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
-use super::app::{App, Focus};
-use super::{Guard, Options, draw, finish, lock, osc52};
+use super::app::{App, Focus, KeyCode, KeyEvent};
+use super::terminal::{Guard, finish, lock};
+use super::{Options, draw, osc52};
 use crate::report::{
     Boot, ChurnClass, ClosureKind, Configuration, FileChange, FileStatus, FileType, Files, Hunk,
     Line, LineOp, LinkChange, Mode, PackageChange, PackageChangeKind, Packages, Rebuilt,
@@ -238,12 +238,16 @@ fn press(app: &mut App, keys: &str) {
             '\x08' => KeyCode::Backspace,
             c => KeyCode::Char(c),
         };
-        app.key(KeyEvent::new(code, KeyModifiers::NONE));
+        app.key(code.into());
     }
 }
 
 fn ctrl(app: &mut App, c: char) {
-    app.key(KeyEvent::new(KeyCode::Char(c), KeyModifiers::CONTROL));
+    app.key(KeyEvent {
+        code: KeyCode::Char(c),
+        ctrl: true,
+        alt: false,
+    });
 }
 
 fn shown(app: &App) -> Vec<String> {
@@ -420,7 +424,7 @@ fn selection_and_focus() {
     assert_eq!(app.title(), "web-b", "no ninth configuration");
     press(&mut app, "\t");
     assert_eq!(app.focus, Focus::Detail);
-    app.key(KeyEvent::new(KeyCode::BackTab, KeyModifiers::SHIFT));
+    app.key(KeyCode::BackTab.into());
     assert_eq!(app.focus, Focus::List);
     press(&mut app, "\n");
     assert_eq!(app.focus, Focus::Detail);
@@ -507,7 +511,7 @@ fn j_k_g_and_capital_j_k_move_in_detail() {
     assert_eq!(cursor(&app), 0);
     press(&mut app, "K");
     assert_eq!(cursor(&app), 0);
-    app.key(KeyEvent::new(KeyCode::Down, KeyModifiers::NONE));
+    app.key(KeyCode::Down.into());
     assert_eq!(cursor(&app), 1);
 }
 
@@ -754,11 +758,11 @@ fn half_pages_move_in_screen_lines() {
     let mut app = long_detail(120);
     ctrl(&mut app, 'd');
     assert_eq!((cursor(&app), app.views[0].top), (13, 13 - 5));
-    app.key(KeyEvent::new(KeyCode::PageDown, KeyModifiers::NONE));
+    app.key(KeyCode::PageDown.into());
     assert_eq!(cursor(&app), 26);
     ctrl(&mut app, 'u');
     assert_eq!(cursor(&app), 13);
-    app.key(KeyEvent::new(KeyCode::PageUp, KeyModifiers::NONE));
+    app.key(KeyCode::PageUp.into());
     assert_eq!(cursor(&app), 0);
     // Wrapped rows take several lines: a half page skips fewer rows.
     let mut app = long_detail(100);

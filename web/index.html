@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>scry demo</title>
+    <link data-trunk rel="rust" data-bin="scry-web" data-wasm-opt="z" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #121212;
+        color: #e0e0e0;
+      }
+      body {
+        font: 14px ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      }
+      pre {
+        font: inherit;
+        margin: 0;
+      }
+      [tabindex]:focus {
+        outline: none;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      // The viewer's keys, kept from the browser: Tab moves focus, space and the arrows
+      // scroll, `/` and `'` open Firefox's quick find.
+      const keys = new Set(["Tab", " ", "/", "'", "ArrowUp", "ArrowDown", "PageUp", "PageDown"]);
+      document.addEventListener("keydown", (event) => {
+        if (keys.has(event.key)) event.preventDefault();
+      });
+      window.addEventListener("TrunkApplicationStarted", () => {
+        document.querySelector("[tabindex]")?.focus();
+      });
+    </script>
+  </body>
+</html>

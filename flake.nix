@@ -140,6 +140,35 @@
             }
           );
         };
+
+        # `nix run .#web-demo -- OUT_DIR`: the browser viewer (web/) on the fixture's report, for the
+        # docs site's prebuild. Outside the sandbox: trunk fetches the wasm-bindgen matching
+        # web/Cargo.lock, which nixpkgs rarely has.
+        web-demo = {
+          type = "app";
+          meta.description = "Build the browser viewer on the fixture's report";
+          program = lib.getExe (
+            pkgs.writeShellApplication {
+              name = "web-demo";
+              runtimeInputs = [
+                pkgs.cargo
+                pkgs.rustc
+                pkgs.lld
+                pkgs.trunk
+                pkgs.coreutils
+                pkgs.git
+              ];
+              text = ''
+                out=$(realpath -m "''${1:?usage: web-demo OUT_DIR}")
+                cd "$(git rev-parse --show-toplevel)"
+                # Exit 1 stands for the fixture's failing configurations; the report is complete.
+                SCRY_FIXTURE=1 cargo run --release --quiet -- colmena --format json >web/report.json || [ $? -eq 1 ]
+                cd web
+                trunk build --release --public-url ./ --dist "$out"
+              '';
+            }
+          );
+        };
       });
 
       # CI builds and publishes `checks.<system>` as one set, so the package and dev shell are here too.

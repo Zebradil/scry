@@ -69,6 +69,7 @@ pub mod build_step;
 pub mod revision;
 /// The run: entry point, per-configuration tasks under `--jobs`, timeouts, Ctrl-C, cleanup,
 /// the report and the output (spec 4.7, 6.3). Entry point M0, the rest M6.
+#[cfg(not(target_arch = "wasm32"))]
 pub mod run;
 /// Where configurations come from: selection patterns (`select`), colmena hives, flakes and
 /// hand-given paths (spec 4.1, 4.2). M6.
@@ -83,6 +84,8 @@ pub mod tui;
 // M8: fixtures and completions.
 
 /// Dynamic shell completion for bash, zsh and fish (spec 10). M8.
+#[cfg(not(target_arch = "wasm32"))]
 pub mod completions;
 /// Fixture run mode: a synthetic fleet served by the fake seam (spec 11). M8.
+#[cfg(not(target_arch = "wasm32"))]
 pub mod fixture;
