@@ -2,3 +2,6 @@
 /.worktrees
 result
 result-*
+
+# Built by `nix run .#web-demo -- docs/public/viewer` (the docs prebuild).
+/docs/public/viewer

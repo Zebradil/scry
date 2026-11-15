@@ -1,12 +1,8 @@
 //! scry's viewer in a browser, drawn by Ratzilla, on a report saved with `--format json`.
 //! The configurations arrive one by one, as in a live run.
 //!
-//! Build from this directory, with the target and tools from nixpkgs:
-//!
-//! ```sh
-//! (cd .. && SCRY_FIXTURE=1 cargo run -- colmena --format json) > report.json
-//! nix shell nixpkgs#rustc nixpkgs#cargo nixpkgs#trunk nixpkgs#lld -c trunk build --release
-//! ```
+//! `nix run .#web-demo -- OUT_DIR` writes the fixture's report to `report.json` and builds the
+//! page into `OUT_DIR`; the docs site's prebuild runs it.
 //!
 //! WebGL2 rather than Ratzilla's DOM backend: in 0.3.1 `DomBackend::size` assumes 10×20 px
 //! cells instead of the measured ones, so the frame covers only part of the grid.
