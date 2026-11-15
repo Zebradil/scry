@@ -131,6 +131,24 @@ fn exit_text(code: Option<i32>) -> String {
     )
 }
 
+/// Writes a script for a test to run. Writing it in place would hold a writable descriptor
+/// that a child spawned meanwhile by a concurrent test inherits until its own exec, and Linux
+/// refuses to exec a file open for writing (`ETXTBSY`, "Text file busy"). `install` writes the
+/// executable in a process of its own that has exited before the script ever runs.
+#[cfg(all(test, not(target_arch = "wasm32")))]
+pub(crate) fn write_script(path: &std::path::Path, contents: &str) {
+    let source = path.with_extension("source");
+    std::fs::write(&source, contents).unwrap();
+    let status = std::process::Command::new("install")
+        .args(["-m", "755"])
+        .arg(&source)
+        .arg(path)
+        .status()
+        .unwrap();
+    assert!(status.success(), "install {}: {status}", path.display());
+    std::fs::remove_file(&source).unwrap();
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

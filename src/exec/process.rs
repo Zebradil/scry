@@ -551,9 +551,9 @@ mod tests {
     fn fake_ssh(dir: &Path) -> String {
         let path = dir.join("ssh");
         let log = dir.join("log");
-        std::fs::write(
+        crate::exec::write_script(
             &path,
-            format!(
+            &format!(
                 r#"#!/bin/sh
 echo "$*" >> "{log}"
 socket=
@@ -569,9 +569,7 @@ exec sh -c "$line"
 "#,
                 log = log.display()
             ),
-        )
-        .unwrap();
-        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o755)).unwrap();
+        );
         path.to_str().unwrap().to_owned()
     }
 
