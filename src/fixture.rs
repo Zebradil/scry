@@ -881,12 +881,10 @@ mod tests {
         }
         let bin = r("bin");
         std::fs::create_dir(&bin).unwrap();
-        std::fs::write(format!("{bin}/nix"), "#!/bin/sh\necho {}\n").unwrap();
-        std::fs::set_permissions(
-            format!("{bin}/nix"),
-            std::os::unix::fs::PermissionsExt::from_mode(0o755),
-        )
-        .unwrap();
+        crate::exec::write_script(
+            std::path::Path::new(&format!("{bin}/nix")),
+            "#!/bin/sh\necho {}\n",
+        );
 
         let real = |command: &Command| {
             let system = if cfg!(target_os = "macos") {
