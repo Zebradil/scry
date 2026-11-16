@@ -2,6 +2,12 @@
 name: scry
 tagline: Preview what a change to a Nix fleet does to each machine
 repo: https://github.com/Zebradil/scry
+analytics:
+  script: https://stats.zebradil.dev/app.js
+  attributes:
+    data-website-id: 4db7b614-57f5-4bd7-a384-9bdb9268f364
+    # Counts only the published site, not local dev or preview builds.
+    data-domains: zebradil.github.io
 theme: default
 
 install:
@@ -12,15 +18,22 @@ install:
 
 features:
   - title: Packages
-    body: Added, removed, upgraded, downgraded and resized packages, and the closure size. Same-version rebuilds collapse into one line. # guessed: condensed from README section list
+    body:
+      Added, removed, upgraded, downgraded and resized packages, and the closure size. Same-version rebuilds collapse
+      into one line. # guessed: condensed from README section list
   - title: Files
-    body: A line diff of every changed file under the followed trees, with store-hash churn collapsed and changed store references followed. # guessed: condensed from README section list
+    body:
+      A line diff of every changed file under the followed trees, with store-hash churn collapsed and changed store
+      references followed. # guessed: condensed from README section list
   - title: Boot
     body: Kernel, initrd, modules, kernel parameters and specialisations of NixOS configurations. # guessed: condensed from README section list
   - title: Deployed or revision mode
-    body: Compare against what each machine runs now, or against the same configuration built from a git revision without contacting any machine. # guessed: condensed from README "Two modes"
+    body:
+      Compare against what each machine runs now, or against the same configuration built from a git revision without
+      contacting any machine. # guessed: condensed from README "Two modes"
   - title: Read-only
-    body: Copies no closure, adds no GC root and activates nothing; the only write to a target is a requested colmena build. # guessed: condensed from README
+    body:
+      Copies no closure, adds no GC root and activates nothing; the only write to a target is a requested colmena build. # guessed: condensed from README
   - title: Shared changes once
     body: Changes that appear identically in several configurations are shown once, in a TUI, plain text or JSON. # guessed: merges README dedup and Output sections
 
