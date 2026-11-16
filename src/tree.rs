@@ -188,7 +188,10 @@ pub struct Walk {
     root: String,
     followed: &'static [&'static str],
     excluded: &'static [&'static str],
+    /// Keyed by the name Nix gives the path, see [`strip_case_hack`].
     listed: BTreeMap<String, Listed>,
+    /// The on-disk path of each listed path that differs from its name.
+    on_disk: BTreeMap<String, String>,
     /// Every root requested so far, with the name of its tree for error messages.
     roots: BTreeMap<String, String>,
 }
@@ -216,6 +219,7 @@ impl Walk {
             followed,
             excluded,
             listed: BTreeMap::new(),
+            on_disk: BTreeMap::new(),
             roots: BTreeMap::new(),
         }
     }
@@ -259,7 +263,11 @@ impl Walk {
                 bail!("file name with a newline in {tree}: unexpected listing line {line:?}");
             };
             tree = name;
-            self.listed.insert(path.to_owned(), listed);
+            let name = strip_case_hack(path);
+            if name != path {
+                self.on_disk.insert(name.clone(), path.to_owned());
+            }
+            self.listed.insert(name, listed);
         }
         Ok(())
     }
@@ -359,7 +367,12 @@ impl Resolve<'_> {
         let entry = match (self.walk.region(rel), listed) {
             (Region::Excluded, _) | (Region::Own, Listed::Directory | Listed::Link(_)) => return,
             (_, &Listed::File { cksum, size }) => Entry::File {
-                path: abs.to_owned(),
+                path: self
+                    .walk
+                    .on_disk
+                    .get(abs)
+                    .map_or(abs, String::as_str)
+                    .to_owned(),
                 cksum,
                 size,
             },
@@ -374,6 +387,21 @@ impl Resolve<'_> {
         };
         self.tree.insert(rel.to_owned(), entry);
     }
+}
+
+/// Nix on a case-insensitive store (`use-case-hack`, the default on macOS) stores names that
+/// differ only in case as `<name>~nix~case~hack~<n>` and drops the suffix when it serializes the
+/// path, so a Linux closure built on a Mac carries the suffix only on disk. Strips it from every
+/// component, as Nix does.
+fn strip_case_hack(path: &str) -> String {
+    const SUFFIX: &str = "~nix~case~hack~";
+    if !path.contains(SUFFIX) {
+        return path.to_owned();
+    }
+    path.split('/')
+        .map(|c| c.find(SUFFIX).map_or(c, |i| &c[..i]))
+        .collect::<Vec<_>>()
+        .join("/")
 }
 
 /// Whether the nearest listed ancestor of `path` is a directory. `find` lists real directories
@@ -689,6 +717,27 @@ lrwxr-xr-x 1 0 0 72 Jan  1  1970 /nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-etc
             cksum,
             size,
         }
+    }
+
+    /// terminfo has both `A/` and `a/`: a macOS store renames one, and links into it still use
+    /// the plain name.
+    #[test]
+    fn case_hack_suffixes_are_not_part_of_names() {
+        let r = "/nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-terminfo";
+        let hacked = format!("{r}/a~nix~case~hack~1/adm1178");
+        let mut walk = Walk::reference(r);
+        walk.next_roots();
+        let listing = format!(
+            "{r}\n{r}/1\n{r}/A\n{r}/a~nix~case~hack~1\n{}{}",
+            ls(&format!("{r}/1/1178"), ".././a/adm1178"),
+            ck(&hacked, 7, 437),
+        );
+        walk.add_listing(listing.as_bytes()).unwrap();
+        assert!(walk.next_roots().is_empty());
+        let tree = walk.tree();
+        assert_eq!(tree["1/1178"], file(&hacked, 7, 437));
+        assert_eq!(tree["a/adm1178"], file(&hacked, 7, 437));
+        assert_eq!(tree["A"], Entry::Directory);
     }
 
     #[test]
