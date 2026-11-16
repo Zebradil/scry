@@ -4,19 +4,18 @@
 //! `nix run .#web-demo -- OUT_DIR` writes the fixture's report to `report.json`, puts the font
 //! in `fonts/` and builds the page into `OUT_DIR`; the docs site's prebuild runs it.
 //!
-//! WebGL2 rather than Ratzilla's DOM backend: in 0.3.1 `DomBackend::size` assumes 10×20 px
-//! cells instead of the measured ones, so the frame covers only part of the grid (#34).
+//! Ratzilla's DOM backend rather than WebGL2: the browser draws the text, so it is crisp at any
+//! pixel ratio and can be selected, and the wasm is about half the size (#34).
 
 use std::cell::RefCell;
 use std::io;
 use std::rc::Rc;
 
-use ratzilla::backend::webgl2::{FontAtlasConfig, WebGl2BackendOptions};
 use ratzilla::event::{KeyCode as WebCode, KeyEvent as WebEvent};
 use ratzilla::ratatui::buffer::Buffer;
-use ratzilla::ratatui::style::{Color, Modifier};
+use ratzilla::ratatui::style::Color;
 use ratzilla::ratatui::{Frame, Terminal};
-use ratzilla::{WebGl2Backend, WebRenderer};
+use ratzilla::{DomBackend, WebRenderer};
 use scry::report::Report;
 use scry::tui::app::{App, KeyCode, KeyEvent};
 use scry::tui::{Options, draw};
@@ -32,7 +31,7 @@ const ARRIVAL_FRAMES: u32 = 24;
 
 /// Declared with `@font-face` in `index.html`.
 const FONT: &str = "JetBrains Mono";
-const FONT_SIZE: f32 = 14.0;
+const FONT_SIZE: u32 = 14;
 
 /// What the viewer's named colours become. Ratzilla would draw them in xterm's dark defaults
 /// (`#800000` for red) on black.
@@ -58,7 +57,7 @@ const PALETTE: Palette = Palette {
 };
 
 fn main() {
-    // The atlas is drawn from the font once, so the font must be loaded before the backend.
+    // The backend measures a cell once, at start, so the font must be loaded before it.
     wasm_bindgen_futures::spawn_local(async {
         for weight in ["", "bold "] {
             if let Some(document) = ratzilla::web_sys::window().and_then(|w| w.document()) {
@@ -90,12 +89,7 @@ fn start() -> io::Result<()> {
     let mut pending = report.configurations.into_iter();
     let mut frame = 0;
 
-    let backend = WebGl2Backend::new_with_options(
-        WebGl2BackendOptions::new()
-            .font_atlas_config(FontAtlasConfig::dynamic(&[FONT], FONT_SIZE))
-            .canvas_padding_color(rgb(PALETTE.background)),
-    )?;
-    let mut terminal = Terminal::new(backend)?;
+    let mut terminal = Terminal::new(DomBackend::new()?)?;
     terminal.on_key_event({
         let app = Rc::clone(&app);
         move |event| {
@@ -108,13 +102,13 @@ fn start() -> io::Result<()> {
             app.quit = false;
         }
     })?;
-    // Keys reach the canvas only while it has focus; a click gives it back.
-    if let Some(canvas) = ratzilla::web_sys::window()
+    // Keys reach the grid only while it has focus; a click gives it back.
+    if let Some(grid) = ratzilla::web_sys::window()
         .and_then(|w| w.document())
-        .and_then(|d| d.query_selector("canvas").ok().flatten())
+        .and_then(|d| d.query_selector("[tabindex]").ok().flatten())
         .and_then(|e| e.dyn_into::<HtmlElement>().ok())
     {
-        let _ = canvas.focus();
+        let _ = grid.focus();
     }
     terminal.draw_web(move |f: &mut Frame| {
         frame += 1;
@@ -132,8 +126,8 @@ fn start() -> io::Result<()> {
     Ok(())
 }
 
-/// Puts [`PALETTE`] on the drawn cells, and fades `DIM` ones towards the background, since the
-/// WebGL2 backend ignores that modifier.
+/// Puts [`PALETTE`] on the drawn cells. `DIM` is left to the backend, which draws it at half
+/// opacity over the background.
 fn paint(buffer: &mut Buffer) {
     let p = &PALETTE;
     for cell in &mut buffer.content {
@@ -145,20 +139,9 @@ fn paint(buffer: &mut Buffer) {
             Color::Cyan => p.cyan,
             _ => p.foreground,
         };
-        let fg = if cell.modifier.contains(Modifier::DIM) {
-            mix(fg, p.background, 0.45)
-        } else {
-            fg
-        };
         cell.fg = rgb(fg);
         cell.bg = rgb(p.background);
     }
-}
-
-/// `a` moved towards `b` by `t`.
-fn mix(a: (u8, u8, u8), b: (u8, u8, u8), t: f32) -> (u8, u8, u8) {
-    let m = |a: u8, b: u8| (f32::from(a) + (f32::from(b) - f32::from(a)) * t).round() as u8;
-    (m(a.0, b.0), m(a.1, b.1), m(a.2, b.2))
 }
 
 fn rgb((r, g, b): (u8, u8, u8)) -> Color {
