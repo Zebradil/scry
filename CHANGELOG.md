@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.3.0](https://github.com/Zebradil/scry/compare/v0.2.0...v0.3.0) (2026-11-16)
+
+
+### Features
+
+* run scry's viewer in the browser on a live demo page ([#30](https://github.com/Zebradil/scry/issues/30)) ([50161bb](https://github.com/Zebradil/scry/commit/50161bb5c7afaf3aaa5da50ad4416d822db77029))
+* **web:** draw the viewer with Ratzilla's DOM backend ([#36](https://github.com/Zebradil/scry/issues/36)) ([e74f55b](https://github.com/Zebradil/scry/commit/e74f55b3d9aa7adfb5499f2b75c8f891b0753a03))
+
+
+### Fixes
+
+* **deps:** update dependency @zebradil/docs-kit to v0.12.0 ([#31](https://github.com/Zebradil/scry/issues/31)) ([e6aeff5](https://github.com/Zebradil/scry/commit/e6aeff58b7ffa298299de9ae020c50a1f835effa))
+* **deps:** update docs-kit to v0.11.1 ([#24](https://github.com/Zebradil/scry/issues/24)) ([02b5fcd](https://github.com/Zebradil/scry/commit/02b5fcdbc10585da6d1d12c1629eb0a2a1f5dc52))
+* **files:** strip Nix case-hack suffixes from listed names ([#40](https://github.com/Zebradil/scry/issues/40)) ([848b175](https://github.com/Zebradil/scry/commit/848b175cd967dd3600a29fc9f758aa50b4b0c72a))
+
+
+### Documentation
+
+* add a recorded demo to the README and docs ([#27](https://github.com/Zebradil/scry/issues/27)) ([2bdac70](https://github.com/Zebradil/scry/commit/2bdac700a41888e49eec2e927e51a0c3bfd71c0d))
+* add counter to the docs site ([ff913d1](https://github.com/Zebradil/scry/commit/ff913d18785c46f86c6659606912592e27b2b7d2))
+* serve the browser demo full screen and theme it ([#35](https://github.com/Zebradil/scry/issues/35)) ([ba4092f](https://github.com/Zebradil/scry/commit/ba4092f9ff1ec32aaf5ce74addbeba85413e89b0))
+* use remote site.yaml schema URL ([#39](https://github.com/Zebradil/scry/issues/39)) ([8189305](https://github.com/Zebradil/scry/commit/81893053cc2fb694e4e5dad64084d4e37f1868b8))
+
 ## [0.2.0](https://github.com/Zebradil/scry/compare/v0.1.0...v0.2.0) (2026-11-15)
 
 
