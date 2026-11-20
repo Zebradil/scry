@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/Zebradil/scry/compare/v0.3.0...v0.4.0) (2026-11-20)
+
+
+### Features
+
+* **colmena:** add --build-on-target ([#45](https://github.com/Zebradil/scry/issues/45)) ([66daa06](https://github.com/Zebradil/scry/commit/66daa06a9d5850948ff4dfbf3e6b6a8bdcfa2df7))
+
 ## [0.3.0](https://github.com/Zebradil/scry/compare/v0.2.0...v0.3.0) (2026-11-16)
 
 
