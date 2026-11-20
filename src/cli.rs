@@ -60,6 +60,10 @@ impl Command {
 pub struct ColmenaArgs {
     #[command(flatten)]
     pub source: SourceArgs,
+    /// Build every selected node on its target and compare it there, as if its
+    /// `deployment.buildOnTarget` were true
+    #[arg(long, conflicts_with = "base")]
+    pub build_on_target: bool,
     #[command(flatten)]
     pub common: CommonArgs,
 }
@@ -268,6 +272,8 @@ mod tests {
             &["colmena", "--format", "yaml"],
             &["colmena", "--on", "a", "--on", "b"],
             &["colmena", "--target", "web-a=web-a"],
+            &["colmena", "--build-on-target", "--base", "main"],
+            &["flake", "--build-on-target"],
             &["completions", "powershell"],
         ] {
             let err = parse(args).expect_err(&format!("{args:?}"));

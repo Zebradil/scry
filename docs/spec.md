@@ -124,7 +124,7 @@ Maintainer:
 ## 4. Command line
 
 ```text
-scry colmena [--on SEL] [--base REV] [--no-build] [COMMON]
+scry colmena [--on SEL] [--base REV | --build-on-target] [--no-build] [COMMON]
 scry flake [REF] [--on SEL] [--target NAME=TARGET]... [--base REV] [--no-build] [COMMON]
 scry paths [--target TARGET] OLD NEW [COMMON]
 scry completions SHELL
@@ -196,7 +196,7 @@ There is no build step, and `--base` does not apply. The configuration's name is
 
 | Mode | Source and node | Old side | New side |
 |---|---|---|---|
-| Deployed | colmena, `buildOnTarget = true` | target, current system | target, after `colmena build` |
+| Deployed | colmena, `buildOnTarget = true` or `--build-on-target` | target, current system | target, after `colmena build` |
 | Deployed | colmena, `buildOnTarget = false` | target, current system | this machine, after `colmena build` |
 | Deployed | colmena, no `targetHost` | this machine, current system | this machine |
 | Deployed | flake, local configuration | this machine, current system | this machine, after `nix build` |
@@ -228,7 +228,12 @@ mode.
 - colmena, deployed mode: one `colmena build --on <names>` for the selected nodes. It honours
   `buildOnTarget`, so for those nodes colmena copies derivations to the target and builds there. That
   write is the deploy tool's build, asked for by the user, and the only write to a target a run can
-  cause.
+  cause. `--build-on-target` passes colmena's own `--build-on-target`, which treats every selected
+  node as `buildOnTarget`, and scry reads every new side on its target to match. It suits a machine
+  whose local Linux builds differ from the targets' own, such as a Mac whose case-insensitive store
+  leaks `~nix~case~hack~` names into symlink targets. A node without `targetHost` then fails in
+  colmena, as it does with `buildOnTarget`. The flag conflicts with `--base`, which contacts no
+  target.
 - flake, deployed mode: one `nix build --keep-going` over all selected toplevels.
 - Revision mode, both sources: one `nix build --keep-going` per revision over the selected toplevels'
   `drvPath`s (`<drv>^out`). Everything builds on this machine and ignores `buildOnTarget`, because no

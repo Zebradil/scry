@@ -388,9 +388,12 @@ async fn colmena(
         None => None,
     };
     let _ = writeln!(err, "scry: evaluating the hive");
-    let nodes = colmena::nodes(&**exec, &env.cwd)
+    let mut nodes = colmena::nodes(&**exec, &env.cwd)
         .await
         .context("evaluating the hive")?;
+    if args.build_on_target {
+        nodes.iter_mut().for_each(|n| n.build_on_target = true);
+    }
     if nodes.is_empty() {
         bail!("the hive has no nodes");
     }
@@ -469,7 +472,8 @@ async fn colmena(
                     .filter(|(_, head)| head.is_ok())
                     .map(|(s, _)| s.name.clone())
                     .collect();
-                let built = build_step::colmena(&**exec, &env.cwd, &names).await;
+                let built =
+                    build_step::colmena(&**exec, &env.cwd, &names, args.build_on_target).await;
                 not_built(err, built);
             }
             Some(_) => build_revision(&**exec, &head, base.as_deref(), temp, err).await,
