@@ -441,6 +441,34 @@ async fn colmena_with_tags_and_build_on_target() {
 }
 
 #[tokio::test]
+async fn colmena_build_on_target_flag_moves_every_new_side_to_its_target() {
+    let temp = TempDir::new().unwrap();
+    let (fake, new) = colmena_fleet();
+    // `hive` answers only a plain `colmena build`, so a build without the flag panics.
+    let fake = hive(fake, false, HIVE, vec![("web-a", new)]).rule(|_, c| {
+        let args: Vec<&str> = c.args.iter().map(String::as_str).collect();
+        matches!(
+            args[4..],
+            ["colmena", "build", "--build-on-target", "--on", "web-a"]
+        )
+        .then(|| ok(""))
+    });
+    let args = [
+        "colmena",
+        "--on",
+        "web-a",
+        "--build-on-target",
+        "--format",
+        "json",
+    ];
+    let ran = scry(fake, env(&temp), &args).await;
+    let report: serde_json::Value = serde_json::from_str(&ran.stdout).unwrap();
+    let web_a = &report["configurations"][0];
+    assert_eq!(web_a["old"]["location"], "root@web-a");
+    assert_eq!(web_a["new"]["location"], "root@web-a");
+}
+
+#[tokio::test]
 async fn colmena_evaluation_failure_fails_only_its_node() {
     let temp = TempDir::new().unwrap();
     let (fake, new) = colmena_fleet();

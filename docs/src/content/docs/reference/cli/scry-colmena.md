@@ -14,6 +14,7 @@ Options:
       --on <SEL>               Comma-separated patterns matched against whole names: `*` and `?` globs, `@tag` for colmena tags. A pattern that matches nothing is an error
       --base <REV>             Compare against the same configurations built from git revision REV instead of what the machines run; contacts no machine
       --no-build               Skip the build step; toplevels must already exist
+      --build-on-target        Build every selected node on its target and compare it there, as if its `deployment.buildOnTarget` were true
       --format <FORMAT>        `auto`: TUI when stdout is a terminal, text otherwise [default: auto] [possible values: auto, text, json]
       --color <COLOR>          `auto`: colour when stdout is a terminal and NO_COLOR is unset or empty [default: auto] [possible values: auto, always, never]
       --expand-churn           Show hash-only and version-only file groups expanded
