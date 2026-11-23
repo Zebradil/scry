@@ -580,7 +580,8 @@ Churned files are grouped: `N hash-only (store hash churn)` and
 **Word highlight**: inside each hunk, each run of removed lines pairs with the run of added lines right
 after it, line by line. Unpaired lines are coloured whole. A paired line is split into tokens: a run of
 Unicode alphanumerics or `_`, or any single other character. A token-level longest common subsequence
-marks the tokens that differ. Two marked runs separated by at most 2 characters, none of them
+marks the tokens that differ; store hashes count as equal, so hash churn next to a real change is not
+marked. Two marked runs separated by at most 2 characters, none of them
 alphanumeric, join into one, so `"4.6.8"` against `"5.0.1"` marks `4.6.8` whole rather than three
 digits. A pair whose only difference is store hashes is dimmed, without highlight.
 

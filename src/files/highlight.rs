@@ -4,7 +4,7 @@ use std::ops::Range;
 
 use similar::{Algorithm, DiffTag, capture_diff_slices};
 
-use crate::files::churn::normalize_hashes;
+use crate::files::churn::{HASH_PLACEHOLDER, normalize_hashes, store_refs};
 use crate::report::{Hunk, Line, LineOp};
 
 /// Index pairs `(removed, added)` in `lines`: each run of removed lines pairs with the run of
@@ -69,12 +69,28 @@ fn tokens(text: &str) -> Vec<Range<usize>> {
     out
 }
 
+/// The text of each token, a store hash replaced by one placeholder so that hash churn next to
+/// a real change is not marked. A hash is always one whole token: 32 alphanumerics between `/`
+/// and `-`.
+fn words<'a>(text: &'a str, tokens: &[Range<usize>]) -> Vec<&'a str> {
+    let hashes: Vec<Range<usize>> = store_refs(text).into_iter().map(|r| r.hash).collect();
+    tokens
+        .iter()
+        .map(|t| {
+            if hashes.contains(t) {
+                HASH_PLACEHOLDER
+            } else {
+                &text[t.clone()]
+            }
+        })
+        .collect()
+}
+
 /// Byte spans of the tokens outside a longest common subsequence, adjacent or close ones merged
 /// ([`merge_close`]). Myers' shortest edit script keeps a longest common subsequence.
 fn spans(old: &str, new: &str) -> (Spans, Spans) {
     let (old_tokens, new_tokens) = (tokens(old), tokens(new));
-    let old_words: Vec<&str> = old_tokens.iter().map(|r| &old[r.clone()]).collect();
-    let new_words: Vec<&str> = new_tokens.iter().map(|r| &new[r.clone()]).collect();
+    let (old_words, new_words) = (words(old, &old_tokens), words(new, &new_tokens));
     let (mut old_spans, mut new_spans) = (Vec::new(), Vec::new());
     for op in capture_diff_slices(Algorithm::Myers, &old_words, &new_words) {
         if op.tag() != DiffTag::Equal {
@@ -185,6 +201,16 @@ mod tests {
         );
         assert_eq!(old, [(19, 20), (27, 29)]);
         assert_eq!(new, [(19, 20), (27, 29)]);
+    }
+
+    #[test]
+    fn store_hashes_next_to_a_real_change_are_not_marked() {
+        let old =
+            "exec app --config /nix/store/wc6ihc60mnw68ick60nj2sckc9shyanc-app.json --workers 4";
+        let new =
+            "exec app --config /nix/store/ncmc27rc6az54vpj6rrhbkp3x4aml55v-app.json --workers 8";
+        let at = old.len() - 1;
+        assert_eq!(spans(old, new), (vec![(at, at + 1)], vec![(at, at + 1)]));
     }
 
     #[test]

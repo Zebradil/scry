@@ -213,10 +213,6 @@ expression: configuration
                 "text": "systemConfig=/nix/store/7hxhq9fwq4sp17qr1mnl7dy3rpkywvv1-nixos-system-web-a-26.05.20261102.7dcdd87",
                 "spans": [
                   [
-                    24,
-                    56
-                  ],
-                  [
                     79,
                     98
                   ]
@@ -232,10 +228,6 @@ expression: configuration
                 "op": "+",
                 "text": "systemConfig=/nix/store/w3fzn58f5mfcypjnw4knm81m44g1r4dv-nixos-system-web-a-26.11.20261110.9a8b7c6",
                 "spans": [
-                  [
-                    24,
-                    56
-                  ],
                   [
                     79,
                     98
@@ -339,16 +331,8 @@ expression: configuration
                 "text": "{\"org.nixos.bootspec.v1\":{\"initrd\":\"/nix/store/shbxaalxqc0ffagh8sbijm8id4kzrvcq-initrd-linux-6.12.40/initrd\",\"kernel\":\"/nix/store/j3r3kmf8d4mpvpm1aa6n5sxyyn34g2nj-linux-6.12.40/bzImage\",\"label\":\"NixOS Zokor 26.05.20261102.7dcdd87 (Linux 6.12.40)\",\"toplevel\":\"/nix/store/7hxhq9fwq4sp17qr1mnl7dy3rpkywvv1-nixos-system-web-a-26.05.20261102.7dcdd87\"}}",
                 "spans": [
                   [
-                    47,
-                    79
-                  ],
-                  [
                     98,
                     100
-                  ],
-                  [
-                    130,
-                    162
                   ],
                   [
                     174,
@@ -361,10 +345,6 @@ expression: configuration
                   [
                     242,
                     244
-                  ],
-                  [
-                    270,
-                    302
                   ],
                   [
                     325,
@@ -377,16 +357,8 @@ expression: configuration
                 "text": "{\"org.nixos.bootspec.v1\":{\"initrd\":\"/nix/store/z2fmwg2srcacr3p3ynghhc0abs7vkka2-initrd-linux-6.12.48/initrd\",\"kernel\":\"/nix/store/z37fp5iy03ki9g0fji4cxjq4515hyr7s-linux-6.12.48/bzImage\",\"label\":\"NixOS Zokor 26.11.20261110.9a8b7c6 (Linux 6.12.48)\",\"toplevel\":\"/nix/store/w3fzn58f5mfcypjnw4knm81m44g1r4dv-nixos-system-web-a-26.11.20261110.9a8b7c6\"}}",
                 "spans": [
                   [
-                    47,
-                    79
-                  ],
-                  [
                     98,
                     100
-                  ],
-                  [
-                    130,
-                    162
                   ],
                   [
                     174,
@@ -399,10 +371,6 @@ expression: configuration
                   [
                     242,
                     244
-                  ],
-                  [
-                    270,
-                    302
                   ],
                   [
                     325,
@@ -652,10 +620,6 @@ expression: configuration
                 "text": "include /nix/store/0x2yr6g9idyjxyid9s5bl96rd5c3fncg-openssl-3.0.13/etc/ssl/openssl.cnf",
                 "spans": [
                   [
-                    19,
-                    51
-                  ],
-                  [
                     64,
                     66
                   ]
@@ -665,10 +629,6 @@ expression: configuration
                 "op": "+",
                 "text": "include /nix/store/7c1a3asp2izlfnv5h2a4dxqjgcfl1f8b-openssl-3.0.14/etc/ssl/openssl.cnf",
                 "spans": [
-                  [
-                    19,
-                    51
-                  ],
                   [
                     64,
                     66
@@ -785,10 +745,6 @@ expression: configuration
                 "text": "exec app --config /nix/store/wc6ihc60mnw68ick60nj2sckc9shyanc-app.json --workers 4",
                 "spans": [
                   [
-                    29,
-                    61
-                  ],
-                  [
                     81,
                     82
                   ]
@@ -804,10 +760,6 @@ expression: configuration
                 "op": "+",
                 "text": "exec app --config /nix/store/ncmc27rc6az54vpj6rrhbkp3x4aml55v-app.json --workers 8",
                 "spans": [
-                  [
-                    29,
-                    61
-                  ],
                   [
                     81,
                     82
