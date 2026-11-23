@@ -41,7 +41,7 @@ Packages  38.0 MiB -> 38.0 MiB (+1.2 KiB)
   [A] new-agent                 +326 B 1.4.0  (also in 1)
   [A] resolv.conf               +140 B  (also in 1)
   [R] unit-debug-shell.service  -227 B  (also in 1)
-  12 rebuilt (same version, new hash, +470 B)
+  14 rebuilt (same version, new hash, +470 B)
 Files
   [M] app-helper/bin/app-helper  (also in 1)
       @@ -1,3 +1,3 @@
@@ -86,7 +86,7 @@ Files
       +b
       \ No newline at end of file
   2 hash-only (store hash churn; --expand-churn shows them)
-  2 version-only (store path version bumps; --expand-churn shows them)
+  5 version-only (version bumps; --expand-churn shows them)
 Boot
   kernel: linux-6.12.40 -> linux-6.12.48  (also in 1)
   initrd: initrd-linux-6.12.40 -> initrd-linux-6.12.48  (also in 1)
@@ -105,7 +105,7 @@ Packages  38.0 MiB -> 38.0 MiB (+1.2 KiB)
   [A] new-agent                 +326 B 1.4.0  (also in 1)
   [A] resolv.conf               +140 B  (also in 1)
   [R] unit-debug-shell.service  -227 B  (also in 1)
-  12 rebuilt (same version, new hash, +470 B)
+  14 rebuilt (same version, new hash, +470 B)
 Files
   [M] app-helper/bin/app-helper  (also in 1)
       @@ -1,3 +1,3 @@
@@ -150,7 +150,7 @@ Files
       +b
       \ No newline at end of file
   2 hash-only (store hash churn; --expand-churn shows them)
-  2 version-only (store path version bumps; --expand-churn shows them)
+  5 version-only (version bumps; --expand-churn shows them)
 Boot
   kernel: linux-6.12.40 -> linux-6.12.48  (also in 1)
   initrd: initrd-linux-6.12.40 -> initrd-linux-6.12.48  (also in 1)

@@ -284,7 +284,7 @@ pub fn rebuilt_label(count: usize, size_delta: i64) -> String {
 pub fn churn_label(class: ChurnClass, count: usize, hint: bool) -> String {
     let (name, about) = match class {
         ChurnClass::HashOnly => ("hash-only", "store hash churn"),
-        ChurnClass::VersionOnly => ("version-only", "store path version bumps"),
+        ChurnClass::VersionOnly => ("version-only", "version bumps"),
         ChurnClass::Real => ("real", "real changes"),
     };
     let hint = if hint {

@@ -20,7 +20,7 @@ Files
         -ExecStart=/nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-app/bin/app
         +ExecStart=/nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-app/bin/app
     [M] etc/c.conf
-  1 version-only (store path version bumps)
+  1 version-only (version bumps)
     [M] etc/b.conf
         @@ -2,1 +2,1 @@
         -/nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-app-1.0

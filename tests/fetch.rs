@@ -135,13 +135,16 @@ async fn churn_references_and_small_rebuilds() {
     let configuration = run(&fleet, &job).await;
     // Display order: by path, followed references right after their referrer; the small
     // rebuild `app-helper` on its own; `app-start` only under the unit that points at it, its
-    // binary dropped; `etc/profiles/per-user` and the `sw` tree not followed.
+    // binary dropped; `etc/profiles/per-user` and the `sw` tree not followed. `boot.json`,
+    // `etc/issue` and `nixos-version` differ only by the system, revision and kernel versions.
     assert_eq!(
         changes(&configuration),
         [
             "Modified VersionOnly activate",
             "Modified Real app-helper/bin/app-helper",
+            "Modified VersionOnly boot.json",
             "Modified Real etc/binary.db",
+            "Modified VersionOnly etc/issue",
             "LinkChanged Real etc/mtab",
             "Modified Real etc/nix/nix.conf",
             "Modified HashOnly etc/profile",
@@ -154,6 +157,7 @@ async fn churn_references_and_small_rebuilds() {
             "Modified Real etc/systemd/system/app.service → app-start/bin/app-start → app.json",
             "TypeChanged Real etc/systemd/system/debug-shell.service",
             "Modified Real etc/udev/hwdb.bin",
+            "Modified VersionOnly nixos-version/bin/nixos-version",
             "Modified Real user-environment/bin/tool",
         ]
     );

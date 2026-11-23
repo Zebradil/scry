@@ -13,8 +13,10 @@ use std::time::Duration;
 use anyhow::{Result, anyhow, bail};
 
 use crate::exec::{Exec, ExecError, Output};
+use crate::files::churn::Masks;
 use crate::files::compare::{self, Contents};
 use crate::report::{ClosureKind, Configuration, Sections, Side, Source, Status};
+use crate::store::name::{parse_drv_name, store_path_name};
 use crate::transport::machine::Machine;
 use crate::transport::script::Script;
 use crate::tree::Walk;
@@ -373,6 +375,13 @@ async fn compare(exec: &dyn Exec, job: &Job, known: &Mutex<Known>) -> Result<Sta
         .chain(specialisations.map(String::as_str))
         .collect();
     let packages = packages::compare(sizes[0], sizes[1], &toplevels);
+    let versions = [Which::Old, Which::New].map(|which| data(which).system_version());
+    let kernels = [&old_boot, &new_boot].map(|boot| {
+        boot.kernel
+            .as_deref()
+            .map(|k| parse_drv_name(store_path_name(k)).1)
+    });
+    let masks = Masks::new(versions.each_ref().map(|v| v.as_deref()), kernels);
 
     // Level one of each walk came with the probe.
     let mut walks: Vec<Vec<Walk>> = Vec::new();
@@ -437,6 +446,7 @@ async fn compare(exec: &dyn Exec, job: &Job, known: &Mutex<Known>) -> Result<Sta
         job.max_file_size,
         old_contents,
         new_contents,
+        &masks,
     );
 
     let followed = references::follow(
@@ -448,6 +458,7 @@ async fn compare(exec: &dyn Exec, job: &Job, known: &Mutex<Known>) -> Result<Sta
             old_sizes: sizes[0],
             new_sizes: sizes[1],
             toplevels: &toplevels,
+            masks: &masks,
         },
         job.max_file_size,
         &changes,

@@ -48,14 +48,15 @@ pub fn to_fetch(old: &Tree, new: &Tree, max_file_size: u64) -> Fetch {
 }
 
 /// The file changes from `old` to `new`, sorted by path, with hunks highlighted and modified
-/// text files classified. A file's content comes from the contents of its side; a file over
-/// `max_file_size`, or missing from them, is not fetched.
+/// text files classified with `masks`. A file's content comes from the contents of its side; a
+/// file over `max_file_size`, or missing from them, is not fetched.
 pub fn compare(
     old: &Tree,
     new: &Tree,
     max_file_size: u64,
     old_contents: &Contents,
     new_contents: &Contents,
+    masks: &churn::Masks,
 ) -> Vec<FileChange> {
     differing(old, new)
         .map(|(path, o, n, status)| {
@@ -91,7 +92,7 @@ pub fn compare(
             change.hunks = diff::hunks(old_text, new_text);
             highlight::highlight(&mut change.hunks);
             if status == FileStatus::Modified {
-                change.class = churn::classify(old_text, new_text);
+                change.class = churn::classify(old_text, new_text, masks);
             }
             change
         })
@@ -324,7 +325,14 @@ mod tests {
     #[test]
     fn statuses_and_content() {
         let (old, new) = fixture();
-        let changes = compare(&old.tree, &new.tree, MAX, &old.contents, &new.contents);
+        let changes = compare(
+            &old.tree,
+            &new.tree,
+            MAX,
+            &old.contents,
+            &new.contents,
+            &churn::Masks::default(),
+        );
         let summary: Vec<_> = changes
             .iter()
             .map(|c| {
@@ -391,7 +399,14 @@ mod tests {
     #[test]
     fn unfetched_content_is_reported_as_not_fetched() {
         let (old, new) = fixture();
-        let changes = compare(&old.tree, &new.tree, MAX, &Contents::new(), &new.contents);
+        let changes = compare(
+            &old.tree,
+            &new.tree,
+            MAX,
+            &Contents::new(),
+            &new.contents,
+            &churn::Masks::default(),
+        );
         let text = changes.iter().find(|c| c.path == "text").unwrap();
         assert!(!text.content_fetched && text.hunks.is_empty());
     }
@@ -399,7 +414,14 @@ mod tests {
     #[test]
     fn display_order_puts_references_after_their_referrer() {
         let (old, new) = fixture();
-        let mut changes = compare(&old.tree, &new.tree, MAX, &old.contents, &new.contents);
+        let mut changes = compare(
+            &old.tree,
+            &new.tree,
+            MAX,
+            &old.contents,
+            &new.contents,
+            &churn::Masks::default(),
+        );
         let template = changes[0].clone();
         let with = |path: &str, via: &[&str]| FileChange {
             path: path.into(),

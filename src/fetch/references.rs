@@ -10,6 +10,7 @@ use anyhow::{Context, Result};
 use super::content::{gzip_arg, lines, tar_failure, unpack};
 use super::{Host, SCRIPT, join, listing};
 use crate::exec::{Command, Exec};
+use crate::files::churn::Masks;
 use crate::files::compare::{self, Contents};
 use crate::files::refs;
 use crate::packages::{SMALL_REBUILD_MAX_BYTES, SmallRebuild};
@@ -29,6 +30,7 @@ pub(crate) struct Sides<'a> {
     /// Both toplevels and their specialisations: never followed, the comparison already
     /// covers what they hold.
     pub toplevels: &'a [&'a str],
+    pub masks: &'a Masks,
 }
 
 /// One pair to compare for one referrer.
@@ -229,6 +231,7 @@ fn compare_pair(
         max_file_size,
         &hosts[sides.old].contents,
         &hosts[sides.new].contents,
+        sides.masks,
     );
     Some(Compared {
         changes,

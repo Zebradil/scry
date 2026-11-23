@@ -20,7 +20,7 @@ expression: "render(&churn(), true, true)"
         \e[2;31m-ExecStart=/nix/store/1b9p07z77phvv2hf6gm9f28syp39f1ag-app/bin/app\e[0m
         \e[2;32m+ExecStart=/nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-app/bin/app\e[0m
     \e[36m[M]\e[0m \e[36metc/c.conf\e[0m
-  1 version-only (store path version bumps)
+  1 version-only (version bumps)
     \e[36m[M]\e[0m \e[36metc/b.conf\e[0m
         \e[2m@@ -2,1 +2,1 @@\e[0m
         \e[31m-/nix/store/\e[0m\e[1;31m1b9p07z77phvv2hf6gm9f28syp39f1ag\e[0m\e[31m-app-1.\e[0m\e[1;31m0\e[0m

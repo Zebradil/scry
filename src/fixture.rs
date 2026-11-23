@@ -555,6 +555,11 @@ pub fn nixos(h: &mut Host, old: bool) -> String {
 pub fn nixos_of(h: &mut Host, old: bool, host: &str) -> String {
     let s = if old { "o" } else { "n" };
     let pick = |o: &'static str, n: &'static str| if old { o } else { n };
+    let version = pick("26.05.20261102.7dcdd87", "26.11.20261110.9a8b7c6");
+    let revision = pick(
+        "7dcdd87a866099a230ed5146a5bb7d16fd5c9b14",
+        "9a8b7c60bb6afce84fbac3e75fc47c5f2272400b",
+    );
     let bash = store_path(s, "bash-5.2p37");
     h.file(&format!("{bash}/bin/bash"), b"\x7fELF\0bash".to_vec())
         .nar_size(&bash, 2 << 20);
@@ -617,12 +622,18 @@ pub fn nixos_of(h: &mut Host, old: bool, host: &str) -> String {
         &openssl_cnf,
         format!("include {openssl}/etc/ssl/openssl.cnf\n"),
     );
+    let issue = store_path(s, "issue");
+    h.file(
+        &issue,
+        format!("\n<<< Welcome to NixOS {version} (\\m) - \\l >>>\n\n"),
+    );
     let user_env = store_path(s, "user-environment");
     h.file(&format!("{user_env}/bin/tool"), pick("a", "b"));
 
     let etc = store_path(s, "etc");
     let e = |rel: &str| format!("{etc}/etc/{rel}");
     h.link(&e("hosts"), &hosts)
+        .link(&e("issue"), &issue)
         .link(&e("nix/nix.conf"), &nix_conf)
         .link(&e("profile"), &profile)
         .link(&e("ssl/openssl.cnf"), &openssl_cnf)
@@ -664,8 +675,21 @@ pub fn nixos_of(h: &mut Host, old: bool, host: &str) -> String {
         h.file(&format!("{path}/{file}"), b"\0kernel".to_vec())
             .nar_size(path, 12 << 20);
     }
+    let nixos_version = store_path(s, "nixos-version");
+    h.file(
+        &format!("{nixos_version}/bin/nixos-version"),
+        format!(
+            "#!{bash}/bin/bash\ncase \"$1\" in\n  --revision) echo \"{revision}\" ;;\n  \
+             --json) echo '{{\"kernelVersion\":\"{kernel}\",\"nixosVersion\":\"{version}\",\
+             \"nixpkgsRevision\":\"{revision}\"}}' ;;\n  *) echo \"{version} (Zokor)\" ;;\nesac\n"
+        ),
+    );
     let sw = store_path(s, "system-path");
     h.link(&format!("{sw}/bin/bash"), &format!("{bash}/bin/bash"))
+        .link(
+            &format!("{sw}/bin/nixos-version"),
+            &format!("{nixos_version}/bin/nixos-version"),
+        )
         .link(
             &format!("{sw}/bin/app-helper"),
             &format!("{helper}/bin/app-helper"),
@@ -682,9 +706,16 @@ pub fn nixos_of(h: &mut Host, old: bool, host: &str) -> String {
         );
     }
 
-    let version = pick("26.05.20261102.7dcdd87", "26.11.20261110.9a8b7c6");
     let t = store_path(s, &format!("nixos-system-{host}-{version}"));
     h.file(&format!("{t}/nixos-version"), format!("{version}\n"))
+        .file(
+            &format!("{t}/boot.json"),
+            format!(
+                "{{\"org.nixos.bootspec.v1\":{{\"initrd\":\"{initrd}/initrd\",\
+                 \"kernel\":\"{linux}/bzImage\",\"label\":\"NixOS Zokor {version} (Linux {kernel})\",\
+                 \"toplevel\":\"{t}\"}}}}\n"
+            ),
+        )
         .file(
             &format!("{t}/kernel-params"),
             pick("quiet loglevel=4", "quiet  loglevel=4 mitigations=auto\n"),

@@ -15,4 +15,4 @@ Files
       -workers = 4
       +workers = 8
   2 hash-only (store hash churn; --expand-churn shows them)
-  1 version-only (store path version bumps; --expand-churn shows them)
+  1 version-only (version bumps; --expand-churn shows them)
