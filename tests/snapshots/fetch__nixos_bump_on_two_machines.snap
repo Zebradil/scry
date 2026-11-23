@@ -9,8 +9,8 @@ expression: configuration
   "target": "root@web-a",
   "status": "done",
   "packages": {
-    "size_old": 39859652,
-    "size_new": 39860880,
+    "size_old": 39861289,
+    "size_new": 39862517,
     "changes": [
       {
         "kind": "upgraded",
@@ -76,7 +76,7 @@ expression: configuration
       }
     ],
     "rebuilt": {
-      "count": 12,
+      "count": 14,
       "size_delta": 470,
       "items": [
         {
@@ -115,11 +115,25 @@ expression: configuration
           "size_delta": 363
         },
         {
+          "pname": "issue",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
+        },
+        {
           "pname": "nix.conf",
           "versions": [
             ""
           ],
           "size_delta": 13
+        },
+        {
+          "pname": "nixos-version",
+          "versions": [
+            ""
+          ],
+          "size_delta": 0
         },
         {
           "pname": "openssl.cnf",
@@ -317,6 +331,138 @@ expression: configuration
         ]
       },
       {
+        "path": "boot.json",
+        "via": [],
+        "status": "modified",
+        "class": "version-only",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 348,
+        "size_new": 348,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 1,
+            "new_start": 1,
+            "new_lines": 1,
+            "lines": [
+              {
+                "op": "-",
+                "text": "{\"org.nixos.bootspec.v1\":{\"initrd\":\"/nix/store/shbxaalxqc0ffagh8sbijm8id4kzrvcq-initrd-linux-6.12.40/initrd\",\"kernel\":\"/nix/store/j3r3kmf8d4mpvpm1aa6n5sxyyn34g2nj-linux-6.12.40/bzImage\",\"label\":\"NixOS Zokor 26.05.20261102.7dcdd87 (Linux 6.12.40)\",\"toplevel\":\"/nix/store/7hxhq9fwq4sp17qr1mnl7dy3rpkywvv1-nixos-system-web-a-26.05.20261102.7dcdd87\"}}",
+                "spans": [
+                  [
+                    47,
+                    79
+                  ],
+                  [
+                    98,
+                    100
+                  ],
+                  [
+                    130,
+                    162
+                  ],
+                  [
+                    174,
+                    176
+                  ],
+                  [
+                    210,
+                    212
+                  ],
+                  [
+                    213,
+                    221
+                  ],
+                  [
+                    222,
+                    229
+                  ],
+                  [
+                    242,
+                    244
+                  ],
+                  [
+                    270,
+                    302
+                  ],
+                  [
+                    325,
+                    327
+                  ],
+                  [
+                    328,
+                    336
+                  ],
+                  [
+                    337,
+                    344
+                  ]
+                ]
+              },
+              {
+                "op": "+",
+                "text": "{\"org.nixos.bootspec.v1\":{\"initrd\":\"/nix/store/z2fmwg2srcacr3p3ynghhc0abs7vkka2-initrd-linux-6.12.48/initrd\",\"kernel\":\"/nix/store/z37fp5iy03ki9g0fji4cxjq4515hyr7s-linux-6.12.48/bzImage\",\"label\":\"NixOS Zokor 26.11.20261110.9a8b7c6 (Linux 6.12.48)\",\"toplevel\":\"/nix/store/w3fzn58f5mfcypjnw4knm81m44g1r4dv-nixos-system-web-a-26.11.20261110.9a8b7c6\"}}",
+                "spans": [
+                  [
+                    47,
+                    79
+                  ],
+                  [
+                    98,
+                    100
+                  ],
+                  [
+                    130,
+                    162
+                  ],
+                  [
+                    174,
+                    176
+                  ],
+                  [
+                    210,
+                    212
+                  ],
+                  [
+                    213,
+                    221
+                  ],
+                  [
+                    222,
+                    229
+                  ],
+                  [
+                    242,
+                    244
+                  ],
+                  [
+                    270,
+                    302
+                  ],
+                  [
+                    325,
+                    327
+                  ],
+                  [
+                    328,
+                    336
+                  ],
+                  [
+                    337,
+                    344
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
         "path": "etc/binary.db",
         "via": [],
         "status": "modified",
@@ -330,6 +476,76 @@ expression: configuration
         "link_old": null,
         "link_new": null,
         "hunks": []
+      },
+      {
+        "path": "etc/issue",
+        "via": [],
+        "status": "modified",
+        "class": "version-only",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 60,
+        "size_new": 60,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 3,
+            "new_start": 1,
+            "new_lines": 3,
+            "lines": [
+              {
+                "op": " ",
+                "text": "",
+                "spans": []
+              },
+              {
+                "op": "-",
+                "text": "<<< Welcome to NixOS 26.05.20261102.7dcdd87 (\\m) - \\l >>>",
+                "spans": [
+                  [
+                    24,
+                    26
+                  ],
+                  [
+                    27,
+                    35
+                  ],
+                  [
+                    36,
+                    43
+                  ]
+                ]
+              },
+              {
+                "op": "+",
+                "text": "<<< Welcome to NixOS 26.11.20261110.9a8b7c6 (\\m) - \\l >>>",
+                "spans": [
+                  [
+                    24,
+                    26
+                  ],
+                  [
+                    27,
+                    35
+                  ],
+                  [
+                    36,
+                    43
+                  ]
+                ]
+              },
+              {
+                "op": " ",
+                "text": "",
+                "spans": []
+              }
+            ]
+          }
+        ]
       },
       {
         "path": "etc/mtab",
@@ -742,6 +958,160 @@ expression: configuration
         "link_old": null,
         "link_new": null,
         "hunks": []
+      },
+      {
+        "path": "nixos-version/bin/nixos-version",
+        "via": [],
+        "status": "modified",
+        "class": "version-only",
+        "type_old": "file",
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": 345,
+        "size_new": 345,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 1,
+            "old_lines": 6,
+            "new_start": 1,
+            "new_lines": 6,
+            "lines": [
+              {
+                "op": "-",
+                "text": "#!/nix/store/cib3xd27pi09wwg8zifzndzcwcmgkj3n-bash-5.2p37/bin/bash",
+                "spans": [],
+                "hash_only": true
+              },
+              {
+                "op": "+",
+                "text": "#!/nix/store/48y6kcryarxipp91d3qwb8pdmx4s6k0r-bash-5.2p37/bin/bash",
+                "spans": [],
+                "hash_only": true
+              },
+              {
+                "op": " ",
+                "text": "case \"$1\" in",
+                "spans": []
+              },
+              {
+                "op": "-",
+                "text": "  --revision) echo \"7dcdd87a866099a230ed5146a5bb7d16fd5c9b14\" ;;",
+                "spans": [
+                  [
+                    20,
+                    60
+                  ]
+                ]
+              },
+              {
+                "op": "-",
+                "text": "  --json) echo '{\"kernelVersion\":\"6.12.40\",\"nixosVersion\":\"26.05.20261102.7dcdd87\",\"nixpkgsRevision\":\"7dcdd87a866099a230ed5146a5bb7d16fd5c9b14\"}' ;;",
+                "spans": [
+                  [
+                    39,
+                    41
+                  ],
+                  [
+                    62,
+                    64
+                  ],
+                  [
+                    65,
+                    73
+                  ],
+                  [
+                    74,
+                    81
+                  ],
+                  [
+                    102,
+                    142
+                  ]
+                ]
+              },
+              {
+                "op": "-",
+                "text": "  *) echo \"26.05.20261102.7dcdd87 (Zokor)\" ;;",
+                "spans": [
+                  [
+                    14,
+                    16
+                  ],
+                  [
+                    17,
+                    25
+                  ],
+                  [
+                    26,
+                    33
+                  ]
+                ]
+              },
+              {
+                "op": "+",
+                "text": "  --revision) echo \"9a8b7c60bb6afce84fbac3e75fc47c5f2272400b\" ;;",
+                "spans": [
+                  [
+                    20,
+                    60
+                  ]
+                ]
+              },
+              {
+                "op": "+",
+                "text": "  --json) echo '{\"kernelVersion\":\"6.12.48\",\"nixosVersion\":\"26.11.20261110.9a8b7c6\",\"nixpkgsRevision\":\"9a8b7c60bb6afce84fbac3e75fc47c5f2272400b\"}' ;;",
+                "spans": [
+                  [
+                    39,
+                    41
+                  ],
+                  [
+                    62,
+                    64
+                  ],
+                  [
+                    65,
+                    73
+                  ],
+                  [
+                    74,
+                    81
+                  ],
+                  [
+                    102,
+                    142
+                  ]
+                ]
+              },
+              {
+                "op": "+",
+                "text": "  *) echo \"26.11.20261110.9a8b7c6 (Zokor)\" ;;",
+                "spans": [
+                  [
+                    14,
+                    16
+                  ],
+                  [
+                    17,
+                    25
+                  ],
+                  [
+                    26,
+                    33
+                  ]
+                ]
+              },
+              {
+                "op": " ",
+                "text": "esac",
+                "spans": []
+              }
+            ]
+          }
+        ]
       },
       {
         "path": "user-environment/bin/tool",
