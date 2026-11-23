@@ -552,8 +552,23 @@ store path.
 1. **Hash-only**: equal once every store hash is replaced by one placeholder on both sides. Only
    hashes inside store references count, so checksums inside config files stay real changes.
 2. **Version-only**: not hash-only, but equal once the version of every store reference's name is
-   replaced too (split by the 7.1 rule, so `single-file-1.26.4` loses `1.26.4`). Such a file only
-   follows a package bump the Packages section already reports.
+   replaced too (split by the 7.1 rule, so `single-file-1.26.4` loses `1.26.4`), and, outside store
+   references, the versions scry knows per side are masked. Such a file only follows a package
+   bump the Packages section, or a version bump the header and Boot section, already report. A
+   known version is masked only when both sides have one and they differ, and only where no ASCII
+   letter or digit touches it, so `6.1.5` stays in `6.1.50`. The known versions are:
+   - the **system version** (section 5), each side's own in its own text;
+   - the **nixpkgs revision**: when the system version ends in `.<rev>` with `<rev>` at least 7 hex
+     digits, as flake builds' `26.05.20261102.7dcdd87` does, any 40-hex-digit string starting with
+     `<rev>`;
+   - the **kernel version**: the version of the `kernel` link target's store name (7.5), so
+     `linux-6.12.48` gives `6.12.48`.
+
+   A nixpkgs bump within one release thus leaves `boot.json` (its `label` reads
+   `NixOS <codename> <system version> (Linux <kernel version>)`), `etc/issue`, `etc/os-release`
+   (`BUILD_ID`) and the `nixos-version` script (system version, full revision, kernel version) as
+   version-only. A release bump also changes the release or codename in `etc/os-release`,
+   `boot.json` and the `nixos-version` script, which then stay real changes.
 3. Otherwise a real change.
 
 Churned files are grouped: `N hash-only (store hash churn)` and

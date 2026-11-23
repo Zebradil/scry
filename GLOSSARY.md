@@ -48,8 +48,10 @@ Terms as used in the spec, code, issues and docs. Prefer these over synonyms.
 - **Hash-only change**: a modified file that is equal on both sides once every store hash is replaced
   by a placeholder.
 - **Version-only change**: a modified file that is not hash-only but is equal once the version in every
-  store path name is replaced too.
-- **Churn**: hash-only and version-only changes together. Collapsed by default.
+  store path name is replaced too, and the system version, nixpkgs revision and kernel version of
+  each side are masked outside store paths.
+- **Churn**: hash-only and version-only changes together. Collapsed by default, shown with
+  `--expand-churn`.
 - **Followed reference**: a store path referenced from a modified file whose old and new versions differ;
   compared by content and shown as `referrer → name`.
 - **Shared change**: a change that appears identically in two or more configurations of one run.
