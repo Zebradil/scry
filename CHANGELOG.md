@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0](https://github.com/Zebradil/scry/compare/v0.4.0...v0.5.0) (2026-11-23)
+
+
+### Features
+
+* --word-highlight styles, dim by default; quieter word marks ([#52](https://github.com/Zebradil/scry/issues/52)) ([d164bb3](https://github.com/Zebradil/scry/commit/d164bb353f1086e71fd1edd013c315744a65216f))
+* **files:** treat system, revision and kernel version bumps as version-only churn ([#50](https://github.com/Zebradil/scry/issues/50)) ([d9ec775](https://github.com/Zebradil/scry/commit/d9ec775fc29d8a92c8649ff4ee1eb6896a6722e2))
+
 ## [0.4.0](https://github.com/Zebradil/scry/compare/v0.3.0...v0.4.0) (2026-11-20)
 
 
