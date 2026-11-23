@@ -951,7 +951,7 @@ fn nodes_under_any_open_state() {
     );
     assert_eq!(
         view::churn_label(ChurnClass::VersionOnly, 2, false),
-        "2 version-only (store path version bumps)"
+        "2 version-only (version bumps)"
     );
 }
 

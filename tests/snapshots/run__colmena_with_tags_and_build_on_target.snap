@@ -86,7 +86,7 @@ Files
       +b
       \ No newline at end of file
   2 hash-only (store hash churn; --expand-churn shows them)
-  5 version-only (store path version bumps; --expand-churn shows them)
+  5 version-only (version bumps; --expand-churn shows them)
 Boot
   kernel: linux-6.12.40 -> linux-6.12.48  (also in 1)
   initrd: initrd-linux-6.12.40 -> initrd-linux-6.12.48  (also in 1)
@@ -150,7 +150,7 @@ Files
       +b
       \ No newline at end of file
   2 hash-only (store hash churn; --expand-churn shows them)
-  5 version-only (store path version bumps; --expand-churn shows them)
+  5 version-only (version bumps; --expand-churn shows them)
 Boot
   kernel: linux-6.12.40 -> linux-6.12.48  (also in 1)
   initrd: initrd-linux-6.12.40 -> initrd-linux-6.12.48  (also in 1)

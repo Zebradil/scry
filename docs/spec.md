@@ -572,7 +572,7 @@ store path.
 3. Otherwise a real change.
 
 Churned files are grouped: `N hash-only (store hash churn)` and
-`N version-only (store path version bumps)`. Both are collapsed by default and opened with
+`N version-only (version bumps)`. Both are collapsed by default and opened with
 `--expand-churn` or in the TUI.
 
 **Word highlight**: inside each hunk, each run of removed lines pairs with the run of added lines right
@@ -755,7 +755,7 @@ Files
       +exec app --workers 8
   [M] etc/udev/hwdb.bin  (content not fetched, 13.5 MiB -> 13.6 MiB)
   57 hash-only (store hash churn; --expand-churn shows them)
-  3 version-only (store path version bumps; --expand-churn shows them)
+  3 version-only (version bumps; --expand-churn shows them)
 Boot
   kernel: linux-6.12.40 -> linux-6.12.48
   initrd: initrd-linux-6.12.40 -> initrd-linux-6.12.48

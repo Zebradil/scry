@@ -38,7 +38,7 @@ Files
   [T] etc/systemd/system/debug-shell.service  file -> external link /dev/null
   [M] etc/udev/hwdb.bin  (content not fetched, 13.5 MiB -> 13.6 MiB)
   57 hash-only (store hash churn; --expand-churn shows them)
-  3 version-only (store path version bumps; --expand-churn shows them)
+  3 version-only (version bumps; --expand-churn shows them)
 Boot
   kernel: linux-6.12.40 -> linux-6.12.48
   initrd: initrd-linux-6.12.40 -> initrd-linux-6.12.48

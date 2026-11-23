@@ -38,7 +38,7 @@ expression: "render(&normative(), true, false)"
   \e[35m[T]\e[0m \e[35metc/systemd/system/debug-shell.service\e[0m  file -> external link /dev/null
   \e[36m[M]\e[0m \e[36metc/udev/hwdb.bin\e[0m  (content not fetched, 13.5 MiB -> 13.6 MiB)
   57 hash-only (store hash churn; --expand-churn shows them)
-  3 version-only (store path version bumps; --expand-churn shows them)
+  3 version-only (version bumps; --expand-churn shows them)
 \e[1mBoot\e[0m
   kernel: linux-6.12.40 -> linux-6.12.48
   initrd: initrd-linux-6.12.40 -> initrd-linux-6.12.48
