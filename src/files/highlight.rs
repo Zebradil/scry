@@ -69,8 +69,8 @@ fn tokens(text: &str) -> Vec<Range<usize>> {
     out
 }
 
-/// Byte spans of the tokens outside a longest common subsequence, adjacent ones merged.
-/// Myers' shortest edit script keeps a longest common subsequence.
+/// Byte spans of the tokens outside a longest common subsequence, adjacent or close ones merged
+/// ([`merge_close`]). Myers' shortest edit script keeps a longest common subsequence.
 fn spans(old: &str, new: &str) -> (Spans, Spans) {
     let (old_tokens, new_tokens) = (tokens(old), tokens(new));
     let old_words: Vec<&str> = old_tokens.iter().map(|r| &old[r.clone()]).collect();
@@ -82,7 +82,24 @@ fn spans(old: &str, new: &str) -> (Spans, Spans) {
             push_span(&mut new_spans, &new_tokens, op.new_range());
         }
     }
-    (old_spans, new_spans)
+    (merge_close(old, old_spans), merge_close(new, new_spans))
+}
+
+/// Joins two spans separated by at most 2 characters, none alphanumeric, so `4.6.8` against
+/// `5.0.1` reads as one change rather than three.
+fn merge_close(text: &str, spans: Spans) -> Spans {
+    let mut out: Spans = Vec::with_capacity(spans.len());
+    for (start, end) in spans {
+        match out.last_mut() {
+            Some(last) if close(&text[last.1..start]) => last.1 = end,
+            _ => out.push((start, end)),
+        }
+    }
+    out
+}
+
+fn close(gap: &str) -> bool {
+    gap.chars().count() <= 2 && !gap.chars().any(char::is_alphanumeric)
 }
 
 fn push_span(spans: &mut Spans, tokens: &[Range<usize>], range: Range<usize>) {
@@ -168,6 +185,27 @@ mod tests {
         );
         assert_eq!(old, [(19, 20), (27, 29)]);
         assert_eq!(new, [(19, 20), (27, 29)]);
+    }
+
+    #[test]
+    fn close_changes_merge_across_punctuation() {
+        let (old, new) = spans(r#""version": "4.6.8","#, r#""version": "5.0.1","#);
+        assert_eq!(old, [(12, 17)]);
+        assert_eq!(new, [(12, 17)]);
+        // Two characters of punctuation and whitespace still merge.
+        let (old, new) = spans("f(a, b)", "f(x, y)");
+        assert_eq!(old, [(2, 6)]);
+        assert_eq!(new, [(2, 6)]);
+    }
+
+    #[test]
+    fn gaps_with_a_letter_or_three_characters_stay_apart() {
+        let (old, new) = spans("(a)", "[a]");
+        assert_eq!(old, [(0, 1), (2, 3)]);
+        assert_eq!(new, [(0, 1), (2, 3)]);
+        let (old, new) = spans("1...2", "3...4");
+        assert_eq!(old, [(0, 1), (4, 5)]);
+        assert_eq!(new, [(0, 1), (4, 5)]);
     }
 
     #[test]

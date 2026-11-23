@@ -218,14 +218,6 @@ expression: configuration
                   ],
                   [
                     79,
-                    81
-                  ],
-                  [
-                    82,
-                    90
-                  ],
-                  [
-                    91,
                     98
                   ]
                 ]
@@ -246,14 +238,6 @@ expression: configuration
                   ],
                   [
                     79,
-                    81
-                  ],
-                  [
-                    82,
-                    90
-                  ],
-                  [
-                    91,
                     98
                   ]
                 ]
@@ -372,14 +356,6 @@ expression: configuration
                   ],
                   [
                     210,
-                    212
-                  ],
-                  [
-                    213,
-                    221
-                  ],
-                  [
-                    222,
                     229
                   ],
                   [
@@ -392,14 +368,6 @@ expression: configuration
                   ],
                   [
                     325,
-                    327
-                  ],
-                  [
-                    328,
-                    336
-                  ],
-                  [
-                    337,
                     344
                   ]
                 ]
@@ -426,14 +394,6 @@ expression: configuration
                   ],
                   [
                     210,
-                    212
-                  ],
-                  [
-                    213,
-                    221
-                  ],
-                  [
-                    222,
                     229
                   ],
                   [
@@ -446,14 +406,6 @@ expression: configuration
                   ],
                   [
                     325,
-                    327
-                  ],
-                  [
-                    328,
-                    336
-                  ],
-                  [
-                    337,
                     344
                   ]
                 ]
@@ -508,14 +460,6 @@ expression: configuration
                 "spans": [
                   [
                     24,
-                    26
-                  ],
-                  [
-                    27,
-                    35
-                  ],
-                  [
-                    36,
                     43
                   ]
                 ]
@@ -526,14 +470,6 @@ expression: configuration
                 "spans": [
                   [
                     24,
-                    26
-                  ],
-                  [
-                    27,
-                    35
-                  ],
-                  [
-                    36,
                     43
                   ]
                 ]
@@ -1016,14 +952,6 @@ expression: configuration
                   ],
                   [
                     62,
-                    64
-                  ],
-                  [
-                    65,
-                    73
-                  ],
-                  [
-                    74,
                     81
                   ],
                   [
@@ -1038,14 +966,6 @@ expression: configuration
                 "spans": [
                   [
                     14,
-                    16
-                  ],
-                  [
-                    17,
-                    25
-                  ],
-                  [
-                    26,
                     33
                   ]
                 ]
@@ -1070,14 +990,6 @@ expression: configuration
                   ],
                   [
                     62,
-                    64
-                  ],
-                  [
-                    65,
-                    73
-                  ],
-                  [
-                    74,
                     81
                   ],
                   [
@@ -1092,14 +1004,6 @@ expression: configuration
                 "spans": [
                   [
                     14,
-                    16
-                  ],
-                  [
-                    17,
-                    25
-                  ],
-                  [
-                    26,
                     33
                   ]
                 ]
