@@ -259,6 +259,7 @@ async fn work(
         let options = tui::Options {
             expand_churn: common.expand_churn,
             color,
+            word_highlight: common.word_highlight,
         };
         let header = report.clone();
         let quit = Arc::new(AtomicBool::new(false));
@@ -309,6 +310,7 @@ async fn work(
             let options = render::text::Options {
                 color,
                 expand_churn: common.expand_churn,
+                word_highlight: common.word_highlight,
             };
             render::text::write(&report, options, out)
         }

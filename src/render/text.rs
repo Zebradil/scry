@@ -3,15 +3,18 @@
 
 use std::io::{self, Write};
 
+use crate::cli::WordHighlight;
 use crate::render::view::{self, Color, Kind, Node, Span};
 use crate::report::{Configuration, Report};
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct Options {
-    /// ANSI colour, bold and dim; see `render::color_enabled`.
+    /// ANSI colours and attributes; see `render::color_enabled`.
     pub color: bool,
     /// `--expand-churn`.
     pub expand_churn: bool,
+    /// `--word-highlight`.
+    pub word_highlight: WordHighlight,
 }
 
 /// The whole report: the shared section when there are two or more configurations, then each
@@ -27,7 +30,7 @@ pub fn write(report: &Report, options: Options, out: &mut impl Write) -> io::Res
     let blocks = std::iter::once(shared).chain(
         configurations
             .iter()
-            .map(|c| view::configuration(&report.mode, &report.shared, c)),
+            .map(|c| view::configuration(&report.mode, &report.shared, c, options.word_highlight)),
     );
     for (i, nodes) in blocks.filter(|b| !b.is_empty()).enumerate() {
         if i > 0 {
@@ -108,19 +111,31 @@ fn write_span(out: &mut impl Write, span: &Span, color: bool) -> io::Result<()> 
     if !color || style == Default::default() {
         return out.write_all(span.text.as_bytes());
     }
-    let mut codes = Vec::new();
-    if style.bold {
-        codes.push("1");
-    }
-    if style.dim {
-        codes.push("2");
-    }
-    codes.extend(style.color.map(|c| match c {
-        Color::Red => "31",
-        Color::Green => "32",
-        Color::Yellow => "33",
-        Color::Magenta => "35",
-        Color::Cyan => "36",
-    }));
+    let attributes = [
+        (style.bold, 1),
+        (style.dim, 2),
+        (style.underline, 4),
+        (style.reverse, 7),
+    ];
+    let codes: Vec<String> = attributes
+        .into_iter()
+        .filter_map(|(on, code)| on.then_some(code))
+        .chain(style.color.map(foreground))
+        .chain(style.background.map(|c| foreground(c) + 10))
+        .map(|code| code.to_string())
+        .collect();
     write!(out, "\x1b[{}m{}\x1b[0m", codes.join(";"), span.text)
+}
+
+/// The SGR foreground code; the background code is 10 more.
+fn foreground(color: Color) -> u8 {
+    match color {
+        Color::Black => 30,
+        Color::Red => 31,
+        Color::Green => 32,
+        Color::Yellow => 33,
+        Color::Magenta => 35,
+        Color::Cyan => 36,
+        Color::BrightWhite => 97,
+    }
 }

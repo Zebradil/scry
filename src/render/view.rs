@@ -1,7 +1,7 @@
 //! The view model of text output (spec 8.3), built to be reused by the TUI (spec 8.4).
 //!
 //! [`configuration`] and [`shared`] turn report data into a tree of [`Node`]s. A node is one
-//! output row: styled [`Span`]s (text, foreground colour, bold, dim; spec 8.5), an indent in
+//! output row: styled [`Span`]s (text, colours and attributes; spec 8.5), an indent in
 //! columns relative to its parent row, a [`Kind`], and its child rows. Rows are complete as
 //! built: labels, tags, colours, column alignment and `(also in N)`. What a reader decides is
 //! which nodes are open:
@@ -26,6 +26,7 @@
 //! the machines compared and must not reach the terminal or the clipboard as control
 //! sequences. Widths are display widths of the escaped text.
 
+use crate::cli::WordHighlight;
 use crate::files::refs::display_path;
 use crate::report::{
     Boot, BootChange, ChurnClass, ClosureKind, Configuration, FileChange, FileStatus, FileType,
@@ -36,29 +37,39 @@ use crate::shared::{AlsoIn, boot_rows};
 use crate::size::{format_delta, format_size};
 use unicode_width::UnicodeWidthStr;
 
-/// Foreground colours of the 16-colour palette that the tables of spec 7.2, 7.3 and 7.5 use.
+/// Colours of the 16-colour palette that the tables of spec 7.2, 7.3 and 7.5 and the word
+/// highlight styles use.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Color {
+    Black,
     Red,
     Green,
     Yellow,
     Magenta,
     Cyan,
+    BrightWhite,
 }
 
-/// `color: None` is the terminal's default foreground.
+/// `color: None` is the terminal's default foreground, `background: None` its default
+/// background.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct Style {
     pub color: Option<Color>,
+    pub background: Option<Color>,
     pub bold: bool,
     pub dim: bool,
+    pub underline: bool,
+    pub reverse: bool,
 }
 
 impl Style {
-    const PLAIN: Self = Self {
+    pub const PLAIN: Self = Self {
         color: None,
+        background: None,
         bold: false,
         dim: false,
+        underline: false,
+        reverse: false,
     };
     const BOLD: Self = Self {
         bold: true,
@@ -211,8 +222,13 @@ pub fn shared(items: &[SharedChange]) -> Vec<Node> {
 
 /// One configuration as in spec 8.3: its header row (with the `old`, `new` and `system` rows,
 /// or the status row, as children), then the Packages, Files and Boot sections of a `done`
-/// configuration. `shared` gives the `(also in N)` marks.
-pub fn configuration(mode: &Mode, shared: &[SharedChange], c: &Configuration) -> Vec<Node> {
+/// configuration. `shared` gives the `(also in N)` marks, `word` the style of changed words.
+pub fn configuration(
+    mode: &Mode,
+    shared: &[SharedChange],
+    c: &Configuration,
+    word: WordHighlight,
+) -> Vec<Node> {
     let header = format!("{} · {} ({})", c.name, kind_name(c.kind), location(mode, c));
     let mut rows = Vec::new();
     let mut sections = Vec::new();
@@ -230,7 +246,7 @@ pub fn configuration(mode: &Mode, shared: &[SharedChange], c: &Configuration) ->
             }
             let also = AlsoIn::new(shared);
             sections.push(packages(&s.packages, &also));
-            sections.extend(files(&s.files, &also));
+            sections.extend(files(&s.files, &also, word));
             sections.extend(s.boot.as_ref().and_then(|b| boot(b, &also)));
         }
         Status::NoChanges => {
@@ -483,7 +499,7 @@ fn list(versions: &[String]) -> String {
         .join(", ")
 }
 
-fn files(f: &Files, also: &AlsoIn) -> Option<Node> {
+fn files(f: &Files, also: &AlsoIn, word: WordHighlight) -> Option<Node> {
     if f.changes.is_empty() {
         return None;
     }
@@ -491,14 +507,14 @@ fn files(f: &Files, also: &AlsoIn) -> Option<Node> {
         .changes
         .iter()
         .filter(|c| c.class == ChurnClass::Real)
-        .map(|c| file(c, also.file(c)))
+        .map(|c| file(c, also.file(c), word))
         .collect();
     for class in [ChurnClass::HashOnly, ChurnClass::VersionOnly] {
         let group: Vec<Node> = f
             .changes
             .iter()
             .filter(|c| c.class == class)
-            .map(|c| file(c, None))
+            .map(|c| file(c, None, word))
             .collect();
         if !group.is_empty() {
             let label = churn_label(class, group.len(), false);
@@ -514,10 +530,10 @@ fn files(f: &Files, also: &AlsoIn) -> Option<Node> {
     ))
 }
 
-fn file(c: &FileChange, also: Option<usize>) -> Node {
+fn file(c: &FileChange, also: Option<usize>, word: WordHighlight) -> Node {
     let mut spans = file_row(c, true);
     push_also(&mut spans, also);
-    Node::new(2, spans, file_kind(c), hunk_lines(&c.hunks))
+    Node::new(2, spans, file_kind(c), hunk_lines(&c.hunks, word))
 }
 
 fn file_kind(c: &FileChange) -> Kind {
@@ -607,7 +623,7 @@ fn describe(file_type: Option<FileType>, link: &Option<String>) -> String {
     }
 }
 
-fn hunk_lines(hunks: &[Hunk]) -> Vec<Node> {
+fn hunk_lines(hunks: &[Hunk], word: WordHighlight) -> Vec<Node> {
     let mut rows = Vec::new();
     for h in hunks {
         let header = format!(
@@ -616,7 +632,7 @@ fn hunk_lines(hunks: &[Hunk]) -> Vec<Node> {
         );
         rows.push(Node::text(4, header, Style::DIM));
         for line in &h.lines {
-            rows.push(Node::new(4, line_spans(line), Kind::Text, Vec::new()));
+            rows.push(Node::new(4, line_spans(line, word), Kind::Text, Vec::new()));
             if line.no_newline {
                 rows.push(Node::text(4, "\\ No newline at end of file", Style::DIM));
             }
@@ -625,34 +641,52 @@ fn hunk_lines(hunks: &[Hunk]) -> Vec<Node> {
     rows
 }
 
-/// A hunk line in its op's colour, highlighted tokens bold; a hash-only pair dimmed, without
-/// bold (spec 7.3). A span that does not fit the text leaves the rest plain.
-fn line_spans(line: &Line) -> Vec<Span> {
+/// A hunk line in its op's colour, its highlighted tokens and the rest styled by `word`; a
+/// hash-only pair dimmed, without highlight (spec 7.3). A span that does not fit the text
+/// leaves the rest plain.
+fn line_spans(line: &Line, word: WordHighlight) -> Vec<Span> {
     let (op, color) = match line.op {
         LineOp::Context => (" ", None),
         LineOp::Removed => ("-", Some(Color::Red)),
         LineOp::Added => ("+", Some(Color::Green)),
     };
+    let highlighted = !line.hash_only && !line.spans.is_empty();
+    let fg = Style::fg(color);
     let plain = Style {
-        color,
-        dim: line.hash_only,
-        bold: false,
+        dim: line.hash_only || (highlighted && word == WordHighlight::Dim),
+        ..fg
     };
-    let bold = Style {
-        bold: true,
-        ..plain
+    let bold = Style { bold: true, ..fg };
+    let changed = match word {
+        WordHighlight::Dim | WordHighlight::Bold => bold,
+        WordHighlight::Reverse => Style {
+            reverse: true,
+            ..bold
+        },
+        WordHighlight::Underline => Style {
+            underline: true,
+            ..fg
+        },
+        WordHighlight::Background => Style {
+            color: Some(match line.op {
+                LineOp::Added => Color::Black,
+                _ => Color::BrightWhite,
+            }),
+            background: color,
+            ..fg
+        },
     };
     let mut spans = Vec::new();
     push(&mut spans, op, plain);
     let mut at = 0;
-    if !line.hash_only {
+    if highlighted {
         for &(start, end) in &line.spans {
             let (Some(before), Some(token)) = (line.text.get(at..start), line.text.get(start..end))
             else {
                 break;
             };
             push(&mut spans, before, plain);
-            push(&mut spans, token, bold);
+            push(&mut spans, token, changed);
             at = end;
         }
     }

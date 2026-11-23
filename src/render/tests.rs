@@ -8,7 +8,7 @@ use insta::assert_snapshot;
 use super::text::{self, Options};
 use super::view::{self, FILE_PATH_SPAN, Kind, Node};
 use super::{color_enabled, json};
-use crate::cli::Color;
+use crate::cli::{Color, WordHighlight};
 use crate::report::{
     Base, Boot, ChurnClass, ClosureKind, Configuration, FileChange, FileStatus, FileType, Files,
     Head, Hunk, Line, LineOp, LinkChange, Mode, PackageChange, PackageChangeKind, Packages,
@@ -202,6 +202,7 @@ fn render(report: &Report, color: bool, expand_churn: bool) -> String {
     let options = Options {
         color,
         expand_churn,
+        ..Options::default()
     };
     text::write(report, options, &mut out).unwrap();
     String::from_utf8(out).unwrap().replace('\x1b', "\\e")
@@ -866,6 +867,38 @@ fn churn_expanded_in_colour() {
 }
 
 #[test]
+fn word_highlight_styles_in_colour() {
+    let mut text = String::new();
+    for style in [
+        WordHighlight::Dim,
+        WordHighlight::Background,
+        WordHighlight::Reverse,
+        WordHighlight::Underline,
+        WordHighlight::Bold,
+    ] {
+        let options = Options {
+            color: true,
+            word_highlight: style,
+            ..Options::default()
+        };
+        let mut out = Vec::new();
+        text::write(&normative(), options, &mut out).unwrap();
+        let out = String::from_utf8(out).unwrap().replace('\x1b', "\\e");
+        text += &format!("{style:?}\n");
+        // A pair with spans on the added side only, and one with spans on both.
+        for line in out.lines().filter(|l| {
+            ["trusted-public-keys", "--workers"]
+                .iter()
+                .any(|w| l.contains(w))
+        }) {
+            text += line;
+            text += "\n";
+        }
+    }
+    assert_snapshot!("word_highlight_styles_colour", text);
+}
+
+#[test]
 fn colour_decision() {
     let set = Some(OsStr::new("1"));
     let empty = Some(OsStr::new(""));
@@ -891,7 +924,12 @@ fn colour_decision() {
 #[test]
 fn view_identity_for_the_tui() {
     let report = normative();
-    let nodes = view::configuration(&report.mode, &report.shared, &report.configurations[0]);
+    let nodes = view::configuration(
+        &report.mode,
+        &report.shared,
+        &report.configurations[0],
+        WordHighlight::default(),
+    );
     let mut collapsible = HashSet::new();
     let mut stack: Vec<&Node> = nodes.iter().collect();
     let mut files = 0;
@@ -924,7 +962,12 @@ fn view_identity_for_the_tui() {
 #[test]
 fn nodes_under_any_open_state() {
     let report = normative();
-    let nodes = view::configuration(&report.mode, &report.shared, &report.configurations[0]);
+    let nodes = view::configuration(
+        &report.mode,
+        &report.shared,
+        &report.configurations[0],
+        WordHighlight::default(),
+    );
     let mut out = Vec::new();
     text::write_nodes(&nodes, |_| true, false, &mut out).unwrap();
     let all_open = String::from_utf8(out).unwrap();

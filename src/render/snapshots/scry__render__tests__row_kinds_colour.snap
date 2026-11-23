@@ -15,8 +15,8 @@ expression: "render(&report, true, false)"
 \e[1mFiles\e[0m
   \e[36m[M]\e[0m \e[36metc/abcdefgh.conf\e[0m  (also in 1)
       \e[2m@@ -1,1 +1,1 @@\e[0m
-      \e[31m-名前 = \e[0m\e[1;31m太郎\e[0m
-      \e[32m+名前 = \e[0m\e[1;32m花子\e[0m
+      \e[2;31m-名前 = \e[0m\e[1;31m太郎\e[0m
+      \e[2;32m+名前 = \e[0m\e[1;32m花子\e[0m
   \e[35m[B]\e[0m \e[35metc/blob.bin\e[0m  (binary, 1.0 KiB -> 2.0 KiB)
   \e[32m[A]\e[0m \e[32metc/evil^[[31m.conf\e[0m
   \e[31m[R]\e[0m \e[31metc/gone.conf\e[0m
@@ -26,12 +26,12 @@ expression: "render(&report, true, false)"
   \e[36m[M]\e[0m \e[36metc/inject.conf\e[0m
       \e[2m@@ -1,1 +1,1 @@\e[0m
       \e[31m-plain\e[0m
-      \e[32m+a^[]52;c;ZXZpbA==^Gb^[]0;pwned^Gc^[[2J^M\e[0m\e[1;32mX\e[0m\e[32m\u{9b}31mY\e[0m
+      \e[2;32m+a^[]52;c;ZXZpbA==^Gb^[]0;pwned^Gc^[[2J^M\e[0m\e[1;32mX\e[0m\e[2;32m\u{9b}31mY\e[0m
   \e[35m[T]\e[0m \e[35metc/ssl/certs\e[0m  directory -> external link /etc/static/ssl/certs
   \e[36m[M]\e[0m \e[36metc/日本語.conf\e[0m  (also in 1)
       \e[2m@@ -1,1 +1,1 @@\e[0m
-      \e[31m-名前 = \e[0m\e[1;31m太郎\e[0m
-      \e[32m+名前 = \e[0m\e[1;32m花子\e[0m
+      \e[2;31m-名前 = \e[0m\e[1;31m太郎\e[0m
+      \e[2;32m+名前 = \e[0m\e[1;32m花子\e[0m
 \e[1mBoot\e[0m
   kernel: (none) -> linux-6.12.48
   initrd: initrd-linux-6.12.40 -> (none)
@@ -48,12 +48,12 @@ expression: "render(&report, true, false)"
 \e[1mFiles\e[0m
   \e[36m[M]\e[0m \e[36metc/abcdefgh.conf\e[0m  (also in 1)
       \e[2m@@ -1,1 +1,1 @@\e[0m
-      \e[31m-名前 = \e[0m\e[1;31m太郎\e[0m
-      \e[32m+名前 = \e[0m\e[1;32m花子\e[0m
+      \e[2;31m-名前 = \e[0m\e[1;31m太郎\e[0m
+      \e[2;32m+名前 = \e[0m\e[1;32m花子\e[0m
   \e[36m[M]\e[0m \e[36metc/日本語.conf\e[0m  (also in 1)
       \e[2m@@ -1,1 +1,1 @@\e[0m
-      \e[31m-名前 = \e[0m\e[1;31m太郎\e[0m
-      \e[32m+名前 = \e[0m\e[1;32m花子\e[0m
+      \e[2;31m-名前 = \e[0m\e[1;31m太郎\e[0m
+      \e[2;32m+名前 = \e[0m\e[1;32m花子\e[0m
 
 \e[1mweb-c · nixos (root@web-c)\e[0m
   \e[31merror: ssh root@web-c: banner ^[]0;pwned^G\e[0m

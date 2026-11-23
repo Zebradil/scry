@@ -1,6 +1,6 @@
 //! The screen (spec 8.4, 8.5): the list, the detail pane, the bottom line. The focused pane
-//! has a thick border and the cursor a `>` mark, so both show without colour; colours are
-//! foreground only, plus bold and dim.
+//! has a thick border and the cursor a `>` mark, so both show without colour. Styles come from
+//! `render::view` as they are.
 
 use ratatui::Frame;
 use ratatui::style::{Color, Modifier};
@@ -114,26 +114,40 @@ fn span(s: &Span, color: bool) -> ratatui::text::Span<'static> {
     ratatui::text::Span::styled(s.text.clone(), ratatui_style(s.style, color))
 }
 
-/// Foreground colour, bold and dim; nothing without colour (spec 8.5).
+/// Colours and attributes; nothing without colour (spec 8.5).
 fn ratatui_style(s: Style, color: bool) -> ratatui::style::Style {
     let mut out = ratatui::style::Style::new();
     if !color {
         return out;
     }
     if let Some(c) = s.color {
-        out = out.fg(match c {
-            view::Color::Red => Color::Red,
-            view::Color::Green => Color::Green,
-            view::Color::Yellow => Color::Yellow,
-            view::Color::Magenta => Color::Magenta,
-            view::Color::Cyan => Color::Cyan,
-        });
+        out = out.fg(ratatui_color(c));
     }
-    if s.bold {
-        out = out.add_modifier(Modifier::BOLD);
+    if let Some(c) = s.background {
+        out = out.bg(ratatui_color(c));
     }
-    if s.dim {
-        out = out.add_modifier(Modifier::DIM);
+    for (on, modifier) in [
+        (s.bold, Modifier::BOLD),
+        (s.dim, Modifier::DIM),
+        (s.underline, Modifier::UNDERLINED),
+        (s.reverse, Modifier::REVERSED),
+    ] {
+        if on {
+            out = out.add_modifier(modifier);
+        }
     }
     out
+}
+
+fn ratatui_color(c: view::Color) -> Color {
+    match c {
+        view::Color::Black => Color::Black,
+        view::Color::Red => Color::Red,
+        view::Color::Green => Color::Green,
+        view::Color::Yellow => Color::Yellow,
+        view::Color::Magenta => Color::Magenta,
+        view::Color::Cyan => Color::Cyan,
+        // ratatui's `White` is SGR 97; its `Gray` is 37.
+        view::Color::BrightWhite => Color::White,
+    }
 }

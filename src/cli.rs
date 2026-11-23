@@ -124,6 +124,9 @@ pub struct CommonArgs {
     /// Show hash-only and version-only file groups expanded
     #[arg(long)]
     pub expand_churn: bool,
+    /// How changed words stand out inside a changed line
+    #[arg(long, value_enum, value_name = "STYLE", default_value_t = WordHighlight::Dim)]
+    pub word_highlight: WordHighlight,
     /// Exit like diff(1): 0 no changes, 1 changes, 2 trouble
     #[arg(long)]
     pub exit_code: bool,
@@ -161,6 +164,17 @@ pub enum Color {
     Auto,
     Always,
     Never,
+}
+
+/// `--word-highlight` (spec 7.3).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, ValueEnum)]
+pub enum WordHighlight {
+    #[default]
+    Dim,
+    Background,
+    Reverse,
+    Underline,
+    Bold,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
@@ -216,6 +230,7 @@ mod tests {
         assert_eq!(common.format, Format::Auto);
         assert_eq!(common.color, Color::Auto);
         assert!(!common.expand_churn && !common.exit_code);
+        assert_eq!(common.word_highlight, WordHighlight::Dim);
         assert_eq!(common.jobs.get(), 16);
         assert_eq!(common.eval_jobs, cpu_count());
         assert_eq!(common.timeout, 60);
@@ -270,6 +285,7 @@ mod tests {
             &["colmena", "--eval-jobs", "0"],
             &["colmena", "--timeout", "0"],
             &["colmena", "--format", "yaml"],
+            &["colmena", "--word-highlight", "italic"],
             &["colmena", "--on", "a", "--on", "b"],
             &["colmena", "--target", "web-a=web-a"],
             &["colmena", "--build-on-target", "--base", "main"],
