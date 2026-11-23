@@ -95,6 +95,10 @@ scry paths --target root@web-a /nix/var/nix/profiles/system-41-link /run/current
 - `--format json`: the full report.
 - `--expand-churn` shows hash-only and version-only changes, which are collapsed by default.
 - `--color auto|always|never`.
+- `--word-highlight dim|background|reverse|underline|bold`: how changed words stand out inside a
+  changed line, in text output and the TUI. `dim` (default) dims the rest of the line and keeps the
+  changed words bold; `bold` alone is hard to see in some themes. `background` puts them on a red or
+  green background.
 
 TUI keys: `j`/`k` move, `J`/`K` next change, `h`/`l` and Enter fold, Tab switch pane, `1`–`9`
 select a configuration, `/` filter, `w` wrap, `t` tree view, `y` copy the pane, `Y` copy the

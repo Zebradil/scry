@@ -15,16 +15,17 @@ Arguments:
   <NEW>  New toplevel, such as /run/current-system
 
 Options:
-      --target <TARGET>        The machine both toplevels live on, [user@]host; this machine when absent
-      --format <FORMAT>        `auto`: TUI when stdout is a terminal, text otherwise [default: auto] [possible values: auto, text, json]
-      --color <COLOR>          `auto`: colour when stdout is a terminal and NO_COLOR is unset or empty [default: auto] [possible values: auto, always, never]
-      --expand-churn           Show hash-only and version-only file groups expanded
-      --exit-code              Exit like diff(1): 0 no changes, 1 changes, 2 trouble
-      --jobs <N>               Configurations fetched at once [default: 16]
-      --eval-jobs <N>          Concurrent `nix eval` / `colmena eval` calls; one NixOS evaluation takes about one core and 1 GB. Defaults to the CPU count
-      --timeout <SECONDS>      Seconds per configuration for fetching; builds and evaluations have no timeout [default: 60]
-      --max-file-size <BYTES>  Files larger than this on either side are reported without content [default: 1048576]
-  -h, --help                   Print help
+      --target <TARGET>         The machine both toplevels live on, [user@]host; this machine when absent
+      --format <FORMAT>         `auto`: TUI when stdout is a terminal, text otherwise [default: auto] [possible values: auto, text, json]
+      --color <COLOR>           `auto`: colour when stdout is a terminal and NO_COLOR is unset or empty [default: auto] [possible values: auto, always, never]
+      --expand-churn            Show hash-only and version-only file groups expanded
+      --word-highlight <STYLE>  How changed words stand out inside a changed line [default: dim] [possible values: dim, background, reverse, underline, bold]
+      --exit-code               Exit like diff(1): 0 no changes, 1 changes, 2 trouble
+      --jobs <N>                Configurations fetched at once [default: 16]
+      --eval-jobs <N>           Concurrent `nix eval` / `colmena eval` calls; one NixOS evaluation takes about one core and 1 GB. Defaults to the CPU count
+      --timeout <SECONDS>       Seconds per configuration for fetching; builds and evaluations have no timeout [default: 60]
+      --max-file-size <BYTES>   Files larger than this on either side are reported without content [default: 1048576]
+  -h, --help                    Print help
 
 Environment:
   NO_COLOR     A non-empty value disables colour under --color auto

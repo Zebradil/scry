@@ -129,7 +129,8 @@ scry flake [REF] [--on SEL] [--target NAME=TARGET]... [--base REV] [--no-build] 
 scry paths [--target TARGET] OLD NEW [COMMON]
 scry completions SHELL
 
-COMMON: [--format auto|text|json] [--color auto|always|never] [--expand-churn] [--exit-code]
+COMMON: [--format auto|text|json] [--color auto|always|never] [--expand-churn]
+        [--word-highlight dim|background|reverse|underline|bold] [--exit-code]
         [--jobs N] [--eval-jobs N] [--timeout SECONDS] [--max-file-size BYTES]
 ```
 
@@ -270,6 +271,7 @@ temporary directory. A side whose toplevel is missing fails as in section 9.
 | `--format` | `auto` | `auto`: TUI when stdout is a terminal, text otherwise. `text`, `json`: force. |
 | `--color` | `auto` | `auto`: colour when stdout is a terminal and `NO_COLOR` is unset or empty. |
 | `--expand-churn` | off | Show hash-only and version-only groups expanded (text) or open (TUI). |
+| `--word-highlight` | `dim` | How changed words stand out in a paired hunk line (7.3). Text and TUI only. |
 | `--exit-code` | off | Exit codes follow `diff(1)`: 1 for changes, 2 for trouble (4.7). |
 | `--jobs` | 16 | Configurations fetched at once. Unmeasured default. |
 | `--eval-jobs` | CPU count | Concurrent `nix eval` / `colmena eval` calls. One NixOS evaluation takes about one core and 1 GB. |
@@ -578,8 +580,24 @@ Churned files are grouped: `N hash-only (store hash churn)` and
 **Word highlight**: inside each hunk, each run of removed lines pairs with the run of added lines right
 after it, line by line. Unpaired lines are coloured whole. A paired line is split into tokens: a run of
 Unicode alphanumerics or `_`, or any single other character. A token-level longest common subsequence
-marks the tokens that differ. Those are shown bold in the line's colour, the rest plain in that colour.
-A pair whose only difference is store hashes is dimmed, without bold.
+marks the tokens that differ. Two marked runs separated by at most 2 characters, none of them
+alphanumeric, join into one, so `"4.6.8"` against `"5.0.1"` marks `4.6.8` whole rather than three
+digits. A pair whose only difference is store hashes is dimmed, without highlight.
+
+A paired line with marked runs is styled by `--word-highlight`; the line's colour is red for removed,
+green for added lines:
+
+| Style | Rest of the line | Marked runs |
+|---|---|---|
+| `dim` (default) | dim, line's colour | bold, line's colour |
+| `background` | line's colour | removed: bright white on red; added: black on green |
+| `reverse` | line's colour | bold reverse video, line's colour |
+| `underline` | line's colour | underlined, line's colour |
+| `bold` | line's colour | bold, line's colour |
+
+How visible bold is depends on the terminal's theme and font, so no single style suits every
+terminal. A paired line without marked runs (the side of a pure insertion or deletion) is coloured
+whole like an unpaired line.
 
 ### 7.4 Followed references and small rebuilds
 
@@ -639,7 +657,7 @@ Fields and their values:
 | hunk line `op` | `" "`, `"-"`, `"+"` |
 
 - Store paths appear in full. Sizes are integers in bytes. `spans` are UTF-8 byte ranges
-  `[start, end)` of highlighted tokens in `text`.
+  `[start, end)` of highlighted runs in `text` (7.3).
 - `error` is present only with status `error` or `timeout`. `packages`, `files` and `boot` are present
   only with status `done`. `boot` is `null` for kinds other than NixOS.
 - `shared` lists items of status-`done` configurations only (8.2).
@@ -849,8 +867,10 @@ transient notice.
 
 ### 8.5 Colour
 
-Foreground colours only, from the 16-colour palette, plus bold and dim. No background colours, so
-output stays readable on dark and light terminals. No colour when it is disabled (4.6).
+Foreground colours from the 16-colour palette, plus bold and dim. No background colours, so output
+stays readable on dark and light terminals; the exceptions are the opt-in `--word-highlight` styles
+(7.3), which add background colours, reverse video and underline to marked runs. No colour, and no
+attribute, when colour is disabled (4.6).
 
 ## 9. Errors
 
@@ -896,7 +916,7 @@ three. Completion is dynamic and silent on any error:
   - both path-info JSON shapes Nix has emitted (an array of objects with `path`, an object keyed by
     path, `null` for an invalid path);
   - hash and version normalisation;
-  - token LCS highlight;
+  - token LCS highlight, including the join of close runs;
   - selection matching (whole-string globs, tags, no match);
   - tree listing parsing (`ls -ld` and `cksum` lines), including names with spaces and ` -> ` inside a
     name;
