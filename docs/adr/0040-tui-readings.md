@@ -5,7 +5,8 @@ Spec 8.4 and 8.5 leave some cases open. These readings fill them; the tests in
 
 ## Screen
 
-- **Cursor and focus without colour**: 8.5 allows foreground colours, bold and dim only, so
+- **Cursor and focus without colour**: 8.5 allows foreground colours, bold and dim only
+  (background colours and reverse video only in opt-in word highlight styles), so
   the cursor and the selected entry are marked with `>` in a gutter (bold in the focused pane,
   dim in the other) and the focused pane has a thick border. Reverse video would be a
   background colour, and both marks must also show with colour off.

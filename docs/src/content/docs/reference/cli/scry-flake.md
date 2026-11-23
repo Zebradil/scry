@@ -14,19 +14,20 @@ Arguments:
   [REF]  The flake; `REF#name` selects exactly one configuration [default: .]
 
 Options:
-      --target <NAME=TARGET>   Reach configuration NAME at TARGET ([user@]host) instead of the host its name gives
-      --on <SEL>               Comma-separated patterns matched against whole names: `*` and `?` globs, `@tag` for colmena tags. A pattern that matches nothing is an error
-      --base <REV>             Compare against the same configurations built from git revision REV instead of what the machines run; contacts no machine
-      --no-build               Skip the build step; toplevels must already exist
-      --format <FORMAT>        `auto`: TUI when stdout is a terminal, text otherwise [default: auto] [possible values: auto, text, json]
-      --color <COLOR>          `auto`: colour when stdout is a terminal and NO_COLOR is unset or empty [default: auto] [possible values: auto, always, never]
-      --expand-churn           Show hash-only and version-only file groups expanded
-      --exit-code              Exit like diff(1): 0 no changes, 1 changes, 2 trouble
-      --jobs <N>               Configurations fetched at once [default: 16]
-      --eval-jobs <N>          Concurrent `nix eval` / `colmena eval` calls; one NixOS evaluation takes about one core and 1 GB. Defaults to the CPU count
-      --timeout <SECONDS>      Seconds per configuration for fetching; builds and evaluations have no timeout [default: 60]
-      --max-file-size <BYTES>  Files larger than this on either side are reported without content [default: 1048576]
-  -h, --help                   Print help
+      --target <NAME=TARGET>    Reach configuration NAME at TARGET ([user@]host) instead of the host its name gives
+      --on <SEL>                Comma-separated patterns matched against whole names: `*` and `?` globs, `@tag` for colmena tags. A pattern that matches nothing is an error
+      --base <REV>              Compare against the same configurations built from git revision REV instead of what the machines run; contacts no machine
+      --no-build                Skip the build step; toplevels must already exist
+      --format <FORMAT>         `auto`: TUI when stdout is a terminal, text otherwise [default: auto] [possible values: auto, text, json]
+      --color <COLOR>           `auto`: colour when stdout is a terminal and NO_COLOR is unset or empty [default: auto] [possible values: auto, always, never]
+      --expand-churn            Show hash-only and version-only file groups expanded
+      --word-highlight <STYLE>  How changed words stand out inside a changed line [default: dim] [possible values: dim, background, reverse, underline, bold]
+      --exit-code               Exit like diff(1): 0 no changes, 1 changes, 2 trouble
+      --jobs <N>                Configurations fetched at once [default: 16]
+      --eval-jobs <N>           Concurrent `nix eval` / `colmena eval` calls; one NixOS evaluation takes about one core and 1 GB. Defaults to the CPU count
+      --timeout <SECONDS>       Seconds per configuration for fetching; builds and evaluations have no timeout [default: 60]
+      --max-file-size <BYTES>   Files larger than this on either side are reported without content [default: 1048576]
+  -h, --help                    Print help
 
 Environment:
   NO_COLOR     A non-empty value disables colour under --color auto

@@ -356,7 +356,15 @@ impl App {
                         Status::Done(s) => Some(&s.packages.rebuilt),
                         _ => None,
                     };
-                    (view::configuration(&self.mode, &self.shared, c), rebuilt)
+                    (
+                        view::configuration(
+                            &self.mode,
+                            &self.shared,
+                            c,
+                            self.options.word_highlight,
+                        ),
+                        rebuilt,
+                    )
                 }
             },
         };
@@ -621,12 +629,13 @@ impl App {
                 Entry::All => view::shared(&self.shared),
                 Entry::Configuration(i) => {
                     let c = self.configuration(i).expect("checked above");
-                    view::configuration(&self.mode, &self.shared, c)
+                    view::configuration(&self.mode, &self.shared, c, self.options.word_highlight)
                 }
             };
             let options = text::Options {
                 color: false,
                 expand_churn: self.options.expand_churn,
+                word_highlight: self.options.word_highlight,
             };
             let mut out = Vec::new();
             text::write_as_text(&nodes, options, &mut out).expect("writing to memory");
@@ -648,11 +657,7 @@ impl App {
     }
 }
 
-const PLAIN: Style = Style {
-    color: None,
-    bold: false,
-    dim: false,
-};
+const PLAIN: Style = Style::PLAIN;
 const DIM: Style = Style { dim: true, ..PLAIN };
 
 fn fg(color: Color) -> Style {

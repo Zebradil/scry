@@ -11,6 +11,7 @@
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
 
+use crate::cli::WordHighlight;
 use crate::report::Configuration;
 
 pub mod app;
@@ -26,8 +27,10 @@ pub use terminal::run;
 pub struct Options {
     /// `--expand-churn`: churn groups start open.
     pub expand_churn: bool,
-    /// Colour, bold and dim; decided by `render::color_enabled`.
+    /// Colours and attributes; decided by `render::color_enabled`.
     pub color: bool,
+    /// `--word-highlight`.
+    pub word_highlight: WordHighlight,
 }
 
 /// What the viewer hands back when the user quits.

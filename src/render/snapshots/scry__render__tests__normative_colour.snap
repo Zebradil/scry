@@ -24,7 +24,7 @@ expression: "render(&normative(), true, false)"
       \e[2m@@ -11,3 +11,3 @@\e[0m
        substituters = https://cache.example
       \e[31m-trusted-public-keys = cache-a:AAAA\e[0m
-      \e[32m+trusted-public-keys = cache-a:AAAA\e[0m\e[1;32m cache-b:BBBB\e[0m
+      \e[2;32m+trusted-public-keys = cache-a:AAAA\e[0m\e[1;32m cache-b:BBBB\e[0m
        max-jobs = auto
   \e[32m[A]\e[0m \e[32metc/ssh/authorized_keys.d/deploy\e[0m
       \e[2m@@ -0,0 +1,1 @@\e[0m
@@ -33,8 +33,8 @@ expression: "render(&normative(), true, false)"
       \e[2m@@ -1,4 +1,4 @@\e[0m
        #!/bin/sh
        set -eu
-      \e[31m-exec app --workers \e[0m\e[1;31m4\e[0m
-      \e[32m+exec app --workers \e[0m\e[1;32m8\e[0m
+      \e[2;31m-exec app --workers \e[0m\e[1;31m4\e[0m
+      \e[2;32m+exec app --workers \e[0m\e[1;32m8\e[0m
   \e[35m[T]\e[0m \e[35metc/systemd/system/debug-shell.service\e[0m  file -> external link /dev/null
   \e[36m[M]\e[0m \e[36metc/udev/hwdb.bin\e[0m  (content not fetched, 13.5 MiB -> 13.6 MiB)
   57 hash-only (store hash churn; --expand-churn shows them)
@@ -60,7 +60,7 @@ expression: "render(&normative(), true, false)"
       \e[2m@@ -11,3 +11,3 @@\e[0m
        substituters = https://cache.example
       \e[31m-trusted-public-keys = cache-a:AAAA\e[0m
-      \e[32m+trusted-public-keys = cache-a:AAAA\e[0m\e[1;32m cache-b:BBBB\e[0m
+      \e[2;32m+trusted-public-keys = cache-a:AAAA\e[0m\e[1;32m cache-b:BBBB\e[0m
        max-jobs = auto
 
 \e[1mweb-d · nixos (root@web-d)\e[0m

@@ -9,7 +9,7 @@ use crate::store::name::{STORE_PREFIX, parse_drv_name, strip_output_suffix};
 const BASE32: &[u8] = b"0123456789abcdfghijklmnpqrsvwxyz";
 /// Stands in for every store hash. Outside Nix's base32 alphabet, so normalised text holds no
 /// store reference and normalising twice changes nothing.
-const HASH_PLACEHOLDER: &str = "<hash>";
+pub(crate) const HASH_PLACEHOLDER: &str = "<hash>";
 const VERSION_PLACEHOLDER: &str = "<version>";
 const SYSTEM_PLACEHOLDER: &str = "<system-version>";
 const REVISION_PLACEHOLDER: &str = "<revision>";

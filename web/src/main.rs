@@ -84,6 +84,7 @@ fn start() -> io::Result<()> {
     let options = Options {
         expand_churn: false,
         color: true,
+        ..Options::default()
     };
     let app = Rc::new(RefCell::new(App::new(report.mode, names, options)));
     let mut pending = report.configurations.into_iter();

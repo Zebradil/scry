@@ -1,0 +1,39 @@
+---
+source: src/render/tests.rs
+expression: text
+---
+Dim
+      \e[31m-trusted-public-keys = cache-a:AAAA\e[0m
+      \e[2;32m+trusted-public-keys = cache-a:AAAA\e[0m\e[1;32m cache-b:BBBB\e[0m
+      \e[2;31m-exec app --workers \e[0m\e[1;31m4\e[0m
+      \e[2;32m+exec app --workers \e[0m\e[1;32m8\e[0m
+      \e[31m-trusted-public-keys = cache-a:AAAA\e[0m
+      \e[2;32m+trusted-public-keys = cache-a:AAAA\e[0m\e[1;32m cache-b:BBBB\e[0m
+Background
+      \e[31m-trusted-public-keys = cache-a:AAAA\e[0m
+      \e[32m+trusted-public-keys = cache-a:AAAA\e[0m\e[30;42m cache-b:BBBB\e[0m
+      \e[31m-exec app --workers \e[0m\e[97;41m4\e[0m
+      \e[32m+exec app --workers \e[0m\e[30;42m8\e[0m
+      \e[31m-trusted-public-keys = cache-a:AAAA\e[0m
+      \e[32m+trusted-public-keys = cache-a:AAAA\e[0m\e[30;42m cache-b:BBBB\e[0m
+Reverse
+      \e[31m-trusted-public-keys = cache-a:AAAA\e[0m
+      \e[32m+trusted-public-keys = cache-a:AAAA\e[0m\e[1;7;32m cache-b:BBBB\e[0m
+      \e[31m-exec app --workers \e[0m\e[1;7;31m4\e[0m
+      \e[32m+exec app --workers \e[0m\e[1;7;32m8\e[0m
+      \e[31m-trusted-public-keys = cache-a:AAAA\e[0m
+      \e[32m+trusted-public-keys = cache-a:AAAA\e[0m\e[1;7;32m cache-b:BBBB\e[0m
+Underline
+      \e[31m-trusted-public-keys = cache-a:AAAA\e[0m
+      \e[32m+trusted-public-keys = cache-a:AAAA\e[0m\e[4;32m cache-b:BBBB\e[0m
+      \e[31m-exec app --workers \e[0m\e[4;31m4\e[0m
+      \e[32m+exec app --workers \e[0m\e[4;32m8\e[0m
+      \e[31m-trusted-public-keys = cache-a:AAAA\e[0m
+      \e[32m+trusted-public-keys = cache-a:AAAA\e[0m\e[4;32m cache-b:BBBB\e[0m
+Bold
+      \e[31m-trusted-public-keys = cache-a:AAAA\e[0m
+      \e[32m+trusted-public-keys = cache-a:AAAA\e[0m\e[1;32m cache-b:BBBB\e[0m
+      \e[31m-exec app --workers \e[0m\e[1;31m4\e[0m
+      \e[32m+exec app --workers \e[0m\e[1;32m8\e[0m
+      \e[31m-trusted-public-keys = cache-a:AAAA\e[0m
+      \e[32m+trusted-public-keys = cache-a:AAAA\e[0m\e[1;32m cache-b:BBBB\e[0m

@@ -472,7 +472,7 @@ fn expand_churn_opens_churn_groups() {
     let names = vec!["web-a".to_owned()];
     let options = Options {
         expand_churn: true,
-        color: false,
+        ..Options::default()
     };
     let mut app = App::new(Mode::Deployed, names, options);
     app.arrive(web_a());
