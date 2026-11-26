@@ -30,18 +30,22 @@ web-a · nixos (local)
   new /nix/store/w3fzn58f5mfcypjnw4knm81m44g1r4dv-nixos-system-web-a-26.11.20261110.9a8b7c6
   system 26.05.20261102.7dcdd87 -> 26.11.20261110.9a8b7c6
 Packages  38.0 MiB -> 38.0 MiB (+1.9 KiB)
-  [U] initrd-linux              0 B    6.12.40 -> 6.12.48
-  [U] openssl                   0 B    3.0.13 -> 3.0.14
-  [C] linux                     0 B    6.12.40 -> 6.12.48
-  [A] metrics.conf              +142 B
-  [A] new-agent                 +326 B 1.4.0
-  [A] resolv.conf               +140 B
-  [A] unit-metrics.service      +375 B
-  [R] unit-debug-shell.service  -227 B
-  [S] etc                       +363 B
-  [S] nix.conf                  +13 B
-  [S] system-path               +173 B
-  [S] system-units              +101 B
+  3 changed
+    [U] initrd-linux              0 B    6.12.40 -> 6.12.48
+    [C] linux                     0 B    6.12.40 -> 6.12.48
+    [U] openssl                   0 B    3.0.13 -> 3.0.14
+  4 added
+    [A] metrics.conf              +142 B
+    [A] new-agent                 +326 B 1.4.0
+    [A] resolv.conf               +140 B
+    [A] unit-metrics.service      +375 B
+  1 removed
+    [R] unit-debug-shell.service  -227 B
+  4 resized (same version, new size)
+    [S] etc                       +363 B
+    [S] nix.conf                  +13 B
+    [S] system-path               +173 B
+    [S] system-units              +101 B
   10 rebuilt (same version, new hash)
 Files
   [M] app-helper/bin/app-helper

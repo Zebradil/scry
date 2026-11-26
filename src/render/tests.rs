@@ -6,7 +6,7 @@ use std::ffi::OsStr;
 use insta::assert_snapshot;
 
 use super::text::{self, Options};
-use super::view::{self, FILE_PATH_SPAN, Kind, Node};
+use super::view::{self, FILE_PATH_SPAN, Kind, Node, PackageGroup};
 use super::{color_enabled, json};
 use crate::cli::{Color, WordHighlight};
 use crate::report::{
@@ -955,6 +955,7 @@ fn view_identity_for_the_tui() {
         sections.files.changes.len(),
         "one node per file change"
     );
+    assert!(collapsible.contains(&Kind::PackageGroup(PackageGroup::Changed)));
     assert!(collapsible.contains(&Kind::Rebuilt));
     assert!(collapsible.contains(&Kind::Churn(ChurnClass::HashOnly)));
 }

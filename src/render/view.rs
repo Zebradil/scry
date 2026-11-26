@@ -6,7 +6,8 @@
 //! built: labels, tags, colours, column alignment and `(also in N)`. What a reader decides is
 //! which nodes are open:
 //!
-//! - Collapsible nodes are [`Kind::Rebuilt`], [`Kind::Churn`], and [`Kind::File`] with children
+//! - Collapsible nodes are [`Kind::PackageGroup`], [`Kind::Rebuilt`], [`Kind::Churn`], and
+//!   [`Kind::File`] with children
 //!   (its hunk lines); see [`Node::collapsible`]. Every other node always shows its children.
 //!   Within one configuration's tree a collapsible node's `Kind` is unique, so it can key the
 //!   TUI's open state.
@@ -16,8 +17,8 @@
 //!   group's row with the `--expand-churn` hint.
 //! - Filtering: [`Kind::Package`] carries the pname, [`Kind::File`] the path and `via`, both
 //!   raw. [`Kind::Boot`] rows, and [`Kind::Text`] rows (headers, status lines, hunk lines),
-//!   carry no name. A filtered group's count goes stale: relabel it with [`rebuilt_label`] or
-//!   [`churn_label`].
+//!   carry no name. A filtered group's count goes stale: relabel it with [`package_group_label`],
+//!   [`rebuilt_label`] or [`churn_label`].
 //! - Tree view: a file row's spans are `[tag, " ", display path, details…]`, the display path
 //!   at [`FILE_PATH_SPAN`]; regrouping replaces that span's text with the part below the added
 //!   directory node, passed through [`escape`]. `via` (after ` → `) never splits.
@@ -101,6 +102,8 @@ pub enum Kind {
     Text,
     /// A package change, a rebuilt package, or a shared package change, by pname.
     Package(String),
+    /// A group of package changes; its children are [`Kind::Package`] rows.
+    PackageGroup(PackageGroup),
     /// The rebuilt group; its children are [`Kind::Package`] rows.
     Rebuilt,
     /// A file change; its children are its hunk lines.
@@ -109,6 +112,29 @@ pub enum Kind {
     Churn(ChurnClass),
     /// A Boot row.
     Boot,
+}
+
+/// The groups of the Packages section, in display order (spec 7.2).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PackageGroup {
+    /// Upgraded, downgraded and changed.
+    Changed,
+    Added,
+    Removed,
+    Resized,
+}
+
+impl From<PackageChangeKind> for PackageGroup {
+    fn from(kind: PackageChangeKind) -> Self {
+        match kind {
+            PackageChangeKind::Upgraded
+            | PackageChangeKind::Downgraded
+            | PackageChangeKind::Changed => Self::Changed,
+            PackageChangeKind::Added => Self::Added,
+            PackageChangeKind::Removed => Self::Removed,
+            PackageChangeKind::Resized => Self::Resized,
+        }
+    }
 }
 
 /// Index of the display path in a [`Kind::File`] row's spans.
@@ -141,7 +167,7 @@ impl Node {
         !self.children.is_empty()
             && matches!(
                 self.kind,
-                Kind::Rebuilt | Kind::Churn(_) | Kind::File { .. }
+                Kind::PackageGroup(_) | Kind::Rebuilt | Kind::Churn(_) | Kind::File { .. }
             )
     }
 }
@@ -287,6 +313,17 @@ fn message(prefix: &str, text: &str) -> Node {
     Node::new(2, vec![span(first, red())], Kind::Text, rest)
 }
 
+/// A package group's row: `3 changed`, `1 resized (same version, new size)`.
+pub fn package_group_label(group: PackageGroup, count: usize) -> String {
+    let name = match group {
+        PackageGroup::Changed => "changed",
+        PackageGroup::Added => "added",
+        PackageGroup::Removed => "removed",
+        PackageGroup::Resized => "resized (same version, new size)",
+    };
+    format!("{count} {name}")
+}
+
 /// The rebuilt group's row: `412 rebuilt (same version, new hash)`. No size: a rebuild that
 /// changed size is resized.
 pub fn rebuilt_label(count: usize) -> String {
@@ -369,21 +406,34 @@ fn packages(p: &Packages, also: &AlsoIn) -> Node {
         .map(|c| format_delta(c.size_delta))
         .collect();
     let delta_width = deltas.iter().map(|d| width(d)).max().unwrap_or(0);
-    let mut rows: Vec<Node> = p
-        .changes
-        .iter()
-        .zip(&deltas)
-        .map(|(c, delta)| {
-            let versions = version_text(c.kind, &c.old_versions, &c.new_versions);
-            let rest = columns(
-                &c.pname,
-                pname_width.unwrap_or(0),
-                Some((delta, delta_width)),
-                &versions,
-            );
-            let mut spans = package_row(c.kind, &c.pname, rest);
-            push_also(&mut spans, also.package(c));
-            Node::new(2, spans, Kind::Package(c.pname.clone()), Vec::new())
+    let mut changes: Vec<_> = p.changes.iter().zip(&deltas).collect();
+    changes.sort_by_key(|(c, _)| (PackageGroup::from(c.kind), &c.pname));
+    let mut rows: Vec<Node> = changes
+        .chunk_by(|(a, _), (b, _)| PackageGroup::from(a.kind) == PackageGroup::from(b.kind))
+        .map(|chunk| {
+            let group = PackageGroup::from(chunk[0].0.kind);
+            let items = chunk
+                .iter()
+                .map(|(c, delta)| {
+                    let versions = version_text(c.kind, &c.old_versions, &c.new_versions);
+                    let rest = columns(
+                        &c.pname,
+                        pname_width.unwrap_or(0),
+                        Some((delta, delta_width)),
+                        &versions,
+                    );
+                    let mut spans = package_row(c.kind, &c.pname, rest);
+                    push_also(&mut spans, also.package(c));
+                    Node::new(2, spans, Kind::Package(c.pname.clone()), Vec::new())
+                })
+                .collect();
+            let label = package_group_label(group, chunk.len());
+            Node::new(
+                2,
+                vec![span(label, Style::PLAIN)],
+                Kind::PackageGroup(group),
+                items,
+            )
         })
         .collect();
     if p.rebuilt.count > 0 {

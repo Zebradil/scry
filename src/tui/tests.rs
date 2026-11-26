@@ -318,7 +318,9 @@ fn list_shows_all_then_configurations_with_live_status() {
     assert!(!shown(&app).iter().any(|r| r.contains("(also in")));
     app.arrive(web_b());
     assert_eq!(statuses(&app)[0], "All 3 shared");
-    assert!(shown(&app).contains(&"  [U] openssl  +100 B   3.0.13 -> 3.0.14  (also in 1)".into()));
+    assert!(
+        shown(&app).contains(&"    [U] openssl  +100 B   3.0.13 -> 3.0.14  (also in 1)".into())
+    );
 }
 
 #[test]
@@ -435,14 +437,15 @@ fn selection_and_focus() {
 }
 
 /// web-a's detail with the default open state and tree view.
-const WEB_A: [&str; 18] = [
+const WEB_A: [&str; 19] = [
     "web-a · nixos (root@web-a)",
     "  old /nix/store/11111111111111111111111111111111-nixos-system-web-a-25.05",
     "  new /nix/store/99999999999999999999999999999999-nixos-system-web-a-25.11",
     "  system 25.11",
     "Packages  1.2 GiB -> 1.2 GiB (+41.0 MiB)",
-    "  [U] openssl  +100 B   3.0.13 -> 3.0.14  (also in 1)",
-    "  [U] systemd  +1.1 MiB 257.5 -> 258.1",
+    "  2 changed",
+    "    [U] openssl  +100 B   3.0.13 -> 3.0.14  (also in 1)",
+    "    [U] systemd  +1.1 MiB 257.5 -> 258.1",
     "  3 rebuilt (same version, new hash)",
     "Files",
     "  etc/  (3)",
@@ -490,6 +493,8 @@ fn j_k_g_and_capital_j_k_move_in_detail() {
     press(&mut app, "jj");
     assert_eq!(cursor(&app), 2);
     press(&mut app, "J");
+    assert_eq!(cursor_text(&app), "2 changed");
+    press(&mut app, "J");
     assert_eq!(
         cursor_text(&app),
         "[U] openssl  +100 B   3.0.13 -> 3.0.14  (also in 1)"
@@ -499,7 +504,7 @@ fn j_k_g_and_capital_j_k_move_in_detail() {
     press(&mut app, "J");
     assert_eq!(cursor_text(&app), "etc/  (3)", "a directory is collapsible");
     press(&mut app, "K");
-    assert_eq!(cursor(&app), 7);
+    assert_eq!(cursor(&app), 8);
     press(&mut app, "G");
     assert_eq!(cursor(&app), WEB_A.len() - 1);
     press(&mut app, "J");
@@ -522,11 +527,11 @@ fn g_works_on_the_detail_from_the_list() {
 #[test]
 fn enter_toggles_and_on_a_leaf_collapses_its_parent() {
     let mut app = web_a_detail();
-    let nix_conf = 12;
+    let nix_conf = 13;
     app.views[app.selected].cursor = nix_conf;
     press(&mut app, "\n");
     assert_eq!(
-        shown(&app)[13..16],
+        shown(&app)[14..17],
         [
             "          @@ -1,1 +1,1 @@",
             "          -substituters = https://cache.example https://old.cache.example/with/a/long/path",
@@ -539,28 +544,28 @@ fn enter_toggles_and_on_a_leaf_collapses_its_parent() {
     // mtab is a leaf in `etc/`: Enter folds the directory.
     press(&mut app, "kk\n");
     assert_eq!(cursor_text(&app), "etc/  (3)");
-    assert_eq!(shown(&app)[10], "  2 hash-only (store hash churn)");
+    assert_eq!(shown(&app)[11], "  2 hash-only (store hash churn)");
     press(&mut app, "\n");
     assert_eq!(shown(&app), WEB_A);
     // A leaf under a header that does not fold stays put.
     press(&mut app, "g\n");
     assert_eq!(cursor(&app), 0);
-    app.views[app.selected].cursor = 5;
+    app.views[app.selected].cursor = 1;
     press(&mut app, "\n");
     assert_eq!(
         (cursor(&app), shown(&app)),
-        (5, WEB_A.map(String::from).to_vec())
+        (1, WEB_A.map(String::from).to_vec())
     );
 }
 
 #[test]
 fn h_collapses_then_goes_to_the_parent_then_to_the_list() {
     let mut app = web_a_detail();
-    app.views[app.selected].cursor = 12;
+    app.views[app.selected].cursor = 13;
     press(&mut app, "lj");
     assert_eq!(cursor_text(&app), "@@ -1,1 +1,1 @@");
     press(&mut app, "h");
-    assert_eq!(cursor(&app), 12, "to the parent");
+    assert_eq!(cursor(&app), 13, "to the parent");
     press(&mut app, "h");
     assert_eq!(shown(&app), WEB_A, "collapsed");
     press(&mut app, "h");
@@ -580,10 +585,10 @@ fn h_collapses_then_goes_to_the_parent_then_to_the_list() {
 #[test]
 fn l_expands_and_never_collapses() {
     let mut app = web_a_detail();
-    app.views[app.selected].cursor = 7;
+    app.views[app.selected].cursor = 8;
     press(&mut app, "l");
     assert_eq!(
-        shown(&app)[8..11],
+        shown(&app)[9..12],
         [
             "    bash       1.0",
             "    coreutils  1.0",
@@ -597,7 +602,7 @@ fn l_expands_and_never_collapses() {
 #[test]
 fn open_state_is_kept_per_configuration_across_selection_and_filter() {
     let mut app = web_a_detail();
-    app.views[app.selected].cursor = 12;
+    app.views[app.selected].cursor = 13;
     press(&mut app, "l");
     let open = shown(&app);
     press(&mut app, "\t3");
@@ -625,7 +630,8 @@ fn filter_editing() {
         shown(&app)[4..],
         [
             "Packages  1.2 GiB -> 1.2 GiB (+41.0 MiB)",
-            "  [U] openssl  +100 B   3.0.13 -> 3.0.14  (also in 1)",
+            "  1 changed",
+            "    [U] openssl  +100 B   3.0.13 -> 3.0.14  (also in 1)",
             "Boot",
             "  kernel: linux-6.12.40 -> linux-6.12.48  (also in 1)",
         ]
@@ -659,7 +665,7 @@ fn filter_editing() {
 #[test]
 fn the_cursor_stays_on_its_row_across_filter_tree_view_and_arrivals() {
     let mut app = web_a_detail();
-    app.views[app.selected].cursor = 12;
+    app.views[app.selected].cursor = 13;
     press(&mut app, "/nix\n");
     assert_eq!(cursor_text(&app), "[M] nix.conf  (also in 1)");
     press(&mut app, "t");
@@ -781,7 +787,7 @@ fn y_copies_the_pane_as_shown_unwrapped_without_colour() {
     let mut app = web_a_detail();
     app.options.color = true;
     app.resize(50, 30);
-    app.views[app.selected].cursor = 12;
+    app.views[app.selected].cursor = 13;
     press(&mut app, "l/nix\ny");
     let copied = clipboard(&mut app);
     assert_eq!(
@@ -877,7 +883,7 @@ fn screen_all_while_fetching() {
 #[test]
 fn screen_configuration_detail() {
     let mut app = web_a_detail();
-    app.views[app.selected].cursor = 12;
+    app.views[app.selected].cursor = 13;
     press(&mut app, "l");
     assert_snapshot!(screen(&mut app, 100, 26));
 }
@@ -886,7 +892,7 @@ fn screen_configuration_detail() {
 fn screen_filter_and_wrap_on_a_narrow_terminal() {
     let mut app = web_a_detail();
     app.resize(64, 18);
-    app.views[app.selected].cursor = 12;
+    app.views[app.selected].cursor = 13;
     press(&mut app, "l/nix\n");
     assert_snapshot!(screen(&mut app, 64, 18));
     press(&mut app, "w");

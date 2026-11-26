@@ -56,10 +56,11 @@ impl Row {
     }
 }
 
-/// Default open state (spec 8.4): rebuilt groups and file changes closed, churn groups closed
-/// unless `--expand-churn`, directories open.
+/// Default open state (spec 8.4): package groups open, rebuilt groups and file changes closed,
+/// churn groups closed unless `--expand-churn`, directories open.
 fn default_open(key: &Key, expand_churn: bool) -> bool {
     match key {
+        Key::Node(Kind::PackageGroup(_)) => true,
         Key::Node(Kind::Churn(_)) => expand_churn,
         Key::Node(_) => false,
         Key::Dir(..) => true,
@@ -98,6 +99,7 @@ fn filter(nodes: Vec<Node>, needle: &str) -> Vec<Node> {
                 node.children = filter(std::mem::take(&mut node.children), needle);
                 let count = node.children.len();
                 let label = match kind {
+                    Kind::PackageGroup(group) => Some(view::package_group_label(group, count)),
                     Kind::Rebuilt => Some(view::rebuilt_label(count)),
                     Kind::Churn(class) => Some(view::churn_label(class, count, false)),
                     _ => None,
