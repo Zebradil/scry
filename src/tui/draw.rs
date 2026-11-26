@@ -14,7 +14,7 @@ use super::rows;
 use crate::render::view::{self, Span, Style};
 
 const HINTS: &str =
-    "j/k move  enter fold  i inspect  / filter  w wrap  t tree  y/Y copy  tab pane  q quit";
+    "j/k move  enter fold  i inspect  / filter  w wrap  t tree  y/Y copy  tab  q quit";
 const INSPECT_HINTS: &str = "j/k scroll  n/N next/prev change  s side by side  w wrap  esc back";
 
 pub fn draw(app: &App, frame: &mut Frame) {
@@ -137,11 +137,7 @@ fn hints(app: &App, text: &'static str) -> Line<'static> {
     if let Some(notice) = &app.notice {
         return Line::raw(notice.clone());
     }
-    let dim = Style {
-        dim: true,
-        ..Style::default()
-    };
-    Line::styled(text, ratatui_style(dim, app.options.color))
+    Line::styled(text, ratatui_style(Style::DIM, app.options.color))
 }
 
 fn pane(focused: bool) -> Block<'static> {

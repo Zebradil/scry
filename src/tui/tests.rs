@@ -1139,3 +1139,42 @@ fn inspect_needs_a_file_change_with_text() {
     press(&mut app, "\ti");
     assert!(app.inspect.is_none(), "not from the list");
 }
+
+#[test]
+fn inspect_in_all_opens_the_change_of_the_row() {
+    let hosts = |text: &str| {
+        modified(
+            "etc/hosts",
+            &[],
+            ChurnClass::Real,
+            vec![line(LineOp::Removed, "old"), line(LineOp::Added, text)],
+        )
+    };
+    let names = ["a", "b", "c", "d"].map(String::from).to_vec();
+    let mut app = App::new(Mode::Deployed, names, Options::default());
+    app.resize(100, 30);
+    for (name, text) in [("a", "x"), ("b", "x"), ("c", "y"), ("d", "y")] {
+        app.arrive(done(name, '1', vec![], &[], vec![hosts(text)]));
+    }
+    press(&mut app, "\t");
+    let rows = shown(&app);
+    let at: Vec<usize> = (0..rows.len())
+        .filter(|&i| rows[i].contains("hosts"))
+        .collect();
+    assert_eq!(at.len(), 2, "{rows:?}");
+    for (&i, (want, other)) in at.iter().zip([("+x", "+y"), ("+y", "+x")]) {
+        app.views[app.selected].cursor = i;
+        press(&mut app, "i");
+        let text: Vec<String> = app
+            .inspect
+            .as_ref()
+            .unwrap()
+            .lines
+            .iter()
+            .map(|l| l.iter().map(|s| s.text.as_str()).collect())
+            .collect();
+        assert!(text.iter().any(|l| l == want), "{text:?}");
+        assert!(!text.iter().any(|l| l == other), "{text:?}");
+        press(&mut app, "\x1b");
+    }
+}

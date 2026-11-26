@@ -578,7 +578,8 @@ impl App {
         let file = loop {
             let Some(i) = at else { break None };
             if let Kind::File { path, via } = &rows[i].kind {
-                break self.file_change(path, via);
+                let nth = rows[..i].iter().filter(|r| r.kind == rows[i].kind).count();
+                break self.file_change(path, via, nth);
             }
             at = rows[i].parent;
         };
@@ -592,14 +593,19 @@ impl App {
         }
     }
 
-    /// The selected entry's file change by path and `via`, as its `Kind::File` row names it.
-    fn file_change(&self, path: &str, via: &[String]) -> Option<&FileChange> {
+    /// The selected entry's file change by path and `via`, as its `Kind::File` row names it,
+    /// the `nth` of its kind: All can list one path once per distinct change.
+    fn file_change(&self, path: &str, via: &[String], nth: usize) -> Option<&FileChange> {
         let is = |c: &FileChange| c.path == path && c.via == via;
         match self.entry(self.selected) {
-            Entry::All => self.shared.iter().find_map(|s| match &s.item {
-                SharedItem::Files(c) if is(c) => Some(c),
-                _ => None,
-            }),
+            Entry::All => self
+                .shared
+                .iter()
+                .filter_map(|s| match &s.item {
+                    SharedItem::Files(c) if is(c) => Some(c),
+                    _ => None,
+                })
+                .nth(nth),
             Entry::Configuration(i) => match &self.configuration(i)?.status {
                 Status::Done(s) => s.files.changes.iter().find(|c| is(c)),
                 _ => None,
