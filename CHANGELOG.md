@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.0](https://github.com/Zebradil/scry/compare/v0.6.0...v0.7.0) (2026-11-26)
+
+
+### Features
+
+* group package changes into changed, added, removed, resized ([#64](https://github.com/Zebradil/scry/issues/64)) ([5069db1](https://github.com/Zebradil/scry/commit/5069db1e08703a7fd1f2aa431ee05e1858ac6ece))
+* list same-version rebuilds whose size changed ([#63](https://github.com/Zebradil/scry/issues/63)) ([53dbb94](https://github.com/Zebradil/scry/commit/53dbb9438ddda0a9dada47cdced3527acea33137))
+* **tui:** inspect window for one file change ([#61](https://github.com/Zebradil/scry/issues/61)) ([5902dd1](https://github.com/Zebradil/scry/commit/5902dd1c36c904b393a232fbbdc63a46e2af2e75))
+
 ## [0.6.0](https://github.com/Zebradil/scry/compare/v0.5.0...v0.6.0) (2026-11-26)
 
 
