@@ -75,7 +75,7 @@ impl Style {
         bold: true,
         ..Self::PLAIN
     };
-    const DIM: Self = Self {
+    pub const DIM: Self = Self {
         dim: true,
         ..Self::PLAIN
     };
@@ -644,7 +644,7 @@ fn hunk_lines(hunks: &[Hunk], word: WordHighlight) -> Vec<Node> {
 /// A hunk line in its op's colour, its highlighted tokens and the rest styled by `word`; a
 /// hash-only pair dimmed, without highlight (spec 7.3). A span that does not fit the text
 /// leaves the rest plain.
-fn line_spans(line: &Line, word: WordHighlight) -> Vec<Span> {
+pub fn line_spans(line: &Line, word: WordHighlight) -> Vec<Span> {
     let (op, color) = match line.op {
         LineOp::Context => (" ", None),
         LineOp::Removed => ("-", Some(Color::Red)),

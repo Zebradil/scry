@@ -6,7 +6,8 @@
 //!
 //! Rows come from `render::view`, so the detail pane shows what text output prints (8.3); the
 //! viewer adds folding, the filter, the tree view of file paths, wrapping and scrolling
-//! (`rows`), the state and keys (`app`), and the screen (`draw`).
+//! (`rows`), the state and keys (`app`), the inspect window for one file change (`inspect`),
+//! and the screen (`draw`).
 
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
@@ -16,6 +17,7 @@ use crate::report::Configuration;
 
 pub mod app;
 pub mod draw;
+pub mod inspect;
 mod rows;
 #[cfg(not(target_arch = "wasm32"))]
 mod terminal;

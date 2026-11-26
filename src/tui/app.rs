@@ -8,13 +8,18 @@ use std::rc::Rc;
 use ratatui::layout::Rect;
 use unicode_width::UnicodeWidthStr;
 
+use super::inspect::Inspect;
 use super::rows::{self, Key, Row, Shape};
 use super::{Finished, Options, osc52};
 use crate::render::text;
 use crate::render::view::{self, Color, Kind, Node, Span, Style};
-use crate::report::{Configuration, Mode, SharedChange, Status};
+use crate::report::{Configuration, FileChange, Mode, SharedChange, SharedItem, Status};
 use crate::shared;
 use crate::size::format_delta;
+
+/// Opens and closes the inspect window. shortcut: `i` is provisional, pending a decision on the
+/// key (issue #60); change `HINTS` in `draw` with it.
+pub const INSPECT_KEY: char = 'i';
 
 /// `y`/`Y` warn above this much OSC 52 payload (spec 8.4; a judgement, unmeasured).
 const CLIPBOARD_LIMIT: usize = 100 * 1024;
@@ -109,6 +114,8 @@ pub struct App {
     /// The filter being edited after `/`.
     pub editing: Option<String>,
     pub notice: Option<String>,
+    /// The inspect window, over both panes while open.
+    pub inspect: Option<Inspect>,
     /// An OSC 52 escape for the event loop to write.
     pub clipboard: Option<String>,
     pub quit: bool,
@@ -148,6 +155,7 @@ impl App {
             filter: String::new(),
             editing: None,
             notice: None,
+            inspect: None,
             clipboard: None,
             quit: false,
             size: (80, 24),
@@ -209,6 +217,7 @@ impl App {
     pub fn resize(&mut self, width: u16, height: u16) {
         self.size = (width, height);
         self.settle();
+        self.layout_inspect();
     }
 
     fn has_all(&self) -> bool {
@@ -320,6 +329,29 @@ impl App {
             usize::from(detail.width).saturating_sub(3),
             usize::from(detail.height).saturating_sub(2),
         )
+    }
+
+    /// The inspect window: the whole screen above the bottom line, inside the border.
+    pub fn inspect_area(&self) -> Rect {
+        let (width, height) = self.size;
+        Rect::new(0, 0, width, height.saturating_sub(1))
+    }
+
+    fn inspect_size(&self) -> (usize, usize) {
+        let area = self.inspect_area();
+        (
+            usize::from(area.width).saturating_sub(2),
+            usize::from(area.height).saturating_sub(2),
+        )
+    }
+
+    fn layout_inspect(&mut self) {
+        let (width, height) = self.inspect_size();
+        let (wrap, word) = (self.wrap, self.options.word_highlight);
+        if let Some(inspect) = &mut self.inspect {
+            inspect.layout(width, wrap, word);
+            inspect.clamp(height);
+        }
     }
 
     fn list_height(&self) -> usize {
@@ -458,6 +490,10 @@ impl App {
             self.settle();
             return;
         }
+        if self.inspect.is_some() {
+            self.inspect_key(key);
+            return;
+        }
         let detail = self.focus == Focus::Detail;
         match key.code {
             KeyCode::Char('d') if ctrl => self.half(true),
@@ -492,11 +528,89 @@ impl App {
             KeyCode::Char('w') => self.wrap = !self.wrap,
             KeyCode::Char('t') => self.keeping_cursor(|app| app.tree = !app.tree),
             KeyCode::Char('/') => self.editing = Some(self.filter.clone()),
+            KeyCode::Char(INSPECT_KEY) if detail => self.open_inspect(),
             KeyCode::Char('y') => self.copy(false),
             KeyCode::Char('Y') => self.copy(true),
             _ => {}
         }
         self.settle();
+    }
+
+    /// Keys in the inspect window: scrolling by screen lines, `n`/`N` between changes, `s` side
+    /// by side, `w` wrap; Esc, `q` or the key that opened it close it.
+    fn inspect_key(&mut self, key: KeyEvent) {
+        let height = self.inspect_size().1;
+        let half = (height / 2).max(1).cast_signed();
+        let Some(inspect) = &mut self.inspect else {
+            return;
+        };
+        match key.code {
+            KeyCode::Char('d') if key.ctrl => inspect.scroll(half, height),
+            KeyCode::Char('u') if key.ctrl => inspect.scroll(-half, height),
+            _ if key.ctrl => {}
+            KeyCode::PageDown => inspect.scroll(half, height),
+            KeyCode::PageUp => inspect.scroll(-half, height),
+            KeyCode::Char('j') | KeyCode::Down => inspect.scroll(1, height),
+            KeyCode::Char('k') | KeyCode::Up => inspect.scroll(-1, height),
+            KeyCode::Char('g') => inspect.top = 0,
+            KeyCode::Char('G') => inspect.scroll(isize::MAX, height),
+            KeyCode::Char('n') => inspect.jump(true, height),
+            KeyCode::Char('N') => inspect.jump(false, height),
+            KeyCode::Char('s') => {
+                inspect.side_by_side = !inspect.side_by_side;
+                self.layout_inspect();
+            }
+            KeyCode::Char('w') => {
+                self.wrap = !self.wrap;
+                self.layout_inspect();
+                self.settle();
+            }
+            KeyCode::Esc | KeyCode::Char('q' | INSPECT_KEY) => self.inspect = None,
+            _ => {}
+        }
+    }
+
+    /// Opens the inspect window on the file change at the cursor or holding the cursor's hunk
+    /// line.
+    fn open_inspect(&mut self) {
+        let rows = self.rows();
+        let mut at = Some(self.views[self.selected].cursor);
+        let file = loop {
+            let Some(i) = at else { break None };
+            if let Kind::File { path, via } = &rows[i].kind {
+                let nth = rows[..i].iter().filter(|r| r.kind == rows[i].kind).count();
+                break self.file_change(path, via, nth);
+            }
+            at = rows[i].parent;
+        };
+        match file {
+            Some(change) if !change.hunks.is_empty() => {
+                self.inspect = Some(Inspect::new(change));
+                self.layout_inspect();
+            }
+            Some(_) => self.notice = Some("no text diff to inspect".into()),
+            None => self.notice = Some("not on a file change".into()),
+        }
+    }
+
+    /// The selected entry's file change by path and `via`, as its `Kind::File` row names it,
+    /// the `nth` of its kind: All can list one path once per distinct change.
+    fn file_change(&self, path: &str, via: &[String], nth: usize) -> Option<&FileChange> {
+        let is = |c: &FileChange| c.path == path && c.via == via;
+        match self.entry(self.selected) {
+            Entry::All => self
+                .shared
+                .iter()
+                .filter_map(|s| match &s.item {
+                    SharedItem::Files(c) if is(c) => Some(c),
+                    _ => None,
+                })
+                .nth(nth),
+            Entry::Configuration(i) => match &self.configuration(i)?.status {
+                Status::Done(s) => s.files.changes.iter().find(|c| is(c)),
+                _ => None,
+            },
+        }
     }
 
     /// `j`/`k`: one row in the focused pane.

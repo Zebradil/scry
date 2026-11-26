@@ -846,6 +846,7 @@ transient notice.
 | `1`–`9` | Select that configuration |
 | `w` | Toggle line wrap (default on) |
 | `t` | Toggle tree view of file paths (default on) |
+| `i` | In detail: open the inspect window on the file change at the cursor or holding it |
 | `/` | Edit the filter. Enter applies it, Esc cancels and keeps the previous filter, Backspace deletes |
 | `y` | Copy the detail pane as shown (filter and open state applied, rows unwrapped) |
 | `Y` | Copy the selected configuration as text output prints it, without colour |
@@ -868,6 +869,14 @@ transient notice.
   `copied N lines (X KiB)`, plus `, may exceed the terminal's clipboard limit` above 100 KiB of
   payload. While the configuration is still fetching it reads `nothing to copy yet`. The 100 KiB
   figure is a judgement, unmeasured.
+- **Inspect window**: one file change's hunks on the whole screen, for long lines such as a one-line
+  JSON file. A hunk whose old and new sides are each a JSON object or array (or empty) is
+  re-indented, one member per line with tokens and key order kept, and diffed again with word
+  highlight; the title then shows `[JSON re-indented]` and the hunk's line numbers count lines of
+  the re-indented text. Keys: `j`/`k`, Ctrl-D/Ctrl-U, PgDn/PgUp, `g`/`G` scroll by screen lines;
+  `n`/`N` put the next/previous change 5 lines below the top; `s` toggles side by side (old left,
+  new right, a removed line beside the added line it pairs with); `w` toggles wrap; Esc, `q` or
+  `i` close it. It works from the hunks in the report, never the full file contents.
 - Quitting while configurations are still fetching counts those as failed (4.7).
 - Mouse support, light-theme detection and truecolour are out of scope.
 
