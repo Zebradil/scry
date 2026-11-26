@@ -616,6 +616,11 @@ So a config file referenced only from a unit or a plist still shows:
   Results are file changes named `referrer → name` or `referrer → name/bin/script`, classified with
   churn like any other file. `name` is the new side's store name, or the old one's when it only exists
   there. The JSON `path` is the referrer's path, and `via` holds the chain of names.
+- **One-sided references**: every other store reference on an added line of a text file, added or
+  modified, whose path is not in the old closure, is compared against nothing, so its content shows
+  as added; likewise a reference on a removed line whose path is not in the new closure shows as
+  removed. A new unit's config file thus shows with the unit. Compared and named as followed
+  references: a regular file as a file, a directory of at most 1 MiB `narSize` as its `bin/`.
 - **Small rebuilds**: every rebuilt package whose paths are each at most 1 MiB `narSize` on both sides,
   with exactly one path per side, gets its `bin/` compared the same way. It is named `name/bin/script`,
   or `referrer → …` when a modified file also points at it. These results count as depth 1.

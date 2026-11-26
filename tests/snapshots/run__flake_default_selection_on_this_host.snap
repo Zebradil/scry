@@ -29,14 +29,16 @@ web-a · nixos (local)
   old /nix/store/7hxhq9fwq4sp17qr1mnl7dy3rpkywvv1-nixos-system-web-a-26.05.20261102.7dcdd87
   new /nix/store/w3fzn58f5mfcypjnw4knm81m44g1r4dv-nixos-system-web-a-26.11.20261110.9a8b7c6
   system 26.05.20261102.7dcdd87 -> 26.11.20261110.9a8b7c6
-Packages  38.0 MiB -> 38.0 MiB (+1.2 KiB)
+Packages  38.0 MiB -> 38.0 MiB (+1.9 KiB)
   [U] initrd-linux              0 B    6.12.40 -> 6.12.48
   [U] openssl                   0 B    3.0.13 -> 3.0.14
   [C] linux                     0 B    6.12.40 -> 6.12.48
+  [A] metrics.conf              +142 B
   [A] new-agent                 +326 B 1.4.0
   [A] resolv.conf               +140 B
+  [A] unit-metrics.service      +375 B
   [R] unit-debug-shell.service  -227 B
-  14 rebuilt (same version, new hash, +470 B)
+  14 rebuilt (same version, new hash, +650 B)
 Files
   [M] app-helper/bin/app-helper
       @@ -1,3 +1,3 @@
@@ -73,6 +75,13 @@ Files
       -{"workers": 4}
       +{"workers": 8}
   [T] etc/systemd/system/debug-shell.service  file -> external link /dev/null
+  [A] etc/systemd/system/metrics.service
+      @@ -0,0 +1,2 @@
+      +[Service]
+      +ExecStart=/nix/store/48y6kcryarxipp91d3qwb8pdmx4s6k0r-bash-5.2p37/bin/bash -c 'metrics /nix/store/f90vc8ax1wbrkcab6hcjhq96sv722150-metrics.conf'
+  [A] etc/systemd/system/metrics.service → metrics.conf
+      @@ -0,0 +1,1 @@
+      +listen = 0.0.0.0:9100
   [M] etc/udev/hwdb.bin  (content not fetched, 4.9 KiB -> 4.9 KiB)
   [M] user-environment/bin/tool
       @@ -1,1 +1,1 @@

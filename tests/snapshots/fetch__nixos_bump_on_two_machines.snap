@@ -10,7 +10,7 @@ expression: configuration
   "status": "done",
   "packages": {
     "size_old": 39861289,
-    "size_new": 39862517,
+    "size_new": 39863214,
     "changes": [
       {
         "kind": "upgraded",
@@ -49,6 +49,15 @@ expression: configuration
       },
       {
         "kind": "added",
+        "pname": "metrics.conf",
+        "old_versions": [],
+        "new_versions": [
+          ""
+        ],
+        "size_delta": 142
+      },
+      {
+        "kind": "added",
         "pname": "new-agent",
         "old_versions": [],
         "new_versions": [
@@ -66,6 +75,15 @@ expression: configuration
         "size_delta": 140
       },
       {
+        "kind": "added",
+        "pname": "unit-metrics.service",
+        "old_versions": [],
+        "new_versions": [
+          ""
+        ],
+        "size_delta": 375
+      },
+      {
         "kind": "removed",
         "pname": "unit-debug-shell.service",
         "old_versions": [
@@ -77,7 +95,7 @@ expression: configuration
     ],
     "rebuilt": {
       "count": 14,
-      "size_delta": 470,
+      "size_delta": 650,
       "items": [
         {
           "pname": "app-helper",
@@ -161,7 +179,7 @@ expression: configuration
           "versions": [
             ""
           ],
-          "size_delta": -79
+          "size_delta": 101
         },
         {
           "pname": "unit-app.service",
@@ -831,6 +849,71 @@ expression: configuration
         "link_old": null,
         "link_new": "/dev/null",
         "hunks": []
+      },
+      {
+        "path": "etc/systemd/system/metrics.service",
+        "via": [],
+        "status": "added",
+        "class": "real",
+        "type_old": null,
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": null,
+        "size_new": 155,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 0,
+            "old_lines": 0,
+            "new_start": 1,
+            "new_lines": 2,
+            "lines": [
+              {
+                "op": "+",
+                "text": "[Service]",
+                "spans": []
+              },
+              {
+                "op": "+",
+                "text": "ExecStart=/nix/store/48y6kcryarxipp91d3qwb8pdmx4s6k0r-bash-5.2p37/bin/bash -c 'metrics /nix/store/f90vc8ax1wbrkcab6hcjhq96sv722150-metrics.conf'",
+                "spans": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "etc/systemd/system/metrics.service",
+        "via": [
+          "metrics.conf"
+        ],
+        "status": "added",
+        "class": "real",
+        "type_old": null,
+        "type_new": "file",
+        "binary": false,
+        "content_fetched": true,
+        "size_old": null,
+        "size_new": 22,
+        "link_old": null,
+        "link_new": null,
+        "hunks": [
+          {
+            "old_start": 0,
+            "old_lines": 0,
+            "new_start": 1,
+            "new_lines": 1,
+            "lines": [
+              {
+                "op": "+",
+                "text": "listen = 0.0.0.0:9100",
+                "spans": []
+              }
+            ]
+          }
+        ]
       },
       {
         "path": "etc/udev/hwdb.bin",

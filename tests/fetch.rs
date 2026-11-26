@@ -156,6 +156,8 @@ async fn churn_references_and_small_rebuilds() {
             "Modified Real etc/systemd/system/app.service → app-start/bin/app-start",
             "Modified Real etc/systemd/system/app.service → app-start/bin/app-start → app.json",
             "TypeChanged Real etc/systemd/system/debug-shell.service",
+            "Added Real etc/systemd/system/metrics.service",
+            "Added Real etc/systemd/system/metrics.service → metrics.conf",
             "Modified Real etc/udev/hwdb.bin",
             "Modified VersionOnly nixos-version/bin/nixos-version",
             "Modified Real user-environment/bin/tool",

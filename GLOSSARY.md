@@ -52,8 +52,9 @@ Terms as used in the spec, code, issues and docs. Prefer these over synonyms.
   each side are masked outside store paths.
 - **Churn**: hash-only and version-only changes together. Collapsed by default, shown with
   `--expand-churn`.
-- **Followed reference**: a store path referenced from a modified file whose old and new versions differ;
-  compared by content and shown as `referrer → name`.
+- **Followed reference**: a store path referenced from a modified file whose old and new versions differ,
+  or referenced on an added (removed) line and missing from the old (new) closure; compared by content
+  and shown as `referrer → name`.
 - **Shared change**: a change that appears identically in two or more configurations of one run.
 - **Report**: the structured result of a run: every configuration with its status and sections, plus the
   shared changes. Every output format renders a report.

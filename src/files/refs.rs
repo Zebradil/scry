@@ -4,7 +4,7 @@
 
 use crate::files::churn::{StoreRef, store_refs};
 use crate::files::highlight;
-use crate::report::FileChange;
+use crate::report::{FileChange, LineOp};
 use crate::store::name::parse_drv_name;
 
 /// Store path pairs `(old, new)` to compare for a modified text file: on lines paired as for
@@ -24,6 +24,24 @@ pub fn pairs(change: &FileChange) -> Vec<(String, String)> {
                 if pair.0 != pair.1 && !out.contains(&pair) {
                     out.push(pair);
                 }
+            }
+        }
+    }
+    out
+}
+
+/// Store paths referenced on the lines of `op` in `change`'s hunks, de-duplicated, in
+/// first-seen order.
+pub fn on_lines(change: &FileChange, op: LineOp) -> Vec<String> {
+    let mut out: Vec<String> = Vec::new();
+    for line in change.hunks.iter().flat_map(|h| &h.lines) {
+        if line.op != op {
+            continue;
+        }
+        for r in store_refs(&line.text) {
+            let path = &line.text[r.range];
+            if !out.iter().any(|p| p == path) {
+                out.push(path.to_owned());
             }
         }
     }

@@ -6,8 +6,10 @@ Shared across configurations
   [U] initrd-linux              6.12.40 -> 6.12.48                                                         web-a, web-b
   [U] openssl                   3.0.13 -> 3.0.14                                                           web-a, web-b
   [C] linux                     6.12.40 -> 6.12.48                                                         web-a, web-b
+  [A] metrics.conf                                                                                         web-a, web-b
   [A] new-agent                 1.4.0                                                                      web-a, web-b
   [A] resolv.conf                                                                                          web-a, web-b
+  [A] unit-metrics.service                                                                                 web-a, web-b
   [R] unit-debug-shell.service                                                                             web-a, web-b
   [M] app-helper/bin/app-helper                                                                            web-a, web-b
   [B] etc/binary.db  (binary)                                                                              web-a, web-b
@@ -19,6 +21,8 @@ Shared across configurations
   [M] etc/systemd/system/app.service → app-start/bin/app-start                                             web-a, web-b
   [M] etc/systemd/system/app.service → app-start/bin/app-start → app.json                                  web-a, web-b
   [T] etc/systemd/system/debug-shell.service  file -> external link /dev/null                              web-a, web-b
+  [A] etc/systemd/system/metrics.service                                                                   web-a, web-b
+  [A] etc/systemd/system/metrics.service → metrics.conf                                                    web-a, web-b
   [M] etc/udev/hwdb.bin  (content not fetched)                                                             web-a, web-b
   [M] user-environment/bin/tool                                                                            web-a, web-b
   kernel: linux-6.12.40 -> linux-6.12.48                                                                   web-a, web-b
@@ -34,14 +38,16 @@ web-a · nixos (root@web-a)
   old /nix/store/7hxhq9fwq4sp17qr1mnl7dy3rpkywvv1-nixos-system-web-a-26.05.20261102.7dcdd87
   new /nix/store/w3fzn58f5mfcypjnw4knm81m44g1r4dv-nixos-system-web-a-26.11.20261110.9a8b7c6
   system 26.05.20261102.7dcdd87 -> 26.11.20261110.9a8b7c6
-Packages  38.0 MiB -> 38.0 MiB (+1.2 KiB)
+Packages  38.0 MiB -> 38.0 MiB (+1.9 KiB)
   [U] initrd-linux              0 B    6.12.40 -> 6.12.48  (also in 1)
   [U] openssl                   0 B    3.0.13 -> 3.0.14  (also in 1)
   [C] linux                     0 B    6.12.40 -> 6.12.48  (also in 1)
+  [A] metrics.conf              +142 B  (also in 1)
   [A] new-agent                 +326 B 1.4.0  (also in 1)
   [A] resolv.conf               +140 B  (also in 1)
+  [A] unit-metrics.service      +375 B  (also in 1)
   [R] unit-debug-shell.service  -227 B  (also in 1)
-  14 rebuilt (same version, new hash, +470 B)
+  14 rebuilt (same version, new hash, +650 B)
 Files
   [M] app-helper/bin/app-helper  (also in 1)
       @@ -1,3 +1,3 @@
@@ -78,6 +84,13 @@ Files
       -{"workers": 4}
       +{"workers": 8}
   [T] etc/systemd/system/debug-shell.service  file -> external link /dev/null  (also in 1)
+  [A] etc/systemd/system/metrics.service  (also in 1)
+      @@ -0,0 +1,2 @@
+      +[Service]
+      +ExecStart=/nix/store/48y6kcryarxipp91d3qwb8pdmx4s6k0r-bash-5.2p37/bin/bash -c 'metrics /nix/store/f90vc8ax1wbrkcab6hcjhq96sv722150-metrics.conf'
+  [A] etc/systemd/system/metrics.service → metrics.conf  (also in 1)
+      @@ -0,0 +1,1 @@
+      +listen = 0.0.0.0:9100
   [M] etc/udev/hwdb.bin  (content not fetched, 4.9 KiB -> 4.9 KiB)  (also in 1)
   [M] user-environment/bin/tool  (also in 1)
       @@ -1,1 +1,1 @@
@@ -98,14 +111,16 @@ web-b · nixos (root@web-b)
   old /nix/store/7hxhq9fwq4sp17qr1mnl7dy3rpkywvv1-nixos-system-web-a-26.05.20261102.7dcdd87
   new /nix/store/w3fzn58f5mfcypjnw4knm81m44g1r4dv-nixos-system-web-a-26.11.20261110.9a8b7c6
   system 26.05.20261102.7dcdd87 -> 26.11.20261110.9a8b7c6
-Packages  38.0 MiB -> 38.0 MiB (+1.2 KiB)
+Packages  38.0 MiB -> 38.0 MiB (+1.9 KiB)
   [U] initrd-linux              0 B    6.12.40 -> 6.12.48  (also in 1)
   [U] openssl                   0 B    3.0.13 -> 3.0.14  (also in 1)
   [C] linux                     0 B    6.12.40 -> 6.12.48  (also in 1)
+  [A] metrics.conf              +142 B  (also in 1)
   [A] new-agent                 +326 B 1.4.0  (also in 1)
   [A] resolv.conf               +140 B  (also in 1)
+  [A] unit-metrics.service      +375 B  (also in 1)
   [R] unit-debug-shell.service  -227 B  (also in 1)
-  14 rebuilt (same version, new hash, +470 B)
+  14 rebuilt (same version, new hash, +650 B)
 Files
   [M] app-helper/bin/app-helper  (also in 1)
       @@ -1,3 +1,3 @@
@@ -142,6 +157,13 @@ Files
       -{"workers": 4}
       +{"workers": 8}
   [T] etc/systemd/system/debug-shell.service  file -> external link /dev/null  (also in 1)
+  [A] etc/systemd/system/metrics.service  (also in 1)
+      @@ -0,0 +1,2 @@
+      +[Service]
+      +ExecStart=/nix/store/48y6kcryarxipp91d3qwb8pdmx4s6k0r-bash-5.2p37/bin/bash -c 'metrics /nix/store/f90vc8ax1wbrkcab6hcjhq96sv722150-metrics.conf'
+  [A] etc/systemd/system/metrics.service → metrics.conf  (also in 1)
+      @@ -0,0 +1,1 @@
+      +listen = 0.0.0.0:9100
   [M] etc/udev/hwdb.bin  (content not fetched, 4.9 KiB -> 4.9 KiB)  (also in 1)
   [M] user-environment/bin/tool  (also in 1)
       @@ -1,1 +1,1 @@

@@ -14,7 +14,7 @@ use crate::files::churn::Masks;
 use crate::files::compare::{self, Contents};
 use crate::files::refs;
 use crate::packages::{SMALL_REBUILD_MAX_BYTES, SmallRebuild};
-use crate::report::{FileChange, FileStatus};
+use crate::report::{FileChange, FileStatus, LineOp};
 use crate::store::name::store_path_name;
 use crate::tree::{Entry, LISTING, Tree, Walk};
 
@@ -33,7 +33,8 @@ pub(crate) struct Sides<'a> {
     pub masks: &'a Masks,
 }
 
-/// One pair to compare for one referrer.
+/// One pair to compare for one referrer. A path referenced on one side only, and absent from
+/// the other side's closure, pairs with `""` there: its content shows as added or removed.
 struct Job {
     referrer: Option<FileChange>,
     old: String,
@@ -94,7 +95,7 @@ pub(crate) async fn follow(
     changes: &[FileChange],
     small_rebuilds: &[SmallRebuild],
 ) -> Result<Vec<FileChange>> {
-    let mut jobs = referenced(changes, &[], sides.toplevels);
+    let mut jobs = referenced(changes, &[], &sides);
     let pointed_at: HashSet<(String, String)> = jobs
         .iter()
         .map(|j| (j.old.clone(), j.new.clone()))
@@ -113,10 +114,12 @@ pub(crate) async fn follow(
             }),
     );
     let small = |path: &str, sizes: &BTreeMap<String, u64>| {
-        sizes
-            .get(path)
-            .is_some_and(|&s| s <= SMALL_REBUILD_MAX_BYTES)
+        path.is_empty()
+            || sizes
+                .get(path)
+                .is_some_and(|&s| s <= SMALL_REBUILD_MAX_BYTES)
     };
+    let absent = Tree::new();
     let mut compared: HashMap<(String, String, bool), Option<Compared>> = HashMap::new();
     let mut results = Vec::new();
     for _ in 0..DEPTH {
@@ -134,6 +137,9 @@ pub(crate) async fn follow(
                 Take::File
             };
             for (host, root) in [(sides.old, &job.old), (sides.new, &job.new)] {
+                if root.is_empty() {
+                    continue;
+                }
                 let entry = wanted[host].entry(root.clone()).or_insert(take);
                 *entry = entry.merge(take);
             }
@@ -156,7 +162,14 @@ pub(crate) async fn follow(
         for job in jobs {
             let key = job.key();
             if !compared.contains_key(&key) {
-                let pair = (&trees[sides.old][&job.old], &trees[sides.new][&job.new]);
+                let tree = |host: usize, root: &String| {
+                    if root.is_empty() {
+                        &absent
+                    } else {
+                        &trees[host][root]
+                    }
+                };
+                let pair = (tree(sides.old, &job.old), tree(sides.new, &job.new));
                 let both_small =
                     small(&job.old, sides.old_sizes) && small(&job.new, sides.new_sizes);
                 let result = compare_pair(&job, pair, both_small, hosts, &sides, max_file_size);
@@ -166,7 +179,7 @@ pub(crate) async fn follow(
                 continue;
             };
             let named = name(result, job.referrer.as_ref());
-            next.extend(referenced(&named, &job.chain, sides.toplevels));
+            next.extend(referenced(&named, &job.chain, &sides));
             results.extend(named);
         }
         jobs = next;
@@ -177,19 +190,38 @@ pub(crate) async fn follow(
     Ok(results)
 }
 
-/// Pairs from every modified text file, with the file as referrer (spec 7.4), except pairs
-/// already on the referrer's `chain` and references to a toplevel.
-fn referenced(changes: &[FileChange], chain: &[(String, String)], toplevels: &[&str]) -> Vec<Job> {
+/// Pairs from every text file, with the file as referrer (spec 7.4), except pairs already on
+/// the referrer's `chain` and references to a toplevel: the paired references of a modified
+/// file, and every other reference on an added line that the old closure lacks, or on a
+/// removed line that the new closure lacks, paired with `""`.
+fn referenced(changes: &[FileChange], chain: &[(String, String)], sides: &Sides<'_>) -> Vec<Job> {
     changes
         .iter()
-        .filter(|c| c.status == FileStatus::Modified)
         .flat_map(|change| {
-            refs::pairs(change)
+            let paired = if change.status == FileStatus::Modified {
+                refs::pairs(change)
+            } else {
+                Vec::new()
+            };
+            let one_sided = |op, closure: &BTreeMap<String, u64>| -> Vec<String> {
+                refs::on_lines(change, op)
+                    .into_iter()
+                    .filter(|path| {
+                        !closure.contains_key(path)
+                            && !paired.iter().any(|(o, n)| o == path || n == path)
+                    })
+                    .collect()
+            };
+            let added = one_sided(LineOp::Added, sides.old_sizes);
+            let removed = one_sided(LineOp::Removed, sides.new_sizes);
+            paired
                 .into_iter()
+                .chain(added.into_iter().map(|n| (String::new(), n)))
+                .chain(removed.into_iter().map(|o| (o, String::new())))
                 .filter(|pair| {
                     !chain.contains(pair)
-                        && !toplevels.contains(&pair.0.as_str())
-                        && !toplevels.contains(&pair.1.as_str())
+                        && !sides.toplevels.contains(&pair.0.as_str())
+                        && !sides.toplevels.contains(&pair.1.as_str())
                 })
                 .map(|pair| Job {
                     referrer: Some(change.clone()),
@@ -203,7 +235,8 @@ fn referenced(changes: &[FileChange], chain: &[(String, String)], toplevels: &[&
 }
 
 /// As files when both are regular files, as `bin/` when both are small directories; a small
-/// rebuild by its `bin/` only. `None` when the pair is neither.
+/// rebuild by its `bin/` only. An absent side (`""`) matches either. `None` when the pair is
+/// neither.
 fn compare_pair(
     job: &Job,
     (old, new): (&Tree, &Tree),
@@ -215,14 +248,21 @@ fn compare_pair(
     let (old, new, bin) = if job.small_rebuild {
         (below(old, "bin"), below(new, "bin"), true)
     } else {
-        match (old.get(""), new.get("")) {
-            (Some(Entry::File { .. }), Some(Entry::File { .. })) => {
-                (old.clone(), new.clone(), false)
-            }
-            (Some(Entry::Directory), Some(Entry::Directory)) if both_small => {
-                (below(old, "bin"), below(new, "bin"), true)
-            }
-            _ => return None,
+        let root_is = |root: &str, tree: &Tree, dir: bool| {
+            root.is_empty()
+                || match tree.get("") {
+                    Some(Entry::File { .. }) => !dir,
+                    Some(Entry::Directory) => dir,
+                    _ => false,
+                }
+        };
+        let both = |dir| root_is(&job.old, old, dir) && root_is(&job.new, new, dir);
+        if both(false) {
+            (old.clone(), new.clone(), false)
+        } else if both(true) && both_small {
+            (below(old, "bin"), below(new, "bin"), true)
+        } else {
+            return None;
         }
     };
     let changes = compare::compare(
