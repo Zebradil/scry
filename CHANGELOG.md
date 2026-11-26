@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/Zebradil/scry/compare/v0.5.0...v0.6.0) (2026-11-26)
+
+
+### Features
+
+* show content of store paths referenced only on one side ([#58](https://github.com/Zebradil/scry/issues/58)) ([26faa30](https://github.com/Zebradil/scry/commit/26faa301db48e123ca01afadd9745fb0b1829ce2))
+
 ## [0.5.0](https://github.com/Zebradil/scry/compare/v0.4.0...v0.5.0) (2026-11-23)
 
 
