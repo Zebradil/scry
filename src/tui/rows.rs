@@ -6,7 +6,6 @@ use std::collections::HashMap;
 use unicode_width::{UnicodeWidthChar, UnicodeWidthStr};
 
 use crate::render::view::{self, FILE_PATH_SPAN, Kind, Node, Span, Style};
-use crate::report::Rebuilt;
 
 /// Lines kept between the cursor and the pane's edge where possible (spec 12).
 pub const MARGIN: usize = 5;
@@ -28,8 +27,6 @@ pub struct Shape<'a> {
     pub expand_churn: bool,
     /// Open state the reader set; other rows keep their default.
     pub open: &'a HashMap<Key, bool>,
-    /// The entry's rebuilt packages, to recount a filtered group's size delta.
-    pub rebuilt: Option<&'a Rebuilt>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -73,7 +70,7 @@ pub fn rows(nodes: Vec<Node>, shape: &Shape) -> Vec<Row> {
     let nodes = if shape.filter.is_empty() {
         nodes
     } else {
-        filter(nodes, shape.filter, shape.rebuilt)
+        filter(nodes, shape.filter)
     };
     let mut rows = Vec::new();
     flatten(
@@ -88,7 +85,7 @@ pub fn rows(nodes: Vec<Node>, shape: &Shape) -> Vec<Row> {
 
 /// Keeps package rows whose pname and file rows whose path or `via` contains `needle`, every
 /// Boot row and every text row; drops a group left empty and recounts the rest (spec 8.4).
-fn filter(nodes: Vec<Node>, needle: &str, rebuilt: Option<&Rebuilt>) -> Vec<Node> {
+fn filter(nodes: Vec<Node>, needle: &str) -> Vec<Node> {
     let hit = |text: &str| text.to_lowercase().contains(needle);
     let mut kept = Vec::new();
     for mut node in nodes {
@@ -98,18 +95,10 @@ fn filter(nodes: Vec<Node>, needle: &str, rebuilt: Option<&Rebuilt>) -> Vec<Node
             Kind::Boot => true,
             _ if node.children.is_empty() => true,
             kind => {
-                node.children = filter(std::mem::take(&mut node.children), needle, rebuilt);
+                node.children = filter(std::mem::take(&mut node.children), needle);
                 let count = node.children.len();
                 let label = match kind {
-                    Kind::Rebuilt => {
-                        let items = rebuilt.map_or(&[][..], |r| &r.items[..]);
-                        let delta = items
-                            .iter()
-                            .filter(|i| hit(&i.pname))
-                            .map(|i| i.size_delta)
-                            .sum();
-                        Some(view::rebuilt_label(count, delta))
-                    }
+                    Kind::Rebuilt => Some(view::rebuilt_label(count)),
                     Kind::Churn(class) => Some(view::churn_label(class, count, false)),
                     _ => None,
                 };
@@ -420,7 +409,7 @@ pub fn scroll(top: usize, (start, end): (usize, usize), total: usize, height: us
 mod tests {
     use super::*;
     use crate::render::view::Color;
-    use crate::report::{ChurnClass, RebuiltPackage};
+    use crate::report::ChurnClass;
 
     fn span(text: &str) -> Span {
         Span {
@@ -475,7 +464,6 @@ mod tests {
             tree,
             expand_churn: false,
             open,
-            rebuilt: None,
         }
     }
 
@@ -638,19 +626,6 @@ mod tests {
 
     #[test]
     fn filter_matches_pnames_and_paths_case_insensitively_keeps_boot_and_recounts() {
-        let rebuilt = Rebuilt {
-            count: 3,
-            size_delta: 7,
-            items: ["bash", "openssh", "openssl"]
-                .iter()
-                .zip([1, 2, 4])
-                .map(|(pname, delta)| RebuiltPackage {
-                    pname: pname.to_string(),
-                    versions: vec![],
-                    size_delta: delta,
-                })
-                .collect(),
-        };
         let nodes = vec![
             node(0, "web-a", Kind::Text, vec![text(2, "old /nix/store/x")]),
             node(
@@ -694,10 +669,7 @@ mod tests {
         ];
         let mut open = HashMap::new();
         open.insert(Key::Node(Kind::Rebuilt), true);
-        let shape = Shape {
-            rebuilt: Some(&rebuilt),
-            ..shape(&open, "ssl", false)
-        };
+        let shape = shape(&open, "ssl", false);
         assert_eq!(
             texts(&rows(nodes, &shape)),
             [
@@ -705,7 +677,7 @@ mod tests {
                 "  old /nix/store/x",
                 "Packages",
                 "  OpenSSL",
-                "  1 rebuilt (same version, new hash, +4 B)",
+                "  1 rebuilt (same version, new hash)",
                 "    openssl",
                 "Files",
                 "  [M] etc/ssl/certs",

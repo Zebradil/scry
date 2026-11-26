@@ -117,7 +117,7 @@ fn done(
         .map(|pname| RebuiltPackage {
             pname: pname.to_string(),
             versions: vec!["1.0".into()],
-            size_delta: 1024,
+            size_delta: 0,
         })
         .collect();
     Configuration {
@@ -132,7 +132,7 @@ fn done(
                 changes,
                 rebuilt: Rebuilt {
                     count: items.len(),
-                    size_delta: 1024 * items.len() as i64,
+                    size_delta: 0,
                     items,
                 },
             },
@@ -443,7 +443,7 @@ const WEB_A: [&str; 18] = [
     "Packages  1.2 GiB -> 1.2 GiB (+41.0 MiB)",
     "  [U] openssl  +100 B   3.0.13 -> 3.0.14  (also in 1)",
     "  [U] systemd  +1.1 MiB 257.5 -> 258.1",
-    "  3 rebuilt (same version, new hash, +3.0 KiB)",
+    "  3 rebuilt (same version, new hash)",
     "Files",
     "  etc/  (3)",
     "    [L] mtab  /proc/mounts -> /proc/self/mounts",
@@ -495,10 +495,7 @@ fn j_k_g_and_capital_j_k_move_in_detail() {
         "[U] openssl  +100 B   3.0.13 -> 3.0.14  (also in 1)"
     );
     press(&mut app, "JJ");
-    assert_eq!(
-        cursor_text(&app),
-        "3 rebuilt (same version, new hash, +3.0 KiB)"
-    );
+    assert_eq!(cursor_text(&app), "3 rebuilt (same version, new hash)");
     press(&mut app, "J");
     assert_eq!(cursor_text(&app), "etc/  (3)", "a directory is collapsible");
     press(&mut app, "K");
@@ -588,9 +585,9 @@ fn l_expands_and_never_collapses() {
     assert_eq!(
         shown(&app)[8..11],
         [
-            "    bash       +1.0 KiB 1.0",
-            "    coreutils  +1.0 KiB 1.0",
-            "    zlib       +1.0 KiB 1.0",
+            "    bash       1.0",
+            "    coreutils  1.0",
+            "    zlib       1.0",
         ]
     );
     press(&mut app, "l");
@@ -819,7 +816,7 @@ fn capital_y_copies_the_text_output_without_colour() {
     press(&mut app, "/nix\nY");
     let copied = clipboard(&mut app);
     assert!(!copied.contains('\x1b'));
-    assert!(copied.contains("\n  3 rebuilt (same version, new hash, +3.0 KiB)\n"));
+    assert!(copied.contains("\n  3 rebuilt (same version, new hash)\n"));
     assert!(copied.contains("\n  [M] etc/nix/nix.conf  (also in 1)\n      @@ -1,1 +1,1 @@\n"));
     assert!(copied.contains("\n  2 hash-only (store hash churn; --expand-churn shows them)\n"));
     // All copies the shared section as text output prints it.

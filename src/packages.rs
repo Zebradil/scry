@@ -7,10 +7,6 @@ use crate::report::{PackageChange, PackageChangeKind, Packages, Rebuilt, Rebuilt
 use crate::store::name::package_id;
 use crate::store::version::version_order;
 
-/// A rebuilt package is resized when its size moves by at least this much (spec 12)…
-pub const RESIZED_MIN_BYTES: u64 = 1024 * 1024;
-/// …and by at least this percentage of its old size (spec 12).
-pub const RESIZED_MIN_PERCENT: u64 = 10;
 /// A small rebuild's path is at most this big, on each side (spec 12).
 pub const SMALL_REBUILD_MAX_BYTES: u64 = 1024 * 1024;
 
@@ -77,14 +73,15 @@ pub fn compare(
                         new: new_path.to_owned(),
                     });
                 }
-                let moved = size_delta.unsigned_abs();
-                if moved < RESIZED_MIN_BYTES || moved * 100 < o.size * RESIZED_MIN_PERCENT {
+                // Store hashes have one length, so a rebuild that only swapped hashes keeps its
+                // narSize to the byte; a size change is new content or a reference whose name
+                // changed length (ADR 0032).
+                if size_delta == 0 {
                     rebuilt.count += 1;
-                    rebuilt.size_delta += size_delta;
                     rebuilt.items.push(RebuiltPackage {
                         pname: pname.to_owned(),
                         versions: n.versions(),
-                        size_delta,
+                        size_delta: 0,
                     });
                     continue;
                 }
@@ -267,6 +264,7 @@ mod tests {
                 change(Changed, "same", &["1.0"], &["1.00"], 0),
                 change(Added, "new-agent", &[], &["1.4.0"], 2 * MIB as i64),
                 change(Removed, "old-lib", &["0.9"], &[], -300 * 1024),
+                change(Resized, "big", &["1"], &["1"], 5 * MIB as i64),
                 change(
                     Resized,
                     "linux-firmware",
@@ -274,30 +272,19 @@ mod tests {
                     &["20250801"],
                     12 * MIB as i64
                 ),
+                change(Resized, "tiny", &["1"], &["1"], 1000),
             ]
         );
         assert_eq!(
             packages.rebuilt,
             Rebuilt {
-                count: 3,
-                size_delta: 5 * MIB as i64 + 1000,
-                items: vec![
-                    RebuiltPackage {
-                        pname: "bash".into(),
-                        versions: vec!["5.2p37".into()],
-                        size_delta: 0
-                    },
-                    RebuiltPackage {
-                        pname: "big".into(),
-                        versions: vec!["1".into()],
-                        size_delta: 5 * MIB as i64
-                    },
-                    RebuiltPackage {
-                        pname: "tiny".into(),
-                        versions: vec!["1".into()],
-                        size_delta: 1000
-                    },
-                ],
+                count: 1,
+                size_delta: 0,
+                items: vec![RebuiltPackage {
+                    pname: "bash".into(),
+                    versions: vec!["5.2p37".into()],
+                    size_delta: 0
+                }],
             }
         );
         assert_eq!(
@@ -318,12 +305,11 @@ mod tests {
     }
 
     #[test]
-    fn resized_needs_both_thresholds() {
+    fn resized_on_any_size_change() {
         let cases = [
-            (10 * MIB, 11 * MIB, Some(Resized)), // exactly 1 MiB and 10 %
-            (10 * MIB, 11 * MIB - 1, None),      // under 1 MiB
-            (20 * MIB, 21 * MIB, None),          // 1 MiB but 5 %
-            (20 * MIB, 18 * MIB, Some(Resized)), // shrinking counts too
+            (10 * MIB, 10 * MIB, None),
+            (10 * MIB, 10 * MIB + 8, Some(Resized)),
+            (20 * MIB, 18 * MIB, Some(Resized)),
         ];
         for (old_size, new_size, expected) in cases {
             let old = closure(&[('0', "pkg-1", old_size)]);

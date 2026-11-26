@@ -172,6 +172,8 @@ pub enum PackageChangeKind {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Rebuilt {
     pub count: usize,
+    /// Always 0, as is each item's: a rebuild that changed size is resized (ADR 0032). Kept so
+    /// schema version 1 stays valid.
     pub size_delta: i64,
     /// By pname.
     pub items: Vec<RebuiltPackage>,
@@ -387,7 +389,7 @@ mod tests {
           "packages": {
             "size_old": 1288490188, "size_new": 1331439861,
             "changes": [ { "kind": "upgraded", "pname": "openssl", "old_versions": ["3.0.13"], "new_versions": ["3.0.14"], "size_delta": 100 } ],
-            "rebuilt": { "count": 412, "size_delta": 3250586, "items": [ { "pname": "bash", "versions": ["5.2p37"], "size_delta": 0 } ] }
+            "rebuilt": { "count": 412, "size_delta": 0, "items": [ { "pname": "bash", "versions": ["5.2p37"], "size_delta": 0 } ] }
           },
           "files": {
             "changes": [

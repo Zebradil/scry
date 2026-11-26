@@ -17,7 +17,7 @@ expression: "render(&normative(), true, false)"
   \e[32m[A]\e[0m \e[32mnew-agent\e[0m       +2.0 MiB   1.4.0
   \e[31m[R]\e[0m \e[31mold-lib\e[0m         -300.0 KiB 0.9
   [S] linux-firmware  +12.0 MiB  20250801
-  412 rebuilt (same version, new hash, +3.1 MiB)
+  412 rebuilt (same version, new hash)
 \e[1mFiles\e[0m
   \e[36m[L]\e[0m \e[36metc/mtab\e[0m  /proc/mounts -> /proc/self/mounts
   \e[36m[M]\e[0m \e[36metc/nix/nix.conf\e[0m  (also in 1)

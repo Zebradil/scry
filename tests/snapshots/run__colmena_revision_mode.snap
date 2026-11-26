@@ -7,7 +7,8 @@ web-a · unknown (1a2b3c4 -> working tree)
   new /nix/store/2sb3q5cg9q2c3m192aaqmckjpzgp6hfd-custom-system
   unknown closure kind: no followed trees, no Boot section
 Packages  1.1 KiB -> 1.1 KiB (+6 B)
-  2 rebuilt (same version, new hash, +3 B)
+  [S] etc  +3 B
+  1 rebuilt (same version, new hash)
 Files
   [M] hello
       @@ -1,1 +1,1 @@

@@ -287,12 +287,10 @@ fn message(prefix: &str, text: &str) -> Node {
     Node::new(2, vec![span(first, red())], Kind::Text, rest)
 }
 
-/// The rebuilt group's row: `412 rebuilt (same version, new hash, +3.1 MiB)`.
-pub fn rebuilt_label(count: usize, size_delta: i64) -> String {
-    format!(
-        "{count} rebuilt (same version, new hash, {})",
-        format_delta(size_delta)
-    )
+/// The rebuilt group's row: `412 rebuilt (same version, new hash)`. No size: a rebuild that
+/// changed size is resized.
+pub fn rebuilt_label(count: usize) -> String {
+    format!("{count} rebuilt (same version, new hash)")
 }
 
 /// A churn group's row: `57 hash-only (store hash churn)`; with `hint`, text output's closed
@@ -397,25 +395,15 @@ fn packages(p: &Packages, also: &AlsoIn) -> Node {
     Node::new(0, vec![span(header, Style::BOLD)], Kind::Text, rows)
 }
 
-/// The collapsed rebuilt line; open, it lists each rebuilt pname with its size delta and
-/// versions.
+/// The collapsed rebuilt line; open, it lists each rebuilt pname with its versions.
 fn rebuilt(r: &Rebuilt) -> Node {
-    let line = rebuilt_label(r.count, r.size_delta);
+    let line = rebuilt_label(r.count);
     let pname_width = r.items.iter().map(|i| width(&i.pname)).max().unwrap_or(0);
-    let deltas: Vec<String> = r.items.iter().map(|i| format_delta(i.size_delta)).collect();
-    let delta_width = deltas.iter().map(|d| width(d)).max().unwrap_or(0);
     let items = r
         .items
         .iter()
-        .zip(&deltas)
-        .map(|(item, delta)| {
-            let versions = one_side(&item.versions);
-            let rest = columns(
-                &item.pname,
-                pname_width,
-                Some((delta, delta_width)),
-                &versions,
-            );
+        .map(|item| {
+            let rest = columns(&item.pname, pname_width, None, &one_side(&item.versions));
             let spans = vec![span(&item.pname, Style::PLAIN), span(rest, Style::PLAIN)];
             Node::new(2, spans, Kind::Package(item.pname.clone()), Vec::new())
         })

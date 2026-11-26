@@ -91,11 +91,55 @@ expression: configuration
         ],
         "new_versions": [],
         "size_delta": -227
+      },
+      {
+        "kind": "resized",
+        "pname": "etc",
+        "old_versions": [
+          ""
+        ],
+        "new_versions": [
+          ""
+        ],
+        "size_delta": 363
+      },
+      {
+        "kind": "resized",
+        "pname": "nix.conf",
+        "old_versions": [
+          ""
+        ],
+        "new_versions": [
+          ""
+        ],
+        "size_delta": 13
+      },
+      {
+        "kind": "resized",
+        "pname": "system-path",
+        "old_versions": [
+          ""
+        ],
+        "new_versions": [
+          ""
+        ],
+        "size_delta": 173
+      },
+      {
+        "kind": "resized",
+        "pname": "system-units",
+        "old_versions": [
+          ""
+        ],
+        "new_versions": [
+          ""
+        ],
+        "size_delta": 101
       }
     ],
     "rebuilt": {
-      "count": 14,
-      "size_delta": 650,
+      "count": 10,
+      "size_delta": 0,
       "items": [
         {
           "pname": "app-helper",
@@ -126,25 +170,11 @@ expression: configuration
           "size_delta": 0
         },
         {
-          "pname": "etc",
-          "versions": [
-            ""
-          ],
-          "size_delta": 363
-        },
-        {
           "pname": "issue",
           "versions": [
             ""
           ],
           "size_delta": 0
-        },
-        {
-          "pname": "nix.conf",
-          "versions": [
-            ""
-          ],
-          "size_delta": 13
         },
         {
           "pname": "nixos-version",
@@ -166,20 +196,6 @@ expression: configuration
             ""
           ],
           "size_delta": 0
-        },
-        {
-          "pname": "system-path",
-          "versions": [
-            ""
-          ],
-          "size_delta": 173
-        },
-        {
-          "pname": "system-units",
-          "versions": [
-            ""
-          ],
-          "size_delta": 101
         },
         {
           "pname": "unit-app.service",

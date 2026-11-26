@@ -11,6 +11,10 @@ Shared across configurations
   [A] resolv.conf                                                                                          web-a, web-b
   [A] unit-metrics.service                                                                                 web-a, web-b
   [R] unit-debug-shell.service                                                                             web-a, web-b
+  [S] etc                                                                                                  web-a, web-b
+  [S] nix.conf                                                                                             web-a, web-b
+  [S] system-path                                                                                          web-a, web-b
+  [S] system-units                                                                                         web-a, web-b
   [M] app-helper/bin/app-helper                                                                            web-a, web-b
   [B] etc/binary.db  (binary)                                                                              web-a, web-b
   [L] etc/mtab  /proc/mounts -> /proc/self/mounts                                                          web-a, web-b
@@ -47,7 +51,11 @@ Packages  38.0 MiB -> 38.0 MiB (+1.9 KiB)
   [A] resolv.conf               +140 B  (also in 1)
   [A] unit-metrics.service      +375 B  (also in 1)
   [R] unit-debug-shell.service  -227 B  (also in 1)
-  14 rebuilt (same version, new hash, +650 B)
+  [S] etc                       +363 B  (also in 1)
+  [S] nix.conf                  +13 B  (also in 1)
+  [S] system-path               +173 B  (also in 1)
+  [S] system-units              +101 B  (also in 1)
+  10 rebuilt (same version, new hash)
 Files
   [M] app-helper/bin/app-helper  (also in 1)
       @@ -1,3 +1,3 @@
@@ -120,7 +128,11 @@ Packages  38.0 MiB -> 38.0 MiB (+1.9 KiB)
   [A] resolv.conf               +140 B  (also in 1)
   [A] unit-metrics.service      +375 B  (also in 1)
   [R] unit-debug-shell.service  -227 B  (also in 1)
-  14 rebuilt (same version, new hash, +650 B)
+  [S] etc                       +363 B  (also in 1)
+  [S] nix.conf                  +13 B  (also in 1)
+  [S] system-path               +173 B  (also in 1)
+  [S] system-units              +101 B  (also in 1)
+  10 rebuilt (same version, new hash)
 Files
   [M] app-helper/bin/app-helper  (also in 1)
       @@ -1,3 +1,3 @@
