@@ -6,5 +6,7 @@ pub mod compare;
 pub mod diff;
 /// Word highlight: line pairing and token LCS (spec 7.3).
 pub mod highlight;
+/// JSON hunks re-indented for the TUI inspect window.
+pub mod pretty;
 /// Store references in text and their old/new pairing (spec 7.4).
 pub mod refs;

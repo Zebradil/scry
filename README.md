@@ -101,7 +101,8 @@ scry paths --target root@web-a /nix/var/nix/profiles/system-41-link /run/current
   green background.
 
 TUI keys: `j`/`k` move, `J`/`K` next change, `h`/`l` and Enter fold, Tab switch pane, `1`–`9`
-select a configuration, `/` filter, `w` wrap, `t` tree view, `y` copy the pane, `Y` copy the
+select a configuration, `/` filter, `w` wrap, `t` tree view, `i` inspect a file change (full
+screen, JSON re-indented, `s` side by side, `n`/`N` next change), `y` copy the pane, `Y` copy the
 configuration, `q` quit. The bottom line shows the hints.
 
 ## Exit codes

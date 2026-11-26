@@ -1046,3 +1046,96 @@ fn other_threads_panics_wait_for_the_terminal_and_the_hook_goes_away() {
     assert_eq!(RESTORED.load(Ordering::SeqCst), 2);
     assert_eq!(Arc::strong_count(&held), 1, "the hook is removed");
 }
+
+/// One configuration with a one-line JSON file: 20 members, `k03` and `k16` changed.
+fn json_app() -> App {
+    let json = |changed: &str| {
+        let members: Vec<String> = (0..20)
+            .map(|i| match i {
+                3 | 16 => format!(r#""k{i:02}":"{changed}""#),
+                _ => format!(r#""k{i:02}":{i}"#),
+            })
+            .collect();
+        format!("{{{}}}", members.join(","))
+    };
+    let file = modified(
+        "etc/app/settings.json",
+        &[],
+        ChurnClass::Real,
+        vec![
+            line(LineOp::Removed, &json("old")),
+            line(LineOp::Added, &json("new")),
+        ],
+    );
+    let names = vec!["web-a".to_owned()];
+    let mut app = App::new(Mode::Deployed, names, Options::default());
+    app.arrive(done("web-a", '1', vec![], &[], vec![file]));
+    app.resize(60, 14);
+    press(&mut app, "\t");
+    let at = shown(&app)
+        .iter()
+        .position(|r| r.contains("settings.json"))
+        .unwrap();
+    app.views[app.selected].cursor = at;
+    app
+}
+
+fn inspect_top(app: &App) -> usize {
+    app.inspect.as_ref().expect("inspect is open").top
+}
+
+#[test]
+fn screen_inspect_json_unified_and_side_by_side() {
+    let mut app = json_app();
+    press(&mut app, "i");
+    assert_snapshot!(screen(&mut app, 60, 14));
+    press(&mut app, "s");
+    assert_snapshot!(screen(&mut app, 60, 14));
+}
+
+#[test]
+fn inspect_scrolls_and_jumps_between_changes() {
+    let mut app = json_app();
+    // From a hunk line too: the window opens on the file change holding it.
+    press(&mut app, "\nji");
+    // 11 lines high, 18 in all: two hunks, the changes at lines 4 (k03) and 13 (k16).
+    press(&mut app, "n");
+    assert_eq!(
+        inspect_top(&app),
+        7,
+        "k03 shows above the jump line, so n goes to k16, as far as the last page allows"
+    );
+    press(&mut app, "N");
+    assert_eq!(
+        inspect_top(&app),
+        0,
+        "back to k03, as far as the top allows"
+    );
+    press(&mut app, "Gj");
+    assert_eq!(inspect_top(&app), 7, "the last page stays full");
+    press(&mut app, "gj");
+    assert_eq!(inspect_top(&app), 1);
+    ctrl(&mut app, 'd');
+    assert_eq!(inspect_top(&app), 6);
+    app.key(KeyCode::Esc.into());
+    assert!(app.inspect.is_none());
+    press(&mut app, "iq");
+    assert!(
+        app.inspect.is_none() && !app.quit,
+        "q closes the window, not the viewer"
+    );
+}
+
+#[test]
+fn inspect_needs_a_file_change_with_text() {
+    let mut app = web_a_detail();
+    press(&mut app, "i");
+    assert!(app.inspect.is_none());
+    assert_eq!(app.notice.as_deref(), Some("not on a file change"));
+    let mtab = shown(&app).iter().position(|r| r.contains("mtab")).unwrap();
+    app.views[app.selected].cursor = mtab;
+    press(&mut app, "i");
+    assert_eq!(app.notice.as_deref(), Some("no text diff to inspect"));
+    press(&mut app, "\ti");
+    assert!(app.inspect.is_none(), "not from the list");
+}

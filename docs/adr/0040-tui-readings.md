@@ -42,6 +42,22 @@ Spec 8.4 and 8.5 leave some cases open. These readings fill them; the tests in
 - **Wrap** breaks at any character, by display width; continuation lines start at the row's
   indent. Tabs expand to stops of 8 for display; `y` copies them as tabs.
 
+## Inspect window
+
+- **JSON is re-indented by its own tokens**, not parsed and printed again: `serde_json` would
+  sort keys and round numbers, so the diff could show values the file does not hold. The text is
+  parsed only to check it is JSON. A hunk that is not whole JSON on both sides, such as part of a
+  multi-line file, stays as it is; when both sides re-indent to the same text the change is in
+  whitespace only, and the raw hunk shows it.
+- **Scrolling has no cursor**: the window is read, not acted on. `n`/`N` count the change at
+  5 lines below the top as the current one, so a change already in view near the top is
+  passed over.
+- **Side by side** splits each run of removed lines and the added lines right after it line by
+  line, as word highlight pairs them; context shows on both halves. With wrap off each half is
+  cut at its own edge.
+- **`q` closes the window** rather than quitting, as in other viewers' nested views; Ctrl-C
+  still quits.
+
 ## Clipboard
 
 - **`X KiB`** in `copied N lines (X KiB)` is the size of the OSC 52 escape, the same quantity

@@ -9,12 +9,19 @@ use ratatui::widgets::{Block, BorderType, Paragraph};
 use unicode_width::UnicodeWidthStr;
 
 use super::app::{App, Focus};
+use super::inspect::Inspect;
 use super::rows;
 use crate::render::view::{self, Span, Style};
 
-const HINTS: &str = "j/k move  enter fold  / filter  w wrap  t tree  y/Y copy  tab pane  q quit";
+const HINTS: &str =
+    "j/k move  enter fold  i inspect  / filter  w wrap  t tree  y/Y copy  tab pane  q quit";
+const INSPECT_HINTS: &str = "j/k scroll  n/N next/prev change  s side by side  w wrap  esc back";
 
 pub fn draw(app: &App, frame: &mut Frame) {
+    if let Some(inspect) = &app.inspect {
+        draw_inspect(app, inspect, frame);
+        return;
+    }
     let areas = app.areas();
     let color = app.options.color;
     let style = |s: Style| ratatui_style(s, color);
@@ -89,16 +96,52 @@ pub fn draw(app: &App, frame: &mut Frame) {
         let x = areas.bottom.x + u16::try_from(text.width()).unwrap_or(u16::MAX);
         frame.set_cursor_position((x.min(areas.bottom.right()), areas.bottom.y));
         Line::raw(text)
-    } else if let Some(notice) = &app.notice {
-        Line::raw(notice.as_str())
     } else {
-        let dim = Style {
-            dim: true,
-            ..Style::default()
-        };
-        Line::styled(HINTS, style(dim))
+        hints(app, HINTS)
     };
     frame.render_widget(Paragraph::new(bottom), areas.bottom);
+}
+
+fn draw_inspect(app: &App, inspect: &Inspect, frame: &mut Frame) {
+    let area = app.inspect_area();
+    let mut title = inspect.title.clone();
+    if inspect.reindented {
+        title += " [JSON re-indented]";
+    }
+    let block = pane(true).title(format!(" {title} "));
+    let inner = block.inner(area);
+    frame.render_widget(block, area);
+    let lines: Vec<Line> = inspect
+        .lines
+        .iter()
+        .skip(inspect.top)
+        .take(usize::from(inner.height))
+        .map(|spans| {
+            Line::from(
+                spans
+                    .iter()
+                    .map(|s| span(s, app.options.color))
+                    .collect::<Vec<_>>(),
+            )
+        })
+        .collect();
+    frame.render_widget(Paragraph::new(lines), inner);
+    frame.render_widget(
+        Paragraph::new(hints(app, INSPECT_HINTS)),
+        app.areas().bottom,
+    );
+}
+
+/// The bottom line: the notice, else `text` dimmed.
+fn hints(app: &App, text: &'static str) -> Line<'static> {
+    if let Some(notice) = &app.notice {
+        return Line::raw(notice.clone());
+    }
+    let dim = Style {
+        dim: true,
+        ..Style::default()
+    };
+    Line::styled(text, ratatui_style(dim, app.options.color))
 }
 
 fn pane(focused: bool) -> Block<'static> {
