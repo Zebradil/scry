@@ -552,6 +552,7 @@ pub fn nixos(h: &mut Host, old: bool) -> String {
 /// after. Link depth 3 (`etc` → `etc/systemd/system` → `app.service`); followed references to
 /// depth 2 (`app.service` → `app-start/bin/app-start` → `app.json`), but neither `app-start`'s
 /// reference to itself, nor `app-helper`'s (a small rebuild), nor `activate`'s to the toplevel.
+/// The added `metrics.service` shows the added `metrics.conf` it references, but not `bash`.
 pub fn nixos_of(h: &mut Host, old: bool, host: &str) -> String {
     let s = if old { "o" } else { "n" };
     let pick = |o: &'static str, n: &'static str| if old { o } else { n };
@@ -604,6 +605,17 @@ pub fn nixos_of(h: &mut Host, old: bool, host: &str) -> String {
         h.link(&debug_shell, &format!("{debug_unit}/debug-shell.service"));
     } else {
         h.link(&debug_shell, "/dev/null");
+        let metrics_conf = store_path("n", "metrics.conf");
+        h.file(&metrics_conf, "listen = 0.0.0.0:9100\n");
+        let metrics_unit = store_path("n", "unit-metrics.service");
+        h.file(
+            &format!("{metrics_unit}/metrics.service"),
+            format!("[Service]\nExecStart={bash}/bin/bash -c 'metrics {metrics_conf}'\n"),
+        )
+        .link(
+            &format!("{units}/metrics.service"),
+            &format!("{metrics_unit}/metrics.service"),
+        );
     }
     let hosts = store_path("shared", "hosts");
     h.file(&hosts, "127.0.0.1 localhost\n");
