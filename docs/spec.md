@@ -507,9 +507,11 @@ report it.
   upgraded.
 - Version text in a row: added and resized rows show the new versions, removed rows the old ones, and
   the rest show `old -> new`.
-- Order: by kind in the order upgraded, downgraded, changed, added, removed, resized; by pname
-  within a kind. Then one collapsed line: `N rebuilt (same version, new hash)`. Expanded, it lists
-  each rebuilt pname with its version.
+- Groups, as `dix` groups them: `N changed` (upgraded, downgraded and changed), `N added`,
+  `N removed`, `N resized (same version, new size)`, in that order, each with its rows by pname; a
+  group without rows is omitted. Then one collapsed line: `N rebuilt (same version, new hash)`.
+  Expanded, it lists each rebuilt pname with its version. JSON `changes` stay ordered by kind in the
+  order upgraded, downgraded, changed, added, removed, resized, then by pname.
 - Each row shows the pname's size delta. The section header shows
   `Packages  <old closure size> -> <new closure size> (<delta>)`.
 - Sizes: under 1024 bytes as an integer with `B`. Otherwise in steps of 1024 with one decimal and
@@ -752,12 +754,16 @@ web-a · nixos (root@web-a)
   new /nix/store/<h>-nixos-system-web-a-25.11.20251001.9a8b7c6
   system 25.05.20250801.6027c30 -> 25.11.20251001.9a8b7c6
 Packages  1.2 GiB -> 1.3 GiB (+41.0 MiB)
-  [U] openssl         +100 B     3.0.13 -> 3.0.14  (also in 1)
-  [U] systemd         +1.2 MiB   257.5 -> 258.1
-  [C] my-tool         +4.0 KiB   1.2.0-1a2b3c4 -> 1.2.0-9f8e7d6
-  [A] new-agent       +2.0 MiB   1.4.0
-  [R] old-lib         -300.0 KiB 0.9
-  [S] linux-firmware  +12.0 MiB  20250801
+  3 changed
+    [C] my-tool         +4.0 KiB   1.2.0-1a2b3c4 -> 1.2.0-9f8e7d6
+    [U] openssl         +100 B     3.0.13 -> 3.0.14  (also in 1)
+    [U] systemd         +1.2 MiB   257.5 -> 258.1
+  1 added
+    [A] new-agent       +2.0 MiB   1.4.0
+  1 removed
+    [R] old-lib         -300.0 KiB 0.9
+  1 resized (same version, new size)
+    [S] linux-firmware  +12.0 MiB  20250801
   412 rebuilt (same version, new hash)
 Files
   [M] etc/nix/nix.conf  (also in 1)
@@ -861,7 +867,7 @@ transient notice.
   directories.
 - **Filter**: case-insensitive substring match on pnames and file paths, in every configuration and in
   All. Boot rows are always shown. The pane title shows `[filter: …]`.
-- **Default open state**: rebuilt and churn groups closed (churn open with `--expand-churn`), file
+- **Default open state**: package groups open, rebuilt and churn groups closed (churn open with `--expand-churn`), file
   changes closed, directories open. Open state is kept per configuration.
 - **Clipboard**: `y` and `Y` emit an OSC 52 escape, so it works over SSH with no clipboard tool. The
   terminal must allow OSC 52 (tmux needs `set-clipboard on`) and never confirms it. Terminals and

@@ -7,7 +7,8 @@ db-a · nix-darwin (6027c30 -> working tree)
   new /nix/store/9w3ka6zcl5ns0fqyd8vkm2rhxbij4p7g-darwin-system-25.11.b
   system 25.11.a -> 25.11.b
 Packages  3.0 MiB -> 3.0 MiB (0 B)
-  [D] python3  0 B 3.12.4 -> 3.11.9
+  1 changed
+    [D] python3  0 B 3.12.4 -> 3.11.9
 Files
   [A] etc/motd
   [R] etc/old.bin  (binary, 2.0 KiB)
