@@ -15,4 +15,4 @@ Packages  1.0 GiB -> 1.1 GiB (+80.0 MiB)
   [A] unit-foo.service  +1.2 KiB
   [R] libbar            -1 B      0.9
   [S] firmware          +3.0 MiB  20250801
-  2 rebuilt (same version, new hash, 0 B)
+  2 rebuilt (same version, new hash)

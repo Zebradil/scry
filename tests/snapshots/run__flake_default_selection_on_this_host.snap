@@ -7,7 +7,7 @@ alice@web-a · home-manager (local)
   new /nix/store/bbk9svdi1br4irf85rw63dy99akpq6w1-home-manager-generation
   system 26.11
 Packages  1.8 KiB -> 1.8 KiB (0 B)
-  4 rebuilt (same version, new hash, 0 B)
+  4 rebuilt (same version, new hash)
 Files
   [M] LaunchAgents/org.example.agent.plist
       @@ -1,1 +1,1 @@
@@ -38,7 +38,11 @@ Packages  38.0 MiB -> 38.0 MiB (+1.9 KiB)
   [A] resolv.conf               +140 B
   [A] unit-metrics.service      +375 B
   [R] unit-debug-shell.service  -227 B
-  14 rebuilt (same version, new hash, +650 B)
+  [S] etc                       +363 B
+  [S] nix.conf                  +13 B
+  [S] system-path               +173 B
+  [S] system-units              +101 B
+  10 rebuilt (same version, new hash)
 Files
   [M] app-helper/bin/app-helper
       @@ -1,3 +1,3 @@

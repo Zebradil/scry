@@ -17,7 +17,7 @@ Packages  1.2 GiB -> 1.3 GiB (+41.0 MiB)
   [A] new-agent       +2.0 MiB   1.4.0
   [R] old-lib         -300.0 KiB 0.9
   [S] linux-firmware  +12.0 MiB  20250801
-  412 rebuilt (same version, new hash, +3.1 MiB)
+  412 rebuilt (same version, new hash)
 Files
   [L] etc/mtab  /proc/mounts -> /proc/self/mounts
   [M] etc/nix/nix.conf  (also in 1)

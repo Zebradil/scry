@@ -379,24 +379,12 @@ impl App {
     }
 
     fn build_rows(&self) -> Vec<Row> {
-        let (nodes, rebuilt) = match self.entry(self.selected) {
-            Entry::All => (view::shared(&self.shared), None),
+        let nodes = match self.entry(self.selected) {
+            Entry::All => view::shared(&self.shared),
             Entry::Configuration(i) => match self.configuration(i) {
-                None => (vec![note("fetching…")], None),
+                None => vec![note("fetching…")],
                 Some(c) => {
-                    let rebuilt = match &c.status {
-                        Status::Done(s) => Some(&s.packages.rebuilt),
-                        _ => None,
-                    };
-                    (
-                        view::configuration(
-                            &self.mode,
-                            &self.shared,
-                            c,
-                            self.options.word_highlight,
-                        ),
-                        rebuilt,
-                    )
+                    view::configuration(&self.mode, &self.shared, c, self.options.word_highlight)
                 }
             },
         };
@@ -406,7 +394,6 @@ impl App {
             tree: self.tree,
             expand_churn: self.options.expand_churn,
             open: &self.views[self.selected].open,
-            rebuilt,
         };
         let mut rows = rows::rows(nodes, &shape);
         if let Entry::All = self.entry(self.selected) {

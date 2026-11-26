@@ -31,10 +31,11 @@ Terms as used in the spec, code, issues and docs. Prefer these over synonyms.
 - **Package**: all store paths of a closure that share one *pname*, with their versions, paths and
   summed size.
 - **Package change**: upgraded, downgraded, changed, added, removed, resized, or rebuilt.
-- **Rebuilt**: same pname and same version set, different store paths. Collapsed into one summary line.
-- **Resized**: a rebuilt package whose size moved by at least 1 MiB and at least 10 % of its old size.
+- **Rebuilt**: same pname, same version set and same size, different store paths. Collapsed into one
+  summary line.
+- **Resized**: same pname and same version set, different store paths, different size.
   Listed instead of collapsed.
-- **Small rebuild**: a rebuilt package with exactly one path per side, each at most 1 MiB: a script
+- **Small rebuild**: a rebuilt or resized package with exactly one path per side, each at most 1 MiB: a script
   rather than a package, so its `bin/` is compared by content.
 - **Followed tree**: a directory under the toplevel whose files are compared by content, store symlinks
   dereferenced. An allow-list per closure kind.

@@ -292,7 +292,7 @@ fn normative() -> Report {
         ],
         Rebuilt {
             count: 412,
-            size_delta: 3_250_586,
+            size_delta: 0,
             items: vec![RebuiltPackage {
                 pname: "bash".into(),
                 versions: vec!["5.2p37".into()],
@@ -972,8 +972,7 @@ fn nodes_under_any_open_state() {
     text::write_nodes(&nodes, |_| true, false, &mut out).unwrap();
     let all_open = String::from_utf8(out).unwrap();
     assert!(
-        all_open
-            .contains("\n  412 rebuilt (same version, new hash, +3.1 MiB)\n    bash  0 B 5.2p37\n"),
+        all_open.contains("\n  412 rebuilt (same version, new hash)\n    bash  5.2p37\n"),
         "{all_open}"
     );
     assert!(
@@ -988,10 +987,7 @@ fn nodes_under_any_open_state() {
     let block = full.split("\n\n").nth(1).unwrap();
     assert_eq!(String::from_utf8(out).unwrap(), format!("{block}\n"));
 
-    assert_eq!(
-        view::rebuilt_label(3, -1024),
-        "3 rebuilt (same version, new hash, -1.0 KiB)"
-    );
+    assert_eq!(view::rebuilt_label(3), "3 rebuilt (same version, new hash)");
     assert_eq!(
         view::churn_label(ChurnClass::VersionOnly, 2, false),
         "2 version-only (version bumps)"

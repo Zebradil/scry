@@ -34,8 +34,8 @@ Spec 8.4 and 8.5 leave some cases open. These readings fill them; the tests in
 ## Rows
 
 - **Filter**: a file matches on its path or any `via` item. Text rows (headers, status
-  lines) stay; a group or section left without rows is dropped; the rebuilt group's size
-  delta is recounted from the matching packages.
+  lines) stay; a group or section left without rows is dropped; a group's count is
+  recounted from the matching rows.
 - **Tree view**: a directory row shows the number of file rows below it. Only chains of
   single-child directories merge; a directory holding one file stays a directory. In All,
   the names column is realigned over the shown rows, since the tree view moves the labels.

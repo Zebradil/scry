@@ -1,6 +1,6 @@
 ---
 source: tests/run.rs
-expression: ran.stdout
+expression: "ran.stdout.replace(&version, \"\\\"tool_version\\\": \\\"[version]\\\"\")"
 ---
 {
   "schema_version": 1,
@@ -15,18 +15,23 @@ expression: ran.stdout
       "packages": {
         "size_old": 1170,
         "size_new": 1176,
-        "changes": [],
+        "changes": [
+          {
+            "kind": "resized",
+            "pname": "etc",
+            "old_versions": [
+              ""
+            ],
+            "new_versions": [
+              ""
+            ],
+            "size_delta": 3
+          }
+        ],
         "rebuilt": {
-          "count": 2,
-          "size_delta": 3,
+          "count": 1,
+          "size_delta": 0,
           "items": [
-            {
-              "pname": "etc",
-              "versions": [
-                ""
-              ],
-              "size_delta": 3
-            },
             {
               "pname": "tool",
               "versions": [

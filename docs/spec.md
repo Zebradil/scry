@@ -75,8 +75,8 @@ Content, all modes:
 
 11. As a user, I want added, removed, upgraded and downgraded packages with old and new versions side by
     side, so that version bumps are obvious.
-12. As a user, I want packages that are merely rebuilt collapsed into one line with their size delta, so
-    that a nixpkgs bump does not hide real changes.
+12. As a user, I want packages that are merely rebuilt collapsed into one line, so that a nixpkgs bump
+    does not hide real changes.
 13. As a user, I want the closure size and its delta per configuration, so that I notice bloat.
 14. As a user, I want every changed config file with a line diff, so that config changes, new keys and
     unit edits are visible.
@@ -492,8 +492,8 @@ report it.
 | One version per side, new > old | upgraded | `[U]` | cyan |
 | One version per side, new < old | downgraded | `[D]` | yellow |
 | Versions differ but are unordered, or several versions on a side | changed | `[C]` | magenta |
-| Same version set, different paths, size moved ≥ 1 MiB and ≥ 10 % of old | resized | `[S]` | default |
-| Same version set, different paths otherwise | rebuilt | collapsed | default |
+| Same version set, different paths, any size change | resized | `[S]` | default |
+| Same version set, different paths, same size | rebuilt | collapsed | default |
 | Same version set, same paths | unchanged | not shown | — |
 
 - Version order is `builtins.compareVersions`, implemented to match Nix's documented behaviour, with
@@ -508,8 +508,8 @@ report it.
 - Version text in a row: added and resized rows show the new versions, removed rows the old ones, and
   the rest show `old -> new`.
 - Order: by kind in the order upgraded, downgraded, changed, added, removed, resized; by pname
-  within a kind. Then one collapsed line: `N rebuilt (same version, new hash, <size delta>)`. Expanded,
-  it lists each rebuilt pname with its version and size delta.
+  within a kind. Then one collapsed line: `N rebuilt (same version, new hash)`. Expanded, it lists
+  each rebuilt pname with its version.
 - Each row shows the pname's size delta. The section header shows
   `Packages  <old closure size> -> <new closure size> (<delta>)`.
 - Sizes: under 1024 bytes as an integer with `B`. Otherwise in steps of 1024 with one decimal and
@@ -687,7 +687,7 @@ Example, shortened (`…` marks elisions, which the real output does not contain
       "packages": {
         "size_old": 1288490188, "size_new": 1331439861,
         "changes": [ { "kind": "upgraded", "pname": "openssl", "old_versions": ["3.0.13"], "new_versions": ["3.0.14"], "size_delta": 100 } ],
-        "rebuilt": { "count": 412, "size_delta": 3250586, "items": [ { "pname": "bash", "versions": ["5.2p37"], "size_delta": 0 } ] }
+        "rebuilt": { "count": 412, "size_delta": 0, "items": [ { "pname": "bash", "versions": ["5.2p37"], "size_delta": 0 } ] }
       },
       "files": {
         "changes": [
@@ -758,7 +758,7 @@ Packages  1.2 GiB -> 1.3 GiB (+41.0 MiB)
   [A] new-agent       +2.0 MiB   1.4.0
   [R] old-lib         -300.0 KiB 0.9
   [S] linux-firmware  +12.0 MiB  20250801
-  412 rebuilt (same version, new hash, +3.1 MiB)
+  412 rebuilt (same version, new hash)
 Files
   [M] etc/nix/nix.conf  (also in 1)
       @@ -11,3 +11,3 @@
@@ -976,7 +976,7 @@ Every heuristic in one place. Change a value only with a measurement recorded in
 
 | Heuristic | Value | Basis |
 |---|---|---|
-| Resized threshold | ≥ 1 MiB and ≥ 10 % of old size | judgement, unmeasured |
+| Resized threshold | any size change | ADR 0032 |
 | Small rebuild cap | ≤ 1 MiB `narSize`, each path, both sides | judgement, unmeasured |
 | Reference depth | 2 | judgement, unmeasured |
 | Git-revision-like version component | ≥ 7 hex characters, at least one letter | judgement |
